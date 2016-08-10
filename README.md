@@ -8,6 +8,10 @@ Compile-time android event bus depended on RxJava ,which support sticky event an
 
 [中文文档](https://github.com/lsxiao/Apollo/blob/master/README-zh-CN.md)
 
+## Demo Preview
+![](https://raw.githubusercontent.com/lsxiao/Apollo/master/demo.gif?raw=true)
+
+
 ## Including in your project
 We need to include the apt plugin in our classpath to enable Annotation Processing:
 
