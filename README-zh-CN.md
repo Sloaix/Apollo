@@ -1,5 +1,8 @@
 # Apollo
 [![](https://jitpack.io/v/lsxiao/Apollo.svg)](https://jitpack.io/#lsxiao/Apollo)
+<a href="http://www.methodscount.com/?lib=com.github.lsxiao.Apollo%3Aapollo%3A0.1.2"><img src="https://img.shields.io/badge/Methods count-core: 93 | deps: 5492-e91e63.svg"/></a>
+<a href="http://www.methodscount.com/?lib=com.github.lsxiao.Apollo%3Aapollo%3A0.1.2"><img src="https://img.shields.io/badge/Size-13 KB-e91e63.svg"/></a>
+
 
 依赖于RxJava的编译时Android事件总线,并且支持Sticky(粘连)事件,以及多个Rx调度器.
 
@@ -65,8 +68,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
-        afterCreate(savedInstanceState);
         mBinder = Apollo.get().bind(this);
+        afterCreate(savedInstanceState);
     }
 
     @Override

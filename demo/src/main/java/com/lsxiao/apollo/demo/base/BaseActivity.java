@@ -14,8 +14,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
-        afterCreate(savedInstanceState);
         mBinder = Apollo.get().bind(this);
+        afterCreate(savedInstanceState);
     }
 
     @Override
