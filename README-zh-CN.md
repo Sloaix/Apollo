@@ -6,6 +6,9 @@
 
 依赖于RxJava的编译时Android事件总线,并且支持Sticky(粘连)事件,以及多个Rx调度器.
 
+## 示例预览
+![](https://raw.githubusercontent.com/lsxiao/Apollo/master/demo.gif?raw=true)
+
 ## 引入Apollo到项目中
 我们需要引入一个apt插件到我们的classpath来开启注解处理功能.
 
