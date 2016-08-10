@@ -1,4 +1,5 @@
 package com.lsxiao.apllo.entity;
+
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
@@ -28,5 +29,9 @@ public class SubscriptionBinder {
             mSubscription.unsubscribe();
             mSubscription = null;
         }
+    }
+
+    public boolean isUnbind() {
+        return mSubscription == null;
     }
 }
