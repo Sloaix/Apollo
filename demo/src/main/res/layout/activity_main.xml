@@ -11,45 +11,29 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".activity.MainActivity">
 
-    <LinearLayout
+    <Button
+        android:id="@+id/bt_send_event_to_fir_act"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:text="@string/send_normal_event_to_first_activity"/>
 
-        <Button
-            android:id="@+id/bt_send_event"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="send Normal"/>
-
-        <Button
-            android:id="@+id/bt_send_sticky_event"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="send Sticky"/>
-
-    </LinearLayout>
-
-    <LinearLayout
+    <Button
+        android:id="@+id/bt_send_sticky_event_to_sec_act"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:text="@string/send_sticky_event_to_second_activity"/>
 
-        <Button
-            android:id="@+id/bt_clear_sticky_event"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="remove sticky"/>
+    <Button
+        android:id="@+id/bt_start_sec_act"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/start_second_activity"/>
 
-        <Button
-            android:id="@+id/bt_show_book_activity"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="start Sticky Activity"/>
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/bt_remove_sec_act_sticky_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/remove_second_activity_sticky_event"/>
 
     <TextView
         android:id="@+id/tv"

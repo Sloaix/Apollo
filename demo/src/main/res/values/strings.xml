@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">Demo</string>
+    <string name="app_name">ApolloDemo</string>
+    <string name="firstActivity">第一activity</string>
+    <string name="secondActivity">第二个activity</string>
+    <string name="send_normal_event_to_first_activity">发送普通事件给第一个activity</string>
+    <string name="send_sticky_event_to_second_activity">发送sticky事件给第二个activity</string>
+    <string name="remove_second_activity_sticky_event">移除第二个activity的sticky事件</string>
+    <string name="start_second_activity">启动第二个activity</string>
 </resources>
