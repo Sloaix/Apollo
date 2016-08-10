@@ -33,8 +33,8 @@ allProjects {
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-  apt "com.github.lsxiao.Apollo:processor:0.1.2"
-  compile "com.github.lsxiao.Apollo:apollo:0.1.2"
+  apt "com.github.lsxiao.Apollo:processor:0.1.3"
+  compile "com.github.lsxiao.Apollo:apollo:0.1.3"
   compile 'io.reactivex:rxandroid:1.2.1'//实际操作时请使用最新的rxandroid版本,这仅仅是一个示例.
 }
 

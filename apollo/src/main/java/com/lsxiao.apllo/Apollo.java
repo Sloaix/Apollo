@@ -5,6 +5,7 @@ import com.lsxiao.apllo.annotations.Receive;
 import com.lsxiao.apllo.entity.SubscriberEvent;
 import com.lsxiao.apllo.entity.SubscriptionBinder;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,15 +16,15 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
-import rx.subjects.Subject;
 
 /**
  * author lsxiao
  * date 2016-05-09 17:27
  */
 public class Apollo {
-    private Subject mPublishSubject;
+    private SerializedSubject<SubscriberEvent, SubscriberEvent> mPublishSubject;
     private final Map<String, SubscriberEvent> mStickyEventMap;//用于保存stick事件
+    private Map<Integer, SubscriptionBinder> mBindTargetMap;//用于保存SubscriptionBinder
     private static Apollo sInstance;
     private SubscriberBinder mSubscriberBinder;
     private Thread mThread;
@@ -31,8 +32,9 @@ public class Apollo {
     private Apollo() {
         //SerializedSubject是线程安全的
         //PublishSubject 会发送订阅者从订阅之后的事件序列,这意味着没订阅前的事件序列不会被发送到当前订阅者
-        mPublishSubject = new SerializedSubject<>(PublishSubject.create());
+        mPublishSubject = new SerializedSubject<>(PublishSubject.<SubscriberEvent>create());
         mStickyEventMap = new ConcurrentHashMap<>();
+        mBindTargetMap = new HashMap<>();
     }
 
     public void init(SubscriberBinder binder, Scheduler main) {
@@ -94,7 +96,6 @@ public class Apollo {
         }
     }
 
-
     /**
      * 移除指定eventType的Sticky事件
      */
@@ -145,7 +146,38 @@ public class Apollo {
         if (null == o) {
             throw new NullPointerException("object to bind must not be null");
         }
-        return mSubscriberBinder.bind(o);
+
+        return uniqueBind(o);
+    }
+
+    /**
+     * 唯一绑定,避免重复绑定到相同的对象
+     *
+     * @param o Object
+     * @return SubscriptionBinder
+     */
+    private SubscriptionBinder uniqueBind(Object o) {
+        int uniqueId = System.identityHashCode(o);
+
+        SubscriptionBinder binder;
+
+        //对象已有绑定记录
+        if (mBindTargetMap.containsKey(uniqueId)) {
+            binder = mBindTargetMap.get(uniqueId);
+            //绑定已经解绑
+            if (binder.isUnbind()) {
+                //移除已经解绑的binder
+                mBindTargetMap.remove(uniqueId);
+                //重新绑定
+                binder = mSubscriberBinder.bind(o);
+                //保存到map中
+                mBindTargetMap.put(uniqueId, binder);
+            }
+        } else {
+            binder = mSubscriberBinder.bind(o);
+            mBindTargetMap.put(uniqueId, binder);
+        }
+        return binder;
     }
 
     /**
@@ -154,18 +186,20 @@ public class Apollo {
      * @param eventType 只接受eventType类型的响应,ofType = filter + cast
      * @return Observable
      */
-    public <T> Observable<T> toObservable(final String tag, Class<T> eventType) {
-        return mPublishSubject.filter(new Func1() {
-            @Override
-            public Object call(Object o) {
-                return ((SubscriberEvent) o).getTag().equals(tag);
-            }
-        }).map(new Func1() {
-            @Override
-            public Object call(Object o) {
-                return ((SubscriberEvent) o).getData();
-            }
-        }).ofType(eventType);
+    public <T> Observable<T> toObservable(final String tag, final Class<T> eventType) {
+        return mPublishSubject
+                .filter(new Func1<SubscriberEvent, Boolean>() {
+                    @Override
+                    public Boolean call(SubscriberEvent subscriberEvent) {
+                        return subscriberEvent.getTag().equals(tag);
+                    }
+                })
+                .flatMap(new Func1<SubscriberEvent, Observable<T>>() {
+                    @Override
+                    public Observable<T> call(SubscriberEvent subscriberEvent) {
+                        return Observable.just(eventType.cast(subscriberEvent.getData()));
+                    }
+                });
     }
 
     /**
@@ -202,7 +236,6 @@ public class Apollo {
     public interface SubscriberBinder {
         SubscriptionBinder bind(Object object);
     }
-
 
     public Thread getThread() {
         return mThread;

@@ -128,8 +128,12 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                                         "new $T<$N>(){" +
                                         "@Override " +
                                         "public void call($N $N){" +
+                                        "try {" +
                                         "$N.$N($N);" +
-                                        "}}," +
+                                        "}" +
+                                        "catch (Exception e){" +
+                                        "e.printStackTrace();" +
+                                        "}}}," +
                                         "new $T<$T>(){" +
                                         "@Override " +
                                         "public void call($T a){" +
