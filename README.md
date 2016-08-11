@@ -186,6 +186,9 @@ finally send a event where your want.
  //a normal event
  Apollo.get().send(EVENT_SHOW_USER, new User("lsxiao"));
 
+ //a non-parameter event
+ Apollo.get().send(EVENT_SHOW_USER);
+
  //a sticky event
  Apollo.get().sendSticky(EVENT_SHOW_BOOK, new Book("A Song of Ice and Fire"));
 ```
