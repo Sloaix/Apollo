@@ -99,9 +99,8 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                     .addStatement("final $T $N=($T)object", classTypeAnnotationIn, receiveMethodInvoker, classTypeAnnotationIn);
             for (ExecutableElement methodElement : mClassMethodMap.get(classTypeAnnotationIn)) {
 
-                //receive方法最多只能有一个参数
-                if (methodElement.getParameters().size() > 1) {
-                    error("the " + methodElement.toString() + " method in " + classTypeAnnotationIn.toString() + "  only support 1 parameter,but there are " + methodElement.getParameters().size());
+                if (!isValidMethod(methodElement, classTypeAnnotationIn)) {
+                    return;
                 }
 
                 boolean hasParameter = methodElement.getParameters().size() > 0;
@@ -177,6 +176,28 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                 .build();
 
         generateCode(subscriberClass);
+    }
+
+    private boolean isValidMethod(ExecutableElement methodElement, DeclaredType classTypeAnnotationIn) {
+        //receive方法最多只能有一个参数
+        if (methodElement.getParameters().size() > 1) {
+            error("the " + methodElement.toString() + " method in " + classTypeAnnotationIn.toString() + "  only support 1 parameter,but there are " + methodElement.getParameters().size());
+            return false;
+        }
+
+        //
+        if (methodElement.getModifiers().contains(Modifier.ABSTRACT)) {
+            error("the " + methodElement.toString() + " method in " + classTypeAnnotationIn.toString() + " must only be a public method ,not a public abstract method ");
+            return false;
+        }
+
+        //必须是公有方法
+        if (!methodElement.getModifiers().contains(Modifier.PUBLIC)) {
+            error("the " + methodElement.toString() + " method in " + classTypeAnnotationIn.toString() + " must only be a public method ");
+            return false;
+        }
+
+        return true;
     }
 
     private void generateCode(TypeSpec subscriberClass) {
