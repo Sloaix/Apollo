@@ -128,18 +128,18 @@ public class MainActivity extends BaseActivity {
 
     //支持多个tag,注意,只能接收到订阅方法参数类类型的事件或者其子类的事件.
     @Receive(tag = {TAG1,TAG2})
-    public void receiveBookSticky(User user) {
+    public void receiveUser(User user) {
         //do something
     }
 
     //支持无参方法
     @Receive(tag = TAG)
-    public void receiveBookSticky() {
+    public void receiveUser() {
         //do something
     }
 
     @Receive(tag = {TAG1,TAG2})
-    public void receiveBookSticky() {
+    public void receiveUser() {
         //do something
     }
 
