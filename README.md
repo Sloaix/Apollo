@@ -132,18 +132,18 @@ public class MainActivity extends BaseActivity {
 
     //support multiple tag
     @Receive(tag = {TAG1,TAG2})
-    public void receiveBookSticky(User user) {
+    public void receiveUser(User user) {
         //do something
     }
 
     //support non-parameter method
     @Receive(tag = TAG)
-    public void receiveBookSticky() {
+    public void receiveUser() {
         //do something
     }
 
     @Receive(tag = {TAG1,TAG2})
-    public void receiveBookSticky() {
+    public void receiveUser() {
         //do something
     }
 
