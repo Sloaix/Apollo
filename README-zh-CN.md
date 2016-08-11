@@ -36,8 +36,8 @@ allProjects {
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-  apt "com.github.lsxiao.Apollo:processor:0.1.3"
-  compile "com.github.lsxiao.Apollo:apollo:0.1.3"
+  apt "com.github.lsxiao.Apollo:processor:0.1.4-alpha"
+  compile "com.github.lsxiao.Apollo:apollo:0.1.4-alpha"
   compile 'io.reactivex:rxandroid:1.2.1'//实际操作时请使用最新的rxandroid版本,这仅仅是一个示例.
 }
 
@@ -124,6 +124,23 @@ public class MainActivity extends BaseActivity {
     @Receive(tag = EVENT_SHOW_USER,type = Receive.Type.STICKY)
     public void receiveBookSticky(Book book) {
         Log.d("apollo", "MainActivity receive book event" + book.toString());
+    }
+
+    //支持多个tag,注意,只能接收到订阅方法参数类类型的事件或者其子类的事件.
+    @Receive(tag = {TAG1,TAG2})
+    public void receiveBookSticky(User user) {
+        //do something
+    }
+
+    //支持无参方法
+    @Receive(tag = TAG)
+    public void receiveBookSticky() {
+        //do something
+    }
+
+    @Receive(tag = {TAG1,TAG2})
+    public void receiveBookSticky() {
+        //do something
     }
 
     public static class User {

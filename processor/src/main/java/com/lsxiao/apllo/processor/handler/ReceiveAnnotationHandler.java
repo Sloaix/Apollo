@@ -99,16 +99,18 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                     .addStatement("final $T $N=($T)object", classTypeAnnotationIn, receiveMethodInvoker, classTypeAnnotationIn);
             for (ExecutableElement methodElement : mClassMethodMap.get(classTypeAnnotationIn)) {
 
-                //receive方法只能有一个变量
+                //receive方法最多只能有一个参数
                 if (methodElement.getParameters().size() > 1) {
                     error("the " + methodElement.toString() + " method in " + classTypeAnnotationIn.toString() + "  only support 1 parameter,but there are " + methodElement.getParameters().size());
                 }
 
+                boolean hasParameter = methodElement.getParameters().size() > 0;
+
                 //获取方法第一个变量
-                VariableElement eventVariable = methodElement.getParameters().get(0);
+                VariableElement eventVariable = hasParameter ? methodElement.getParameters().get(0) : null;
 
                 //获取tag值
-                String tag = methodElement.getAnnotation(Receive.class).tag();
+                String[] tags = methodElement.getAnnotation(Receive.class).tag();
 
                 Receive.Thread observeOn = methodElement.getAnnotation(Receive.class).observeOn();
 
@@ -119,12 +121,13 @@ public class ReceiveAnnotationHandler extends BaseHandler {
 
                 String receiveMethod = methodElement.getSimpleName().toString();
                 String onSubscribeMethod = isSticky ? "toObservableSticky" : "toObservable";
-                String eventVariableClassType = eventVariable.asType().toString() + ".class";
-                String eventVariableClass = eventVariable.asType().toString();
-                String eventVariableInstance = eventVariable.getSimpleName().toString().toLowerCase();
+                String eventVariableClassType = eventVariable == null ? "Object.class" : eventVariable.asType().toString() + ".class";
+                String eventVariableClass = eventVariable == null ? "Object" : eventVariable.asType().toString();
+                String eventVariableInstance = eventVariable == null ? "object" : eventVariable.getSimpleName().toString().toLowerCase();
+                String tagsParameter = "new String[]{" + StrUtil.arraySplitBy(tags, ",") + "}";
 
                 bindMethodBuilder
-                        .addStatement("subscriptionBinder.add($T.get().$N($S,$N).subscribeOn($T.get().getThread().get($N.$N)).observeOn($T.get().getThread().get($N.$N)).subscribe(" +
+                        .addStatement("subscriptionBinder.add($T.get().$N($N,$N).subscribeOn($T.get().getThread().get($N.$N)).observeOn($T.get().getThread().get($N.$N)).subscribe(" +
                                         "new $T<$N>(){" +
                                         "@Override " +
                                         "public void call($N $N){" +
@@ -142,7 +145,7 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                                         "))",
                                 Apollo.class,
                                 onSubscribeMethod,
-                                tag,
+                                tagsParameter,
                                 eventVariableClassType,
                                 Apollo.class,
                                 Receive.Thread.class.getCanonicalName(),
@@ -156,7 +159,7 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                                 eventVariableInstance,
                                 receiveMethodInvoker,
                                 receiveMethod,
-                                eventVariableInstance,
+                                hasParameter ? eventVariableInstance : "",
                                 Action1.class,
                                 Throwable.class,
                                 Throwable.class);
