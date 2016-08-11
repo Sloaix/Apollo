@@ -5,13 +5,15 @@ import com.lsxiao.apllo.annotations.Receive;
 import com.lsxiao.apllo.entity.SubscriberEvent;
 import com.lsxiao.apllo.entity.SubscriptionBinder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import rx.Observable;
 import rx.Scheduler;
-import rx.Subscriber;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -36,6 +38,7 @@ public class Apollo {
         mStickyEventMap = new ConcurrentHashMap<>();
         mBindTargetMap = new HashMap<>();
     }
+
 
     public void init(SubscriberBinder binder, Scheduler main) {
         if (null == binder) {
@@ -125,12 +128,25 @@ public class Apollo {
         mPublishSubject.onNext(event);
     }
 
+    public void send(String tag) {
+        SubscriberEvent event = new SubscriberEvent(tag, new Object());
+        mPublishSubject.onNext(event);
+    }
+
     /**
      * 发送一个新Sticky事件
      */
     public void sendSticky(String tag, Object o) {
         synchronized (mStickyEventMap) {
             SubscriberEvent event = new SubscriberEvent(tag, o, true);
+            mStickyEventMap.put(tag, event);
+            mPublishSubject.onNext(event);
+        }
+    }
+
+    public void sendSticky(String tag) {
+        synchronized (mStickyEventMap) {
+            SubscriberEvent event = new SubscriberEvent(tag, new Object(), true);
             mStickyEventMap.put(tag, event);
             mPublishSubject.onNext(event);
         }
@@ -180,6 +196,15 @@ public class Apollo {
         return binder;
     }
 
+
+    public Observable<Object> toObservable(final String tag) {
+        return toObservable(new String[]{tag}, Object.class);
+    }
+
+    public Observable<Object> toObservable(final String[] tags) {
+        return toObservable(tags, Object.class);
+    }
+
     /**
      * 返回普通事件类型的被观察者
      *
@@ -187,11 +212,29 @@ public class Apollo {
      * @return Observable
      */
     public <T> Observable<T> toObservable(final String tag, final Class<T> eventType) {
+        return toObservable(new String[]{tag}, eventType);
+    }
+
+    public <T> Observable<T> toObservable(final String[] tags, final Class<T> eventType) {
+        if (null == eventType) {
+            throw new NullPointerException("the eventType must be not null");
+        }
+
+        if (null == tags) {
+            throw new NullPointerException("the tags must be not null");
+        }
+
+        if (0 == tags.length) {
+            throw new IllegalArgumentException("the tags must be not empty");
+        }
+
         return mPublishSubject
                 .filter(new Func1<SubscriberEvent, Boolean>() {
                     @Override
                     public Boolean call(SubscriberEvent subscriberEvent) {
-                        return subscriberEvent.getTag().equals(tag);
+                        return Arrays.asList(tags).contains(subscriberEvent.getTag()) &&
+                                //如果subscriberEvent.getData() = null,不用再去检查是不是特定类型或者其子类的实例
+                                (subscriberEvent.getData() == null || eventType.isInstance(subscriberEvent.getData()));
                     }
                 })
                 .flatMap(new Func1<SubscriberEvent, Observable<T>>() {
@@ -202,30 +245,58 @@ public class Apollo {
                 });
     }
 
+
+    public Observable toObservableSticky(final String tag) {
+        return toObservable(new String[]{tag});
+    }
+
+    public Observable<Object> toObservableSticky(final String[] tags) {
+        return toObservableSticky(tags, Object.class);
+    }
+
+
     /**
      * 根据传递的 eventType 类型返回特定类型(eventType)的 被观察者
      */
     public <T> Observable<T> toObservableSticky(String tag, final Class<T> eventType) {
+        return toObservableSticky(new String[]{tag}, eventType);
+    }
+
+    public <T> Observable<T> toObservableSticky(final String[] tags, final Class<T> eventType) {
+        if (null == eventType) {
+            throw new NullPointerException("the eventType must be not null");
+        }
+
+        if (null == tags) {
+            throw new NullPointerException("the tags must be not null");
+        }
+
+        if (0 == tags.length) {
+            throw new IllegalArgumentException("the tags must be not empty");
+        }
+
         synchronized (mStickyEventMap) {
             //普通事件的被观察者
-            Observable<T> observable = toObservable(tag, eventType);
+            Observable<T> observable = toObservable(tags, eventType);
 
-            //sticky事件
-            final SubscriberEvent event = mStickyEventMap.get(tag);
+            final List<SubscriberEvent> stickyEventList = new ArrayList<>();
+            for (String tag : tags) {
+                //sticky事件
+                final SubscriberEvent event = mStickyEventMap.get(tag);
+                if (event != null) {
+                    stickyEventList.add(mStickyEventMap.get(tag));
+                }
+            }
 
-            if (event != null) {
+            if (!stickyEventList.isEmpty()) {
                 //合并事件序列
-                return Observable.create(new Observable.OnSubscribe<SubscriberEvent>() {
-                    @Override
-                    public void call(Subscriber<? super SubscriberEvent> subscriber) {
-                        subscriber.onNext(event);
-                    }
-                }).flatMap(new Func1<SubscriberEvent, Observable<T>>() {
-                    @Override
-                    public Observable<T> call(SubscriberEvent subscriberEvent) {
-                        return Observable.just(eventType.cast(subscriberEvent.getData()));
-                    }
-                }).mergeWith(observable);
+                return Observable.from(stickyEventList)
+                        .flatMap(new Func1<SubscriberEvent, Observable<T>>() {
+                            @Override
+                            public Observable<T> call(SubscriberEvent subscriberEvent) {
+                                return Observable.just(eventType.cast(subscriberEvent.getData()));
+                            }
+                        }).mergeWith(observable);
 
             } else {
                 return observable;

@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface Receive {
 
-    String tag();
+    String[] tag();
 
     Type type() default Type.NORMAL;
 

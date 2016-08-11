@@ -40,8 +40,8 @@ Add the library to the project-level build.gradle, using the apt plugin to enabl
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-  apt "com.github.lsxiao.Apollo:processor:0.1.3"
-  compile "com.github.lsxiao.Apollo:apollo:0.1.3"
+  apt "com.github.lsxiao.Apollo:processor:0.1.4-alpha"
+  compile "com.github.lsxiao.Apollo:apollo:0.1.4-alpha"
   compile 'io.reactivex:rxandroid:1.2.1'//use the latest version,this just a simple.
 }
 
@@ -128,6 +128,23 @@ public class MainActivity extends BaseActivity {
     @Receive(tag = EVENT_SHOW_USER,type = Receive.Type.STICKY)
     public void receiveBookSticky(Book book) {
         Log.d("apollo", "MainActivity receive book event" + book.toString());
+    }
+
+    //support multiple tag
+    @Receive(tag = {TAG1,TAG2})
+    public void receiveBookSticky(User user) {
+        //do something
+    }
+
+    //support non-parameter method
+    @Receive(tag = TAG)
+    public void receiveBookSticky() {
+        //do something
+    }
+
+    @Receive(tag = {TAG1,TAG2})
+    public void receiveBookSticky() {
+        //do something
     }
 
     public static class User {
