@@ -49,6 +49,7 @@ dependencies {
 
 ## Usage
 
+### Init
 init the Apollo in your custom application.
 
 ```java
@@ -65,6 +66,7 @@ public class App extends Application {
 }
 ```
 
+### Bind/Unbind
 you can bind and unbind Apollo in BaseActivity.
 
 ```java
@@ -92,94 +94,78 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 ```
 
+### Receive Event
 write a method where you want to receive events
 
+#### default
 ```java
-public class MainActivity extends BaseActivity {
-    public static final String EVENT_SHOW_USER = "event_show_user";
-    public static final String EVENT_SHOW_BOOK = "event_show_book";
-
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_main;
+    @Receive(tag = TAG)
+    public void receiveEvent(Event event) {
+       //do something.
     }
-
-    @Override
-    protected void afterCreate(Bundle savedInstanceState) {
-
+```
+### non-parameter
+```java
+    @Receive(tag = TAG)
+    public void showDialog(){
+        //show dialog.
     }
+```
 
-    @Receive(tag = EVENT_SHOW_BOOK)
-    public void receiveBook(Book book) {
-        Log.d("apollo", "MainActivity receive book event" + book.toString());
+### multiple tag
+```java
+    @Receive(tag = {TAG1,TAG2})
+    public void showDialog(){
+        //show dialog.
     }
+```
 
+### receive normal event only once.
+```java
+    //the event will be received only once.
+    @Receive(tag = TAG,type = Receive.Type.NORMAL_ONCE)
+    public void showDialog(){
+        //show dialog.
+    }
+```
+
+### schedulers
+```java
     //the subscribeOn and observeOn support  main, io, new, computation, trampoline, immediate schedulers.
     //subscribeOn default scheduler is io.
     //observeOn default scheduler is main.
-    @Receive(tag = EVENT_SHOW_USER,subscribeOn = Receive.Thread.IO, observeOn = Receive.Thread.MAIN)
-    public void receiveUser(User user) {
-        Log.d("apollo", "MainActivity receive user event" + user.toString());
-    }
-
-    //if you want to receive a sticky event.
-    //try make type = Receive.Type.STICKY.
-    //the default value is type = Receive.Type.Normal.
-    @Receive(tag = EVENT_SHOW_USER,type = Receive.Type.STICKY)
-    public void receiveBookSticky(Book book) {
-        Log.d("apollo", "MainActivity receive book event" + book.toString());
-    }
-
-    //support multiple tag
-    @Receive(tag = {TAG1,TAG2})
-    public void receiveUser(User user) {
-        //do something
-    }
-
-    //support non-parameter method
-    @Receive(tag = TAG)
+    @Receive(tag = TAG,subscribeOn = Receive.Thread.IO, observeOn = Receive.Thread.MAIN)
     public void receiveUser() {
-        //do something
+        //do something.
     }
-
-    @Receive(tag = {TAG1,TAG2})
-    public void receiveUser() {
-        //do something
-    }
-
-    public static class User {
-        String name;
-
-        public User(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return "User{" +
-                    "name='" + name + '\'' +
-                    '}';
-        }
-    }
-
-    public static class Book {
-        String name;
-
-        public Book(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return "Book{" +
-                    "name='" + name + '\'' +
-                    '}';
-        }
-    }
-}
-
 ```
 
+### receive sticky event
+```java
+    @Receive(tag = TAG,type = Receive.Type.STICKY)
+    public void receiveEvent(Event event) {
+        //do something.
+    }
+```
+
+### receive sticky event and remove that sticky event.
+```java
+    @Receive(tag = TAG,type = Receive.Type.STICKY_REMOVE)
+    public void receiveEvent(Event event) {
+        //do something.
+    }
+```
+
+### receive sticky event and remove all sticky events.
+```java
+    @Receive(tag = TAG,type = Receive.Type.STICKY_REMOVE_ALL)
+    public void receiveEvent(Event event) {
+        //do something.
+    }
+```
+
+
+### Send Event
 finally send a event where your want.
 
 ```java

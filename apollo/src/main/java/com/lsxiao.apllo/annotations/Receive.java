@@ -22,7 +22,7 @@ public @interface Receive {
     Thread observeOn() default Thread.MAIN;
 
     enum Type {
-        NORMAL, STICKY
+        NORMAL, STICKY, NORMAL_ONCE, STICKY_REMOVE, STICKY_REMOVE_ALL
     }
 
     enum Thread {

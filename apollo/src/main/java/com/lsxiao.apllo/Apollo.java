@@ -109,6 +109,15 @@ public class Apollo {
     }
 
     /**
+     * 移除指定eventType的Sticky事件
+     */
+    public void removeStickyEvent(String[] tags) {
+        for (String tag : tags) {
+            removeStickyEvent(tag);
+        }
+    }
+
+    /**
      * 移除所有的Sticky事件
      */
     public void removeAllStickyEvents() {
