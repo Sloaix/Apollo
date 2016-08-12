@@ -62,15 +62,8 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                 .addStatement("final $T subscriptionBinder = new $T()", SubscriptionBinder.class, SubscriptionBinder.class);
 
         for (Element element : roundEnv.getElementsAnnotatedWith(Receive.class)) {
-
-            //注解最最外侧必须是一个类
-            if (element.getEnclosingElement().getKind() != ElementKind.CLASS) {
-                //打印出错信息
-                error("@Receive must be wrapped by a class");
-            }
-
-            if (element.getKind() != ElementKind.METHOD) {
-                error("@Receive only support method!");
+            if (!isValidElement(element)) {
+                return;
             }
 
             //转行成可执行element
@@ -116,21 +109,26 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                 Receive.Thread subscribeOn = methodElement.getAnnotation(Receive.class).subscribeOn();
 
                 //获取receiveMethod是否接收sticky event
-                boolean isSticky = methodElement.getAnnotation(Receive.class).type() == Receive.Type.STICKY;
+                Receive.Type type = methodElement.getAnnotation(Receive.class).type();
 
                 String receiveMethod = methodElement.getSimpleName().toString();
-                String onSubscribeMethod = isSticky ? "toObservableSticky" : "toObservable";
+                String onSubscribeMethod = type == Receive.Type.STICKY ? "toObservableSticky" : "toObservable";
+                String tagsParameter = "new String[]{" + StrUtil.arraySplitBy(tags, ",") + "}";
+                String takeOnceMethod = type == Receive.Type.NORMAL_ONCE ? ".take(1)" : "";
+                String stickyRemove = type == Receive.Type.STICKY_REMOVE ? "Apollo.get().removeStickyEvent(" + tagsParameter + ");" : type == Receive.Type.STICKY_REMOVE_ALL ? "Apollo.get().removeAllStickyEvents();" : "";
                 String eventVariableClassType = eventVariable == null ? "Object.class" : eventVariable.asType().toString() + ".class";
                 String eventVariableClass = eventVariable == null ? "Object" : eventVariable.asType().toString();
                 String eventVariableInstance = eventVariable == null ? "object" : eventVariable.getSimpleName().toString().toLowerCase();
-                String tagsParameter = "new String[]{" + StrUtil.arraySplitBy(tags, ",") + "}";
 
                 bindMethodBuilder
-                        .addStatement("subscriptionBinder.add($T.get().$N($N,$N).subscribeOn($T.get().getThread().get($N.$N)).observeOn($T.get().getThread().get($N.$N)).subscribe(" +
+                        .addStatement("subscriptionBinder.add($T.get().$N($N,$N)" +
+                                        takeOnceMethod +
+                                        ".subscribeOn($T.get().getThread().get($N.$N)).observeOn($T.get().getThread().get($N.$N)).subscribe(" +
                                         "new $T<$N>(){" +
                                         "@Override " +
                                         "public void call($N $N){" +
                                         "try {" +
+                                        stickyRemove +
                                         "$N.$N($N);" +
                                         "}" +
                                         "catch (Exception e){" +
@@ -178,6 +176,23 @@ public class ReceiveAnnotationHandler extends BaseHandler {
         generateCode(subscriberClass);
     }
 
+    private boolean isValidElement(Element element) {
+        //注解最最外侧必须是一个类
+        if (element.getEnclosingElement().getKind() != ElementKind.CLASS) {
+            //打印出错信息
+            error("@Receive must be wrapped by a class");
+            return false;
+        }
+
+        if (element.getKind() != ElementKind.METHOD) {
+            error("@Receive only support method!");
+            return false;
+        }
+
+        return true;
+    }
+
+    //方法是否有合法
     private boolean isValidMethod(ExecutableElement methodElement, DeclaredType classTypeAnnotationIn) {
         //receive方法最多只能有一个参数
         if (methodElement.getParameters().size() > 1) {
@@ -185,7 +200,7 @@ public class ReceiveAnnotationHandler extends BaseHandler {
             return false;
         }
 
-        //
+        //不能是抽象方法
         if (methodElement.getModifiers().contains(Modifier.ABSTRACT)) {
             error("the " + methodElement.toString() + " method in " + classTypeAnnotationIn.toString() + " must only be a public method ,not a public abstract method ");
             return false;
