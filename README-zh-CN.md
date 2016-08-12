@@ -162,7 +162,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
 ### 发送事件
-finally send a event where your want.
 
 ```java
  //a normal event
