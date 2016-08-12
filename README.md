@@ -40,8 +40,8 @@ Add the library to the project-level build.gradle, using the apt plugin to enabl
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-  apt "com.github.lsxiao.Apollo:processor:0.1.4-alpha"
-  compile "com.github.lsxiao.Apollo:apollo:0.1.4-alpha"
+  apt "com.github.lsxiao.Apollo:processor:0.1.4-alpha.1"
+  compile "com.github.lsxiao.Apollo:apollo:0.1.4-alpha.1"
   compile 'io.reactivex:rxandroid:1.2.1'//use the latest version,this just a simple.
 }
 
@@ -97,14 +97,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 ### Receive Event
 write a method where you want to receive events
 
-#### default
+- default
 ```java
     @Receive(tag = TAG)
     public void receiveEvent(Event event) {
        //do something.
     }
 ```
-### non-parameter
+- non-parameter
 ```java
     @Receive(tag = TAG)
     public void showDialog(){
@@ -112,7 +112,7 @@ write a method where you want to receive events
     }
 ```
 
-### multiple tag
+- multiple tag
 ```java
     @Receive(tag = {TAG1,TAG2})
     public void showDialog(){
@@ -120,7 +120,7 @@ write a method where you want to receive events
     }
 ```
 
-### receive normal event only once.
+- receive normal event only once.
 ```java
     //the event will be received only once.
     @Receive(tag = TAG,type = Receive.Type.NORMAL_ONCE)
@@ -129,7 +129,7 @@ write a method where you want to receive events
     }
 ```
 
-### schedulers
+- schedulers
 ```java
     //the subscribeOn and observeOn support  main, io, new, computation, trampoline, immediate schedulers.
     //subscribeOn default scheduler is io.
@@ -140,7 +140,7 @@ write a method where you want to receive events
     }
 ```
 
-### receive sticky event
+- receive sticky event
 ```java
     @Receive(tag = TAG,type = Receive.Type.STICKY)
     public void receiveEvent(Event event) {
@@ -148,7 +148,7 @@ write a method where you want to receive events
     }
 ```
 
-### receive sticky event and remove that sticky event.
+- receive sticky event and remove that sticky event.
 ```java
     @Receive(tag = TAG,type = Receive.Type.STICKY_REMOVE)
     public void receiveEvent(Event event) {
@@ -156,7 +156,7 @@ write a method where you want to receive events
     }
 ```
 
-### receive sticky event and remove all sticky events.
+- receive sticky event and remove all sticky events.
 ```java
     @Receive(tag = TAG,type = Receive.Type.STICKY_REMOVE_ALL)
     public void receiveEvent(Event event) {

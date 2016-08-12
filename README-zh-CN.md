@@ -36,8 +36,8 @@ allProjects {
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-  apt "com.github.lsxiao.Apollo:processor:0.1.4-alpha"
-  compile "com.github.lsxiao.Apollo:apollo:0.1.4-alpha"
+  apt "com.github.lsxiao.Apollo:processor:0.1.4-alpha.1"
+  compile "com.github.lsxiao.Apollo:apollo:0.1.4-alpha.1"
   compile 'io.reactivex:rxandroid:1.2.1'//实际操作时请使用最新的rxandroid版本,这仅仅是一个示例.
 }
 
@@ -93,14 +93,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 ### 接收事件
 在你喜欢的地方来接收事件.
 
-#### 默认使用
+- 默认使用
 ```java
     @Receive(tag = TAG)
     public void receiveEvent(Event event) {
        //do something.
     }
 ```
-### 无参使用
+- 无参使用
 ```java
     @Receive(tag = TAG)
     public void showDialog(){
@@ -108,7 +108,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 ```
 
-### 多个Tag
+- 多个Tag
 ```java
     @Receive(tag = {TAG1,TAG2})
     public void showDialog(){
@@ -116,7 +116,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 ```
 
-### 只接受一次普通事件
+- 只接受一次普通事件
 ```java
     //the event will be received only once.
     @Receive(tag = TAG,type = Receive.Type.NORMAL_ONCE)
@@ -125,7 +125,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 ```
 
-### 调度器
+- 调度器
 ```java
     //the subscribeOn and observeOn support  main, io, new, computation, trampoline, immediate schedulers.
     //subscribeOn default scheduler is io.
@@ -136,7 +136,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 ```
 
-### 接收sticky事件
+- 接收sticky事件
 ```java
     @Receive(tag = TAG,type = Receive.Type.STICKY)
     public void receiveEvent(Event event) {
@@ -144,7 +144,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 ```
 
-### 接收后清除该sticky事件
+- 接收后清除该sticky事件
 ```java
     @Receive(tag = TAG,type = Receive.Type.STICKY_REMOVE)
     public void receiveEvent(Event event) {
@@ -152,7 +152,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 ```
 
-### 接收后清除所有的sticky事件
+- 接收后清除所有的sticky事件
 ```java
     @Receive(tag = TAG,type = Receive.Type.STICKY_REMOVE_ALL)
     public void receiveEvent(Event event) {
