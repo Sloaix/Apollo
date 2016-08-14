@@ -174,9 +174,33 @@ public abstract class BaseActivity extends AppCompatActivity {
  Apollo.get().sendSticky(EVENT_SHOW_BOOK, new Book("A Song of Ice and Fire"));
 ```
 
-## Pull Requests(请求代码合并)
+## 版本说明
 
-欢迎所有的 pull requests.
+- 0.1.4-alpha.1 (2016-8-12)
+  - 新增:normal event 只接收一次功能(NORAML_ONCE)
+  - 新增:sticky event 接收后自动移除该sticky event的功能(STICKY_REMOVE)
+  - 新增:sticky event 接收后自动移除所有sticky event的功能(STICKY_REMOVE_ALL)
+
+
+- 0.1.4-alpha (2016-8-11)
+  - 新增:多Tag支持
+  - 新增:无参订阅方法支持
+  - 修复processor中一个可能会导致编译失败的bug.
+
+
+- 0.1.3 (2016-8-10)
+  - 修复避免多次绑定同一个对象的问题
+  - 修复一个可能会导致订阅被取消的bug
+
+
+- 0.1.2 (2016-8-8)
+  - 编译时注解 RxBus
+  - 支持sticky event
+  - 支持多个调度器
+  - 支持注解
+
+
+
 
 ## 维护人
 知乎 : [@面条](https://www.zhihu.com/people/lsxiao)
