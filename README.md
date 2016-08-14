@@ -179,9 +179,30 @@ finally send a event where your want.
  Apollo.get().sendSticky(EVENT_SHOW_BOOK, new Book("A Song of Ice and Fire"));
 ```
 
-## Pull Requests
+## Release Note
 
-welcome all pull requests.
+- 0.1.4-alpha.1 (2016-8-12)
+  - support receive a normal event only once.(NORAML_ONCE)
+  - support receive sticky event and remove that sticky event.(STICKY_REMOVE)
+  - support receive sticky event and remove all sticky events.(STICKY_REMOVE_ALL)
+
+
+- 0.1.4-alpha (2016-8-11)
+  - support multiple tags.
+  - support non-parameter method.
+  - fixed a bug in processor which may causing compile fail.
+
+
+- 0.1.3 (2016-8-10)
+  - avoid multiple bind the same object.
+  - fixed a bug may cause unsubscribe.
+
+
+- 0.1.2 (2016-8-8)
+  - compile-time RxBus
+  - support sticky event
+  - support multiple scheduler.
+  - support annotation.
 
 ## Maintained By
 知乎 : [@面条](https://www.zhihu.com/people/lsxiao)
