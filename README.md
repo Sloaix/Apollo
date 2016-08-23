@@ -40,8 +40,8 @@ Add the library to the project-level build.gradle, using the apt plugin to enabl
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-  apt "com.github.lsxiao.Apollo:processor:0.1.4-alpha.1"
-  compile "com.github.lsxiao.Apollo:apollo:0.1.4-alpha.1"
+  apt "com.github.lsxiao.Apollo:processor:0.1.4-alpha.2"
+  compile "com.github.lsxiao.Apollo:apollo:0.1.4-alpha.2"
   compile 'io.reactivex:rxandroid:1.2.1'//use the latest version,this just a simple.
 }
 
