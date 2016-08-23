@@ -181,6 +181,10 @@ finally send a event where your want.
 
 ## Release Note
 
+- 0.1.4-alpha.2 (2016-8-23)
+  - update demo.
+  - support send and receive primitive type event.(int,boolean,float,etc...)
+
 - 0.1.4-alpha.1 (2016-8-12)
   - support receive a normal event only once.(NORAML_ONCE)
   - support receive sticky event and remove that sticky event.(STICKY_REMOVE)

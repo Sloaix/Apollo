@@ -175,6 +175,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 ```
 
 ## 版本说明
+- 0.1.4-alpha.2 (2016-8-23)
+  - 更新demo.
+  - 支持发送和接收基本数据类型的事件.(int,boolean,float,等等...)
+
 
 - 0.1.4-alpha.1 (2016-8-12)
   - 新增:normal event 只接收一次功能(NORAML_ONCE)

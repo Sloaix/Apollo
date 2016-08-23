@@ -11,7 +11,7 @@ import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +23,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 
 import rx.functions.Action1;
 
@@ -31,7 +32,7 @@ import rx.functions.Action1;
  * date 2016-08-07 17:52
  */
 public class ReceiveAnnotationHandler extends BaseHandler {
-    private Map<DeclaredType, List<ExecutableElement>> mClassMethodMap = new HashMap<>();
+    private Map<DeclaredType, List<ExecutableElement>> mClassMethodMap = new LinkedHashMap<>();
     //如果生成了新的源文件process()能够被调用多次,因为生成的源文件中可能会有注解,它们还将会被ApolloAnnotationProcessor处理。
     //所以这里需要是个是否完成标志变量,避免重复处理注解 创建源文件造成异常
     private boolean handleComplete = false;
@@ -85,13 +86,17 @@ public class ReceiveAnnotationHandler extends BaseHandler {
             methodList.add(receiveMethodElement);
         }
 
+
         for (DeclaredType classTypeAnnotationIn : mClassMethodMap.keySet()) {
             String receiveMethodInvoker = StrUtil.dot2Underline(classTypeAnnotationIn.toString());
             bindMethodBuilder
                     .beginControlFlow("if(object.getClass().getCanonicalName().equals($S))", classTypeAnnotationIn.toString())
                     .addStatement("final $T $N=($T)object", classTypeAnnotationIn, receiveMethodInvoker, classTypeAnnotationIn);
-            for (ExecutableElement methodElement : mClassMethodMap.get(classTypeAnnotationIn)) {
 
+            final List<ExecutableElement> list = mClassMethodMap.get(classTypeAnnotationIn);
+
+            for (ExecutableElement methodElement : list) {
+                note(methodElement.getSimpleName().toString());
                 if (!isValidMethod(methodElement, classTypeAnnotationIn)) {
                     return;
                 }
@@ -116,8 +121,8 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                 String tagsParameter = "new String[]{" + StrUtil.arraySplitBy(tags, ",") + "}";
                 String takeOnceMethod = type == Receive.Type.NORMAL_ONCE ? ".take(1)" : "";
                 String stickyRemove = type == Receive.Type.STICKY_REMOVE ? "Apollo.get().removeStickyEvent(" + tagsParameter + ");" : type == Receive.Type.STICKY_REMOVE_ALL ? "Apollo.get().removeAllStickyEvents();" : "";
-                String eventVariableClassType = eventVariable == null ? "Object.class" : eventVariable.asType().toString() + ".class";
-                String eventVariableClass = eventVariable == null ? "Object" : eventVariable.asType().toString();
+                String eventVariableClassType = eventVariable == null ? "Object.class" : parseBaseType(eventVariable) + ".class";
+                String eventVariableClass = eventVariable == null ? "Object" : parseBaseType(eventVariable);
                 String eventVariableInstance = eventVariable == null ? "object" : eventVariable.getSimpleName().toString().toLowerCase();
 
                 bindMethodBuilder
@@ -174,6 +179,45 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                 .build();
 
         generateCode(subscriberClass);
+    }
+
+    /**
+     * 返回基本数据类型装箱后的类型
+     *
+     * @param variableElement VariableElement
+     * @return String
+     */
+    private String parseBaseType(VariableElement variableElement) {
+        TypeKind typeKind = variableElement.asType().getKind();
+        switch (typeKind) {
+            case BOOLEAN: {
+                return Boolean.class.getSimpleName();
+            }
+            case BYTE: {
+                return Byte.class.getSimpleName();
+            }
+            case SHORT: {
+                return Short.class.getSimpleName();
+            }
+            case INT: {
+                return Integer.class.getSimpleName();
+            }
+            case LONG: {
+                return Long.class.getSimpleName();
+            }
+            case CHAR: {
+                return Character.class.getSimpleName();
+            }
+            case FLOAT: {
+                return Float.class.getSimpleName();
+            }
+            case DOUBLE: {
+                return Double.class.getSimpleName();
+            }
+            default: {
+                return variableElement.asType().toString();
+            }
+        }
     }
 
     private boolean isValidElement(Element element) {
