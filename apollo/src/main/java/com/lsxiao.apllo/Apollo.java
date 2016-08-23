@@ -28,7 +28,6 @@ public class Apollo {
     private final Map<String, SubscriberEvent> mStickyEventMap;//用于保存stick事件
     private Map<Integer, SubscriptionBinder> mBindTargetMap;//用于保存SubscriptionBinder
     private static Apollo sInstance;
-    private Boolean mIsPosting;
     private SubscriberBinder mSubscriberBinder;
     private Thread mThread;
 
