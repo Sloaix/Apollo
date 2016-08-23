@@ -38,7 +38,6 @@ public class ApolloAnnotationProcessor extends AbstractProcessor {
     //process()相当于每个处理器的主函数main()。在该方法中去扫描、评估、处理以及生成Java文件。
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-
         /**
          * TypeElement表示一个类或接口程序元素,在这里annotations里面的TypeElement是用来注解的类。
          * 提供对有关类型及其成员的信息的访问。

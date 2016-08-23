@@ -12,7 +12,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
 public @interface Receive {
-
     String[] tag();
 
     Type type() default Type.NORMAL;

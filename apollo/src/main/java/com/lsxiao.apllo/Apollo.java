@@ -28,6 +28,7 @@ public class Apollo {
     private final Map<String, SubscriberEvent> mStickyEventMap;//用于保存stick事件
     private Map<Integer, SubscriptionBinder> mBindTargetMap;//用于保存SubscriptionBinder
     private static Apollo sInstance;
+    private Boolean mIsPosting;
     private SubscriberBinder mSubscriberBinder;
     private Thread mThread;
 
@@ -126,30 +127,39 @@ public class Apollo {
         }
     }
 
+
     /**
      * 发送event
      *
-     * @param tag Tag
-     * @param o   内容
+     * @param event SubscriberEvent
      */
-    public void send(String tag, Object o) {
-        SubscriberEvent event = new SubscriberEvent(tag, o);
+    private void send(SubscriberEvent event) {
         mPublishSubject.onNext(event);
     }
 
+    /**
+     * 发送event
+     *
+     * @param tag    Tag
+     * @param actual 内容
+     */
+    public void send(String tag, Object actual) {
+        SubscriberEvent event = new SubscriberEvent(tag, actual);
+        send(event);
+    }
+
     public void send(String tag) {
-        SubscriberEvent event = new SubscriberEvent(tag, new Object());
-        mPublishSubject.onNext(event);
+        send(tag, new Object());
     }
 
     /**
      * 发送一个新Sticky事件
      */
-    public void sendSticky(String tag, Object o) {
+    public void sendSticky(String tag, Object actual) {
         synchronized (mStickyEventMap) {
-            SubscriberEvent event = new SubscriberEvent(tag, o, true);
+            SubscriberEvent event = new SubscriberEvent(tag, actual, true);
             mStickyEventMap.put(tag, event);
-            mPublishSubject.onNext(event);
+            send(event);
         }
     }
 
@@ -253,7 +263,6 @@ public class Apollo {
                     }
                 });
     }
-
 
     public Observable toObservableSticky(final String tag) {
         return toObservable(new String[]{tag});
