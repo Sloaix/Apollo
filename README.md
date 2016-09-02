@@ -14,7 +14,7 @@ Compile-time android event bus depended on RxJava ,which support sticky event an
 
 ## TODO
 
-- [ ] life circle bind by annotation(@Receive(tag="some event",bindUtil=ActivityEvent.DESTROY)).
+- [ ] life circle bind by annotation(@Receive(tag="some event",bindUntil=ActivityEvent.DESTROY)).
 - [ ] unit test.
 
 ## Including in your project

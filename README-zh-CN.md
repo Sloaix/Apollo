@@ -12,7 +12,7 @@
 
 ## 待完成
 
-- [ ] 生命周期绑定(@Receive(tag="some event",bindUtil=ActivityEvent.DESTROY)).
+- [ ] 生命周期绑定(@Receive(tag="some event",bindUntil=ActivityEvent.DESTROY)).
 - [ ] 单元测试.
 
 
