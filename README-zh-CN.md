@@ -9,6 +9,13 @@
 ## 示例预览
 ![](https://raw.githubusercontent.com/lsxiao/Apollo/master/demo.gif?raw=true)
 
+
+## 待完成
+
+- [ ] 生命周期绑定(@Receive(tag="some event",bindUtil=ActivityEvent.DESTROY)).
+- [ ] 单元测试.
+
+
 ## 引入Apollo到项目中
 我们需要引入一个apt插件到我们的classpath来开启注解处理功能.
 

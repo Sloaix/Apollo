@@ -12,6 +12,11 @@ Compile-time android event bus depended on RxJava ,which support sticky event an
 ![](https://raw.githubusercontent.com/lsxiao/Apollo/master/demo.gif?raw=true)
 
 
+## TODO
+
+- [ ] life circle bind by annotation(@Receive(tag="some event",bindUtil=ActivityEvent.DESTROY)).
+- [ ] unit test.
+
 ## Including in your project
 We need to include the apt plugin in our classpath to enable Annotation Processing:
 
