@@ -215,9 +215,23 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                 return Double.class.getSimpleName();
             }
             default: {
+                if (variableElement.asType() instanceof DeclaredType) {
+                    return handleGenericTypeVariable(variableElement);
+                }
+
                 return variableElement.asType().toString();
             }
         }
+    }
+
+    /**
+     * 处理泛型,返回不带泛型的类类型,List<User>,直接返回java.util.List.class而不是java.util.List<User>.class
+     *
+     * @return String
+     */
+    private String handleGenericTypeVariable(VariableElement variableElement) {
+        DeclaredType declaredType = (DeclaredType) variableElement.asType();
+        return ((TypeElement) declaredType.asElement()).getQualifiedName().toString();
     }
 
     private boolean isValidElement(Element element) {

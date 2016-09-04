@@ -39,7 +39,7 @@ public class SubscriberFragment extends BaseFragment {
         mTvReceiveEvent.setText(mTvReceiveEvent.getText().toString() + event + ",");
     }
 
-    @Receive(tag = "sticky")
+    @Receive(tag = "sticky", type = Receive.Type.STICKY)
     public void onReceiveStickyEvent(String event) {
         mTvReceiveStickyEvent.setText(mTvReceiveStickyEvent.getText().toString() + event + ",");
     }

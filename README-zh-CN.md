@@ -12,7 +12,6 @@
 
 ## 待完成
 
-- [ ] 生命周期绑定(@Receive(tag="some event",bindUntil=ActivityEvent.DESTROY)).
 - [ ] 单元测试.
 
 
@@ -43,8 +42,8 @@ allProjects {
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-  apt "com.github.lsxiao.Apollo:processor:0.1.4-alpha.2"
-  compile "com.github.lsxiao.Apollo:apollo:0.1.4-alpha.2"
+  apt "com.github.lsxiao.Apollo:processor:0.1.4"
+  compile "com.github.lsxiao.Apollo:apollo:0.1.4"
   compile 'io.reactivex:rxandroid:1.2.1'//实际操作时请使用最新的rxandroid版本,这仅仅是一个示例.
 }
 
@@ -182,7 +181,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 ```
 
 ## 版本说明
-- 0.1.4-alpha.2 (2016-8-23)
+- 0.1.4 (2016-8-23)
   - 更新demo.
   - 支持发送和接收基本数据类型的事件.(int,boolean,float,等等...)
 
