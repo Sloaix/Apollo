@@ -14,7 +14,6 @@ Compile-time android event bus depended on RxJava ,which support sticky event an
 
 ## TODO
 
-- [ ] life circle bind by annotation(@Receive(tag="some event",bindUntil=ActivityEvent.DESTROY)).
 - [ ] unit test.
 
 ## Including in your project
@@ -45,8 +44,8 @@ Add the library to the project-level build.gradle, using the apt plugin to enabl
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-  apt "com.github.lsxiao.Apollo:processor:0.1.4-alpha.2"
-  compile "com.github.lsxiao.Apollo:apollo:0.1.4-alpha.2"
+  apt "com.github.lsxiao.Apollo:processor:0.1.4"
+  compile "com.github.lsxiao.Apollo:apollo:0.1.4"
   compile 'io.reactivex:rxandroid:1.2.1'//use the latest version,this just a simple.
 }
 
@@ -186,7 +185,7 @@ finally send a event where your want.
 
 ## Release Note
 
-- 0.1.4-alpha.2 (2016-8-23)
+- 0.1.4 (2016-8-23)
   - update demo.
   - support send and receive primitive type event.(int,boolean,float,etc...)
 
