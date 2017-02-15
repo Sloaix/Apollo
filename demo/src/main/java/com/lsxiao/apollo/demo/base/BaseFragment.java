@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.lsxiao.apllo.Apollo;
-import com.lsxiao.apllo.entity.SubscriptionBinder;
+import com.lsxiao.apllo.contract.ApolloBinder;
 
 /**
  * author lsxiao
@@ -19,7 +19,7 @@ public abstract class BaseFragment extends Fragment {
     public static final String TAG = BaseFragment.class.getSimpleName();
     protected View mRootView;
 
-    private SubscriptionBinder mBinder;
+    private ApolloBinder mBinder;
 
     @Nullable
     @Override
@@ -41,7 +41,7 @@ public abstract class BaseFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         if (null != mBinder) {
-            mBinder.unbind();
+            mBinder.clearAll();
         }
     }
 

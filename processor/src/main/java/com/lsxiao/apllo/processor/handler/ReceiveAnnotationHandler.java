@@ -2,7 +2,9 @@ package com.lsxiao.apllo.processor.handler;
 
 import com.lsxiao.apllo.Apollo;
 import com.lsxiao.apllo.annotations.Receive;
-import com.lsxiao.apllo.entity.SubscriptionBinder;
+import com.lsxiao.apllo.contract.ApolloBinder;
+import com.lsxiao.apllo.contract.ApolloBinderGenerator;
+import com.lsxiao.apllo.entity.ApolloBinderImpl;
 import com.lsxiao.apllo.processor.util.StrUtil;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -25,7 +27,8 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 
-import rx.functions.Action1;
+import io.reactivex.subscribers.ResourceSubscriber;
+
 
 /**
  * author lsxiao
@@ -44,23 +47,23 @@ public class ReceiveAnnotationHandler extends BaseHandler {
         }
 
         //单例变量
-        FieldSpec.Builder fieldBuilder = FieldSpec.builder(Apollo.SubscriberBinder.class, "sInstance", Modifier.PRIVATE, Modifier.STATIC);
+        FieldSpec.Builder fieldBuilder = FieldSpec.builder(ApolloBinderGenerator.class, "sInstance", Modifier.PRIVATE, Modifier.STATIC);
 
         //单例方法
         MethodSpec.Builder instanceMethodBuilder = MethodSpec.methodBuilder("instance")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.SYNCHRONIZED)
-                .returns(Apollo.SubscriberBinder.class)
+                .returns(ApolloBinderGenerator.class)
                 .beginControlFlow("if (null == sInstance)")
-                .addStatement("sInstance = new SubscriberBinderImplement()")
+                .addStatement("sInstance = new ApolloBinderGeneratorImpl()")
                 .endControlFlow()
                 .addStatement("return sInstance");
         //绑定方法
-        MethodSpec.Builder bindMethodBuilder = MethodSpec.methodBuilder("bind")
+        MethodSpec.Builder bindMethodBuilder = MethodSpec.methodBuilder("generate")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
-                .returns(SubscriptionBinder.class)
+                .returns(ApolloBinder.class)
                 .addParameter(Object.class, "object")
-                .addStatement("final $T subscriptionBinder = new $T()", SubscriptionBinder.class, SubscriptionBinder.class);
+                .addStatement("final $T subscriptionBinder = new $T()", ApolloBinderImpl.class, ApolloBinderImpl.class);
 
         for (Element element : roundEnv.getElementsAnnotatedWith(Receive.class)) {
             if (!isValidElement(element)) {
@@ -117,7 +120,7 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                 Receive.Type type = methodElement.getAnnotation(Receive.class).type();
 
                 String receiveMethod = methodElement.getSimpleName().toString();
-                String onSubscribeMethod = type == Receive.Type.STICKY ? "toObservableSticky" : "toObservable";
+                String onSubscribeMethod = type == Receive.Type.STICKY ? "toFlowableSticky" : "toFlowable";
                 String tagsParameter = "new String[]{" + StrUtil.arraySplitBy(tags, ",") + "}";
                 String takeOnceMethod = type == Receive.Type.NORMAL_ONCE ? ".take(1)" : "";
                 String stickyRemove = type == Receive.Type.STICKY_REMOVE ? "Apollo.get().removeStickyEvent(" + tagsParameter + ");" : type == Receive.Type.STICKY_REMOVE_ALL ? "Apollo.get().removeAllStickyEvents();" : "";
@@ -126,25 +129,28 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                 String eventVariableInstance = eventVariable == null ? "object" : eventVariable.getSimpleName().toString().toLowerCase();
 
                 bindMethodBuilder
-                        .addStatement("subscriptionBinder.add($T.get().$N($N,$N)" +
+                        .addStatement("subscriptionBinder.add(" +
+                                        "$T.get().$N($N,$N)" +
                                         takeOnceMethod +
-                                        ".subscribeOn($T.get().getThread().get($N.$N)).observeOn($T.get().getThread().get($N.$N)).subscribe(" +
+                                        ".subscribeOn($T.get().getSchedulerProvider().get($N.$N)).observeOn($T.get().getSchedulerProvider().get($N.$N)).subscribeWith(" +
                                         "new $T<$N>(){" +
                                         "@Override " +
-                                        "public void call($N $N){" +
+                                        "public void onComplete(){" +
+                                        "}" +
+                                        "@Override " +
+                                        "public void onNext($N $N){" +
                                         "try {" +
                                         stickyRemove +
                                         "$N.$N($N);" +
                                         "}" +
                                         "catch (Exception e){" +
                                         "e.printStackTrace();" +
-                                        "}}}," +
-                                        "new $T<$T>(){" +
-                                        "@Override " +
-                                        "public void call($T a){" +
-                                        "a.printStackTrace();" +
                                         "}}" +
-                                        "))",
+                                        "@Override " +
+                                        "public void onError($T a){" +
+                                        "a.printStackTrace();" +
+                                        "}" +
+                                        "}))",
                                 Apollo.class,
                                 onSubscribeMethod,
                                 tagsParameter,
@@ -155,24 +161,22 @@ public class ReceiveAnnotationHandler extends BaseHandler {
                                 Apollo.class,
                                 Receive.Thread.class.getCanonicalName(),
                                 observeOn.name(),
-                                Action1.class,
+                                ResourceSubscriber.class,
                                 eventVariableClass,
                                 eventVariableClass,
                                 eventVariableInstance,
                                 receiveMethodInvoker,
                                 receiveMethod,
                                 hasParameter ? eventVariableInstance : "",
-                                Action1.class,
-                                Throwable.class,
                                 Throwable.class);
             }
             bindMethodBuilder.endControlFlow();
         }
         bindMethodBuilder.addStatement("return subscriptionBinder");
 
-        TypeSpec subscriberClass = TypeSpec.classBuilder("SubscriberBinderImplement")
+        TypeSpec subscriberClass = TypeSpec.classBuilder("ApolloBinderGeneratorImpl")
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addSuperinterface(Apollo.SubscriberBinder.class)
+                .addSuperinterface(ApolloBinderGenerator.class)
                 .addField(fieldBuilder.build())
                 .addMethod(instanceMethodBuilder.build())
                 .addMethod(bindMethodBuilder.build())

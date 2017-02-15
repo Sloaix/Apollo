@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import com.lsxiao.apllo.Apollo;
-import com.lsxiao.apllo.entity.SubscriptionBinder;
+import com.lsxiao.apllo.contract.ApolloBinder;
 
 /**
  * author lsxiao
@@ -22,7 +22,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
     public static final String TAG = BaseDialogFragment.class.getSimpleName();
     protected View mRootView;
 
-    private SubscriptionBinder mBinder;
+    private ApolloBinder mBinder;
 
     @NonNull
     @Override
@@ -52,7 +52,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
         if (null != mBinder) {
-            mBinder.unbind();
+            mBinder.clearAll();
         }
     }
 

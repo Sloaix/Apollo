@@ -9,15 +9,18 @@ allprojects {
 
 ext {
     //Official
-    buildTools = "25.0.1"
+    buildToolsVersion = "25.0.1"
+    compileSdkVersion = 25
     minSdkVersion = 14
     targetSdkVersion = 14
-    compileSdk = 25
     support = "25.1.1"
 
     //libs
-    rxJava2 = "2.0.5"
-    rxAndroid2 = "2.0.1"
+    rxjava2 = "2.0.5"
+    rxandroid2 = "2.0.1"
+
+    javapoet = "1.8.0"
+    autoService = "1.0-rc2"
 
     libs = [
             supportV4        : "com.android.support:support-v4:${support}",
@@ -26,8 +29,10 @@ ext {
             cardView         : "com.android.support:cardview-v7:${support}",
             supportDesign    : "com.android.support:design:${support}",
             supportAnnotation: "com.android.support:support-annotations:${support}",
-            rxJava2          : "io.reactivex.rxjava2:rxjava:${rxJava2}",
-            rxAndroid2       : "io.reactivex.rxjava2:rxandroid:${rxAndroid2}",
+            rxjava2          : "io.reactivex.rxjava2:rxjava:${rxjava2}",
+            rxandroid2       : "io.reactivex.rxjava2:rxandroid:${rxandroid2}",
+            javapoet         : "com.squareup:javapoet:${javapoet}",
+            autoService      : "com.google.auto.service:auto-service:${autoService}",
     ]
 
 

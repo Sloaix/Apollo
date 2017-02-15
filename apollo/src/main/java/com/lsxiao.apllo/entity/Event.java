@@ -4,18 +4,18 @@ package com.lsxiao.apllo.entity;
  * author lsxiao
  * date 2016-08-07 20:00
  */
-public class SubscriberEvent {
+public class Event {
     private final String tag;
     private final Object data;
     private final Boolean sticky;
 
-    public SubscriberEvent(String tag, Object data, boolean sticky) {
+    public Event(String tag, Object data, boolean sticky) {
         this.tag = tag;
         this.data = data;
         this.sticky = sticky;
     }
 
-    public SubscriberEvent(String tag, Object data) {
+    public Event(String tag, Object data) {
         this(tag, data, false);
     }
 
