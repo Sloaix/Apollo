@@ -25,7 +25,7 @@ public @interface Receive {
     }
 
     enum Thread {
-        MAIN, IO, NEW, COMPUTATION, TRAMPOLINE, IMMEDIATE
+        MAIN, IO, NEW, COMPUTATION, TRAMPOLINE, SINGLE
     }
 
 }
