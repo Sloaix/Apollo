@@ -1,0 +1,44 @@
+allprojects {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url "https://www.jitpack.io" }
+        maven { url "https://oss.sonatype.org/content/repositorie1s/snapshots/" }
+    }
+}
+
+ext {
+    //Official
+    buildToolsVersion = "25.0.1"
+    compileSdkVersion = 25
+    minSdkVersion = 14
+    targetSdkVersion = 14
+    support = "25.1.1"
+
+    //libs
+    rxjava2 = "2.0.5"
+    rxandroid2 = "2.0.1"
+
+    javapoet = "1.8.0"
+    autoService = "1.0-rc2"
+
+    libs = [
+            supportV4        : "com.android.support:support-v4:${support}",
+            appcompat        : "com.android.support:appcompat-v7:${support}",
+            recyclerView     : "com.android.support:recyclerview-v7:${support}",
+            cardView         : "com.android.support:cardview-v7:${support}",
+            supportDesign    : "com.android.support:design:${support}",
+            supportAnnotation: "com.android.support:support-annotations:${support}",
+            rxjava2          : "io.reactivex.rxjava2:rxjava:${rxjava2}",
+            rxandroid2       : "io.reactivex.rxjava2:rxandroid:${rxandroid2}",
+            javapoet         : "com.squareup:javapoet:${javapoet}",
+            autoService      : "com.google.auto.service:auto-service:${autoService}",
+    ]
+
+
+    junit = "4.12"
+
+    test = [
+            junit: "junit:junit:${junit}"
+    ]
+}

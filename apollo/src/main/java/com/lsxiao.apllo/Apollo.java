@@ -1,9 +1,12 @@
 package com.lsxiao.apllo;
 
 
-import com.lsxiao.apllo.annotations.Receive;
-import com.lsxiao.apllo.entity.SubscriberEvent;
-import com.lsxiao.apllo.entity.SubscriptionBinder;
+import com.lsxiao.apllo.contract.ApolloBinder;
+import com.lsxiao.apllo.contract.ApolloBinderGenerator;
+import com.lsxiao.apllo.entity.Event;
+import com.lsxiao.apllo.entity.SchedulerProvider;
+
+import org.reactivestreams.Publisher;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,49 +15,51 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import rx.Observable;
-import rx.Scheduler;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
-import rx.subjects.SerializedSubject;
+import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
+
 
 /**
  * author lsxiao
  * date 2016-05-09 17:27
  */
 public class Apollo {
-    private SerializedSubject<SubscriberEvent, SubscriberEvent> mPublishSubject;
-    private final Map<String, SubscriberEvent> mStickyEventMap;//用于保存stick事件
-    private Map<Integer, SubscriptionBinder> mBindTargetMap;//用于保存SubscriptionBinder
+    private FlowableProcessor<Event> mFlowableProcessor;
+    private final Map<String, Event> mStickyEventMap;//用于保存stick事件
+    private final Map<Integer, ApolloBinder> mBindTargetMap;//用于保存SubscriptionBinder
+    private ApolloBinderGenerator mApolloBinderGenerator;
+    private SchedulerProvider mSchedulerProvider;
     private static Apollo sInstance;
-    private SubscriberBinder mSubscriberBinder;
-    private Thread mThread;
 
     private Apollo() {
-        //SerializedSubject是线程安全的
-        //PublishSubject 会发送订阅者从订阅之后的事件序列,这意味着没订阅前的事件序列不会被发送到当前订阅者
-        mPublishSubject = new SerializedSubject<>(PublishSubject.<SubscriberEvent>create());
+        //PublishProcessor 会发送订阅者从订阅之后的事件序列,这意味着没订阅前的事件序列不会被发送到当前订阅者
+        mFlowableProcessor = PublishProcessor.create();
+
+        //SerializedProcessor是线程安全的
+        mFlowableProcessor = mFlowableProcessor.toSerialized();
         mStickyEventMap = new ConcurrentHashMap<>();
         mBindTargetMap = new HashMap<>();
     }
 
 
-    public void init(SubscriberBinder binder, Scheduler main) {
+    public void init(ApolloBinderGenerator binder, SchedulerProvider schedulerProvider) {
         if (null == binder) {
             throw new NullPointerException("the binder must be not null");
         }
 
-        if (null == main) {
-            throw new NullPointerException("the main scheduler must be not null");
+        if (null == schedulerProvider) {
+            throw new NullPointerException("the schedulerProvider must be not null");
         }
 
-        if (null == mSubscriberBinder) {
-            mSubscriberBinder = binder;
+        if (null == mApolloBinderGenerator) {
+            mApolloBinderGenerator = binder;
         }
 
-        if (null == mThread) {
-            mThread = new Thread(main);
+        if (null == mSchedulerProvider) {
+            mSchedulerProvider = schedulerProvider;
         }
     }
 
@@ -73,8 +78,8 @@ public class Apollo {
     /**
      * 判断是否有订阅者
      */
-    public boolean hasObservers() {
-        return mPublishSubject.hasObservers();
+    public boolean hasSubscribers() {
+        return mFlowableProcessor.hasSubscribers();
     }
 
     /**
@@ -130,10 +135,10 @@ public class Apollo {
     /**
      * 发送event
      *
-     * @param event SubscriberEvent
+     * @param event Event
      */
-    private void send(SubscriberEvent event) {
-        mPublishSubject.onNext(event);
+    private void send(Event event) {
+        mFlowableProcessor.onNext(event);
     }
 
     /**
@@ -143,7 +148,7 @@ public class Apollo {
      * @param actual 内容
      */
     public void send(String tag, Object actual) {
-        SubscriberEvent event = new SubscriberEvent(tag, actual);
+        Event event = new Event(tag, actual);
         send(event);
     }
 
@@ -156,7 +161,7 @@ public class Apollo {
      */
     public void sendSticky(String tag, Object actual) {
         synchronized (mStickyEventMap) {
-            SubscriberEvent event = new SubscriberEvent(tag, actual, true);
+            Event event = new Event(tag, actual, true);
             mStickyEventMap.put(tag, event);
             send(event);
         }
@@ -164,9 +169,9 @@ public class Apollo {
 
     public void sendSticky(String tag) {
         synchronized (mStickyEventMap) {
-            SubscriberEvent event = new SubscriberEvent(tag, new Object(), true);
+            Event event = new Event(tag, new Object(), true);
             mStickyEventMap.put(tag, event);
-            mPublishSubject.onNext(event);
+            mFlowableProcessor.onNext(event);
         }
     }
 
@@ -174,11 +179,11 @@ public class Apollo {
      * 绑定Activity或者Fragment
      *
      * @param o Object
-     * @return SubscriptionBinder
+     * @return ApolloBinder
      */
-    public SubscriptionBinder bind(Object o) {
+    public ApolloBinder bind(Object o) {
         if (null == o) {
-            throw new NullPointerException("object to bind must not be null");
+            throw new NullPointerException("object to subscribe must not be null");
         }
 
         return uniqueBind(o);
@@ -188,12 +193,12 @@ public class Apollo {
      * 唯一绑定,避免重复绑定到相同的对象
      *
      * @param o Object
-     * @return SubscriptionBinder
+     * @return ApolloBinder
      */
-    private SubscriptionBinder uniqueBind(Object o) {
-        int uniqueId = System.identityHashCode(o);
+    private ApolloBinder uniqueBind(Object o) {
+        final int uniqueId = System.identityHashCode(o);
 
-        SubscriptionBinder binder;
+        ApolloBinder binder;
 
         //对象已有绑定记录
         if (mBindTargetMap.containsKey(uniqueId)) {
@@ -203,37 +208,27 @@ public class Apollo {
                 //移除已经解绑的binder
                 mBindTargetMap.remove(uniqueId);
                 //重新绑定
-                binder = mSubscriberBinder.bind(o);
+                binder = mApolloBinderGenerator.generate(o);
                 //保存到map中
                 mBindTargetMap.put(uniqueId, binder);
             }
         } else {
-            binder = mSubscriberBinder.bind(o);
+            binder = mApolloBinderGenerator.generate(o);
             mBindTargetMap.put(uniqueId, binder);
         }
         return binder;
     }
 
 
-    public Observable<Object> toObservable(final String tag) {
-        return toObservable(new String[]{tag}, Object.class);
+    public Flowable<Object> toFlowable(final String tag) {
+        return toFlowable(new String[]{tag}, Object.class);
     }
 
-    public Observable<Object> toObservable(final String[] tags) {
-        return toObservable(tags, Object.class);
+    public Flowable<Object> toFlowable(final String[] tags) {
+        return toFlowable(tags, Object.class);
     }
 
-    /**
-     * 返回普通事件类型的被观察者
-     *
-     * @param eventType 只接受eventType类型的响应,ofType = filter + cast
-     * @return Observable
-     */
-    public <T> Observable<T> toObservable(final String tag, final Class<T> eventType) {
-        return toObservable(new String[]{tag}, eventType);
-    }
-
-    public <T> Observable<T> toObservable(final String[] tags, final Class<T> eventType) {
+    public <T> Flowable<T> toFlowable(final String[] tags, final Class<T> eventType) {
         if (null == eventType) {
             throw new NullPointerException("the eventType must be not null");
         }
@@ -246,40 +241,32 @@ public class Apollo {
             throw new IllegalArgumentException("the tags must be not empty");
         }
 
-        return mPublishSubject
-                .filter(new Func1<SubscriberEvent, Boolean>() {
+        return mFlowableProcessor
+                .filter(new Predicate<Event>() {
                     @Override
-                    public Boolean call(SubscriberEvent subscriberEvent) {
-                        return Arrays.asList(tags).contains(subscriberEvent.getTag()) &&
+                    public boolean test(Event event) throws Exception {
+                        return Arrays.asList(tags).contains(event.getTag()) &&
                                 //如果subscriberEvent.getData() = null,不用再去检查是不是特定类型或者其子类的实例
-                                (subscriberEvent.getData() == null || eventType.isInstance(subscriberEvent.getData()));
+                                (event.getData() == null || eventType.isInstance(event.getData()));
                     }
                 })
-                .flatMap(new Func1<SubscriberEvent, Observable<T>>() {
+                .flatMap(new Function<Event, Publisher<T>>() {
                     @Override
-                    public Observable<T> call(SubscriberEvent subscriberEvent) {
-                        return Observable.just(eventType.cast(subscriberEvent.getData()));
+                    public Publisher<T> apply(Event event) throws Exception {
+                        return Flowable.just(eventType.cast(event.getData()));
                     }
                 });
     }
 
-    public Observable toObservableSticky(final String tag) {
-        return toObservable(new String[]{tag});
+    public Flowable<Object> toFlowableSticky(final String tag) {
+        return toFlowableSticky(new String[]{tag});
     }
 
-    public Observable<Object> toObservableSticky(final String[] tags) {
-        return toObservableSticky(tags, Object.class);
+    public Flowable<Object> toFlowableSticky(final String[] tags) {
+        return toFlowableSticky(tags, Object.class);
     }
 
-
-    /**
-     * 根据传递的 eventType 类型返回特定类型(eventType)的 被观察者
-     */
-    public <T> Observable<T> toObservableSticky(String tag, final Class<T> eventType) {
-        return toObservableSticky(new String[]{tag}, eventType);
-    }
-
-    public <T> Observable<T> toObservableSticky(final String[] tags, final Class<T> eventType) {
+    public <T> Flowable<T> toFlowableSticky(final String[] tags, final Class<T> eventType) {
         if (null == eventType) {
             throw new NullPointerException("the eventType must be not null");
         }
@@ -294,102 +281,35 @@ public class Apollo {
 
         synchronized (mStickyEventMap) {
             //普通事件的被观察者
-            Observable<T> observable = toObservable(tags, eventType);
+            Flowable<T> flowable = toFlowable(tags, eventType);
 
-            final List<SubscriberEvent> stickyEventList = new ArrayList<>();
+            final List<Event> stickyEvents = new ArrayList<>();
             for (String tag : tags) {
                 //sticky事件
-                final SubscriberEvent event = mStickyEventMap.get(tag);
+                final Event event = mStickyEventMap.get(tag);
                 if (event != null) {
-                    stickyEventList.add(mStickyEventMap.get(tag));
+                    stickyEvents.add(mStickyEventMap.get(tag));
                 }
             }
 
-            if (!stickyEventList.isEmpty()) {
+            if (!stickyEvents.isEmpty()) {
                 //合并事件序列
-                return Observable.from(stickyEventList)
-                        .flatMap(new Func1<SubscriberEvent, Observable<T>>() {
+                return Flowable.fromIterable(stickyEvents)
+                        .flatMap(new Function<Event, Publisher<T>>() {
                             @Override
-                            public Observable<T> call(SubscriberEvent subscriberEvent) {
-                                return Observable.just(eventType.cast(subscriberEvent.getData()));
+                            public Publisher<T> apply(Event event) throws Exception {
+                                return Flowable.just(eventType.cast(event.getData()));
                             }
-                        }).mergeWith(observable);
+                        }).mergeWith(flowable);
 
             } else {
-                return observable;
+                return flowable;
             }
         }
     }
 
-    public interface SubscriberBinder {
-        SubscriptionBinder bind(Object object);
-    }
-
-    public Thread getThread() {
-        return mThread;
-    }
-
-    public class Thread {
-        private Scheduler mMain;//need init
-        private Scheduler mIO = Schedulers.io();
-        private Scheduler mComputation = Schedulers.computation();
-        private Scheduler mTrampoline = Schedulers.trampoline();
-        private Scheduler mImmediate = Schedulers.immediate();
-        private Scheduler mNew = Schedulers.newThread();
-
-        public Thread(Scheduler mainScheduler) {
-            mMain = mainScheduler;
-        }
-
-        public Scheduler getMain() {
-            return mMain;
-        }
-
-        public Scheduler getIO() {
-            return mIO;
-        }
-
-        public Scheduler getComputation() {
-            return mComputation;
-        }
-
-        public Scheduler getTrampoline() {
-            return mTrampoline;
-        }
-
-        public Scheduler getImmediate() {
-            return mImmediate;
-        }
-
-        public Scheduler getNew() {
-            return mNew;
-        }
-
-        public Scheduler get(Receive.Thread thread) {
-            switch (thread) {
-                case MAIN: {
-                    return getMain();
-                }
-                case IO: {
-                    return getIO();
-                }
-                case COMPUTATION: {
-                    return getComputation();
-                }
-                case TRAMPOLINE: {
-                    return getTrampoline();
-                }
-                case IMMEDIATE: {
-                    return getImmediate();
-                }
-                case NEW: {
-                    return getNew();
-                }
-                default: {
-                    return getMain();
-                }
-            }
-        }
+    public SchedulerProvider getSchedulerProvider() {
+        return mSchedulerProvider;
     }
 
 }

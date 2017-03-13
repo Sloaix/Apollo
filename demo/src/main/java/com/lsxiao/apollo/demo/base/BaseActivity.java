@@ -4,11 +4,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.lsxiao.apllo.Apollo;
-import com.lsxiao.apllo.entity.SubscriptionBinder;
+import com.lsxiao.apllo.contract.ApolloBinder;
 
 
 public abstract class BaseActivity extends AppCompatActivity {
-    private SubscriptionBinder mBinder;
+    private ApolloBinder mBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +21,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mBinder.unbind();
+        mBinder.clearAll();
     }
 
     protected abstract int getLayoutId();

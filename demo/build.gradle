@@ -1,12 +1,14 @@
 apply plugin: 'com.android.application'
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    def config = parent.ext
+
+    compileSdkVersion config.compileSdkVersion
+    buildToolsVersion config.buildToolsVersion
 
     defaultConfig {
         applicationId "com.lsxiao.apollo.demo"
-        minSdkVersion 14
-        targetSdkVersion 25
+        minSdkVersion config.minSdkVersion
+        targetSdkVersion config.targetSdkVersion
         versionCode 1
         versionName "1.0"
     }
@@ -20,10 +22,16 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'io.reactivex:rxjava:1.1.8'
+
+    def test = parent.ext.test
+    testCompile test.junit
+
+    def libs = parent.ext.libs
+    compile libs.appcompat
+    compile libs.rxjava2
+    compile libs.rxandroid2
+
     compile project(':apollo')
+
     annotationProcessor project(':processor')
 }
