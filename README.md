@@ -6,6 +6,10 @@
 
 Compile-time android event bus depended on RxJava ,which support sticky event and multiple schedulers.
 
+if you use RxJava1,use 0.x version.
+
+the RxJava2 version document is coming soon,and some new features will be supported,such as backpressure.
+
 [中文文档](https://github.com/lsxiao/Apollo/blob/master/README-zh-CN.md)
 
 ## Demo Preview

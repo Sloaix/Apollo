@@ -6,6 +6,10 @@
 
 依赖于RxJava的编译时Android事件总线,并且支持Sticky(粘连)事件,以及多个Rx调度器.
 
+如果你使用RxJava1，请使用0.x版本
+
+Apollo的RxJava2文档即即将到来,并且会支持诸如背压一类的新特性。
+
 ## 示例预览
 ![](https://raw.githubusercontent.com/lsxiao/Apollo/master/demo.gif?raw=true)
 
