@@ -1,7 +1,5 @@
 package com.lsxiao.apllo.entity;
 
-import com.lsxiao.apllo.annotations.Receive;
-
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 
@@ -20,6 +18,11 @@ public class SchedulerProvider {
     private Scheduler mTrampoline = Schedulers.trampoline();
     private Scheduler mSingle = Schedulers.single();
     private Scheduler mNew = Schedulers.newThread();
+
+
+    public enum Tag {
+        MAIN, IO, NEW, COMPUTATION, TRAMPOLINE, SINGLE
+    }
 
     private SchedulerProvider(Scheduler main) {
         mMain = main;
@@ -57,8 +60,8 @@ public class SchedulerProvider {
         return mNew;
     }
 
-    public Scheduler get(Receive.Thread thread) {
-        switch (thread) {
+    public Scheduler get(Tag tag) {
+        switch (tag) {
             case MAIN: {
                 return getMain();
             }

@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'kotlin'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -9,5 +10,7 @@ dependencies {
     def libs = parent.ext.libs
     compile libs.javapoet
     compile libs.autoService
+    compile libs.autoCommon
+    compile libs.kotlin
     compile project(':apollo')
 }
