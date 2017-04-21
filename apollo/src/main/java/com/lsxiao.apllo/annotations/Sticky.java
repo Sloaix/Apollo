@@ -6,11 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * author lsxiao
- * date 2016-08-07 18:14
+ * write with Apollo
+ * author:lsxiao
+ * date:2017-04-22 02:20
+ * github:https://github.com/lsxiao
+ * zhihu:https://zhihu.com/people/lsxiao
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
-public @interface Receive {
-    String[] value();
+public @interface Sticky {
 }

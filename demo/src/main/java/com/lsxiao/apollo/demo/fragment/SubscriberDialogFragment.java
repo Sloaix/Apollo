@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.lsxiao.apllo.annotations.Receive;
+import com.lsxiao.apllo.annotations.Sticky;
 import com.lsxiao.apollo.demo.R;
 import com.lsxiao.apollo.demo.base.BaseDialogFragment;
 
@@ -34,8 +35,15 @@ public class SubscriberDialogFragment extends BaseDialogFragment {
         mTvSentStickyEvent = (TextView) mRootView.findViewById(R.id.tv_sent_sticky_event);
     }
 
-    @Receive(tag = "sticky", type = Receive.Type.STICKY)
+    @Receive("xiaolishang")
+    @Sticky
     public void onReceiveStickyEvent(String event) {
+        mTvSentStickyEvent.setText(mTvSentStickyEvent.getText().toString() + event + ",");
+    }
+
+
+    @Receive("test")
+    public void onReceiveEvent(String event) {
         mTvSentStickyEvent.setText(mTvSentStickyEvent.getText().toString() + event + ",");
     }
 }

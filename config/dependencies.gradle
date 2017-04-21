@@ -20,25 +20,29 @@ ext {
     rxandroid2 = "2.0.1"
 
     javapoet = "1.8.0"
-    autoService = "1.0-rc2"
+    autoService = "1.0-rc3"
+    autoCommon = "0.8"
+    kotlin = "1.1.1"
 
     libs = [
-            supportV4        : "com.android.support:support-v4:${support}",
-            appcompat        : "com.android.support:appcompat-v7:${support}",
-            recyclerView     : "com.android.support:recyclerview-v7:${support}",
-            cardView         : "com.android.support:cardview-v7:${support}",
-            supportDesign    : "com.android.support:design:${support}",
-            supportAnnotation: "com.android.support:support-annotations:${support}",
-            rxjava2          : "io.reactivex.rxjava2:rxjava:${rxjava2}",
-            rxandroid2       : "io.reactivex.rxjava2:rxandroid:${rxandroid2}",
-            javapoet         : "com.squareup:javapoet:${javapoet}",
-            autoService      : "com.google.auto.service:auto-service:${autoService}",
+            supportV4        : "com.android.support:support-v4:$support",
+            appcompat        : "com.android.support:appcompat-v7:$support",
+            recyclerView     : "com.android.support:recyclerview-v7:$support",
+            cardView         : "com.android.support:cardview-v7:$support",
+            supportDesign    : "com.android.support:design:$support",
+            supportAnnotation: "com.android.support:support-annotations:$support",
+            rxjava2          : "io.reactivex.rxjava2:rxjava:$rxjava2",
+            rxandroid2       : "io.reactivex.rxjava2:rxandroid:$rxandroid2",
+            javapoet         : "com.squareup:javapoet:$javapoet",
+            autoService      : "com.google.auto.service:auto-service:$autoService",
+            autoCommon       : "com.google.auto:auto-common:$autoCommon",
+            kotlin           : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin",
     ]
 
 
     junit = "4.12"
 
     test = [
-            junit: "junit:junit:${junit}"
+            junit: "junit:junit:$junit"
     ]
 }
