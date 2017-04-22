@@ -3,10 +3,13 @@ package com.lsxiao.apollo.demo.fragment;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.apollo.core.annotations.Backpressure;
 import com.apollo.core.annotations.Receive;
 import com.apollo.core.annotations.Sticky;
 import com.lsxiao.apollo.demo.R;
 import com.lsxiao.apollo.demo.base.BaseDialogFragment;
+
+import io.reactivex.BackpressureStrategy;
 
 /**
  * author lsxiao
@@ -42,6 +45,7 @@ public class SubscriberDialogFragment extends BaseDialogFragment {
     }
 
     @Receive("event")
+    @Backpressure(BackpressureStrategy.DROP)
     public void onReceiveEvent(String event) {
         mTvSentStickyEvent.setText(mTvSentStickyEvent.getText().toString() + event + ",");
     }

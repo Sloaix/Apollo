@@ -6,6 +6,7 @@ import com.apollo.core.contract.ApolloBinderGenerator
 import com.apollo.core.entity.ApolloBinderImpl
 import com.apollo.core.entity.SchedulerProvider
 import com.squareup.javapoet.*
+import io.reactivex.BackpressureStrategy
 import io.reactivex.subscribers.DisposableSubscriber
 import java.io.IOException
 import java.util.*
@@ -135,6 +136,7 @@ internal class CodeGenerator private constructor(private val apolloDescriptors: 
                 .addStatement("$SUBSCRIBER_BINDER_LOCAL_PARAM_NAME.add(" +
                         getApollo() +
                         getToFlowableCode(descriptor) +
+                        getBackpressure(descriptor) +
                         getSubscribeOnMethodCode(descriptor) +
                         getObserveOnMethodCode(descriptor) +
                         getSubscribeWithCode(descriptor) +
@@ -155,6 +157,24 @@ internal class CodeGenerator private constructor(private val apolloDescriptors: 
         }
         val builder = CodeBlock.builder()
                 .add(".$toFlowable(new String[]{${Utils.arraySplitBy(descriptor.tags, ",")}})")
+        return builder.build()
+    }
+
+    /**
+     *  .onBackpressureBuffer()
+     *  .onBackpressureDrop()
+     *  .onBackpressureLatest()
+     */
+    fun getBackpressure(descriptor: ApolloDescriptor): CodeBlock {
+        val onBackpressure: String = when (descriptor.backpressureStrategy) {
+            BackpressureStrategy.BUFFER -> ".onBackpressureBuffer()"
+            BackpressureStrategy.DROP -> ".onBackpressureDrop()"
+            BackpressureStrategy.LATEST -> ".onBackpressureLatest()"
+            else -> {
+                ""
+            }
+        }
+        val builder = CodeBlock.builder().add(onBackpressure)
         return builder.build()
     }
 
@@ -225,10 +245,10 @@ internal class CodeGenerator private constructor(private val apolloDescriptors: 
             .addModifiers(Modifier.PUBLIC)
             .addAnnotation(Override::class.java)
             .addParameter(Object::class.java, "o")
-            .addCode(getInvokerBlock(descriptor).toString())
+            .addCode(getReceiveMethodInvokeCode(descriptor).toString())
             .build()
 
-    fun getInvokerBlock(descriptor: ApolloDescriptor): CodeBlock {
+    fun getReceiveMethodInvokeCode(descriptor: ApolloDescriptor): CodeBlock {
         val parameter = descriptor.methodElement.parameters.map(VariableElement::asType).first()
         val builder = CodeBlock
                 .builder()
