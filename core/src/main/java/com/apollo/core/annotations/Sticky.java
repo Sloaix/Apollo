@@ -1,6 +1,4 @@
-package com.lsxiao.apllo.annotations;
-
-import com.lsxiao.apllo.entity.SchedulerProvider;
+package com.apollo.core.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,13 +8,11 @@ import java.lang.annotation.Target;
 /**
  * write with Apollo
  * author:lsxiao
- * date:2017-04-22 02:21
+ * date:2017-04-22 02:20
  * github:https://github.com/lsxiao
  * zhihu:https://zhihu.com/people/lsxiao
  */
-
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
-public @interface SubscribeOn {
-    SchedulerProvider.Tag value() default SchedulerProvider.Tag.IO;
+public @interface Sticky {
 }

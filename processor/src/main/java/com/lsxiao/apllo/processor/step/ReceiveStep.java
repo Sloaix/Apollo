@@ -1,13 +1,15 @@
 package com.lsxiao.apllo.processor.step;
 
+import com.apollo.core.annotations.Receive;
 import com.google.auto.common.BasicAnnotationProcessor;
+import com.google.auto.common.MoreElements;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.SetMultimap;
-import com.lsxiao.apllo.annotations.Receive;
 import com.lsxiao.apllo.processor.ApolloDescriptor;
 import com.lsxiao.apllo.processor.ApolloProcessor;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,9 +39,9 @@ public class ReceiveStep implements BasicAnnotationProcessor.ProcessingStep {
             Collection<Element> elements = elementsByAnnotation.asMap().get(cls);
 
             for (Element element : elements) {
-                ApolloProcessor.sDescriptorMap.put(element,
-                        ApolloDescriptor.newInstance((ExecutableElement) element)
-                );
+                ApolloDescriptor descriptor = ApolloDescriptor.newInstance((ExecutableElement) element);
+                descriptor.tags(Arrays.asList(MoreElements.asExecutable(element).getAnnotation(Receive.class).value()));
+                ApolloProcessor.sDescriptorMap.put(element, descriptor);
             }
         }
         return new HashSet<>();

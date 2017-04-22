@@ -12,5 +12,5 @@ dependencies {
     compile libs.autoService
     compile libs.autoCommon
     compile libs.kotlin
-    compile project(':apollo')
+    compile project(':core')
 }

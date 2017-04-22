@@ -31,7 +31,7 @@ dependencies {
     compile libs.rxjava2
     compile libs.rxandroid2
 
-    compile project(':apollo')
+    compile project(':core')
 
     annotationProcessor project(':processor')
 }

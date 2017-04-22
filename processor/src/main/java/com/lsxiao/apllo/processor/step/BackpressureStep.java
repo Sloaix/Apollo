@@ -4,7 +4,7 @@ import com.google.auto.common.BasicAnnotationProcessor;
 import com.google.auto.common.MoreElements;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.SetMultimap;
-import com.lsxiao.apllo.annotations.Backpressure;
+import com.apollo.core.annotations.Backpressure;
 import com.lsxiao.apllo.processor.ApolloDescriptor;
 import com.lsxiao.apllo.processor.ApolloProcessor;
 

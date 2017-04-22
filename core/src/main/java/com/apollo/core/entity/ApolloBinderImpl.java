@@ -1,6 +1,6 @@
-package com.lsxiao.apllo.entity;
+package com.apollo.core.entity;
 
-import com.lsxiao.apllo.contract.ApolloBinder;
+import com.apollo.core.contract.ApolloBinder;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -32,7 +32,7 @@ public class ApolloBinderImpl implements ApolloBinder<Disposable> {
     }
 
     @Override
-    public void clearAll() {
+    public void unbind() {
         if (mCompositeDisposable != null && !mCompositeDisposable.isDisposed()) {
             mCompositeDisposable.clear();
             mCompositeDisposable = null;

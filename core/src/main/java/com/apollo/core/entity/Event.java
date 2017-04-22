@@ -1,4 +1,4 @@
-package com.lsxiao.apllo.entity;
+package com.apollo.core.entity;
 
 /**
  * author lsxiao

@@ -3,8 +3,8 @@ package com.lsxiao.apollo.demo.base;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.lsxiao.apllo.Apollo;
-import com.lsxiao.apllo.contract.ApolloBinder;
+import com.apollo.core.Apollo;
+import com.apollo.core.contract.ApolloBinder;
 
 
 public abstract class BaseActivity extends AppCompatActivity {
@@ -21,7 +21,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mBinder.clearAll();
+        mBinder.unbind();
     }
 
     protected abstract int getLayoutId();

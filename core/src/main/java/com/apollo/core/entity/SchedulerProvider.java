@@ -1,4 +1,4 @@
-package com.lsxiao.apllo.entity;
+package com.apollo.core.entity;
 
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;

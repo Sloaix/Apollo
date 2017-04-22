@@ -1,4 +1,4 @@
-package com.lsxiao.apllo.contract;
+package com.apollo.core.contract;
 
 /**
  * write with Apollo
@@ -11,7 +11,7 @@ package com.lsxiao.apllo.contract;
 public interface ApolloBinder<T> {
     public void add(T t);
 
-    public void clearAll();
+    public void unbind();
 
     public boolean isUnbind();
 }

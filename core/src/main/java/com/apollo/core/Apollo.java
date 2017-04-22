@@ -1,10 +1,10 @@
-package com.lsxiao.apllo;
+package com.apollo.core;
 
 
-import com.lsxiao.apllo.contract.ApolloBinder;
-import com.lsxiao.apllo.contract.ApolloBinderGenerator;
-import com.lsxiao.apllo.entity.Event;
-import com.lsxiao.apllo.entity.SchedulerProvider;
+import com.apollo.core.contract.ApolloBinder;
+import com.apollo.core.contract.ApolloBinderGenerator;
+import com.apollo.core.entity.Event;
+import com.apollo.core.entity.SchedulerProvider;
 
 import org.reactivestreams.Publisher;
 
@@ -16,11 +16,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-
 
 /**
  * author lsxiao
@@ -45,13 +45,13 @@ public class Apollo {
     }
 
 
-    public void init(ApolloBinderGenerator binder, SchedulerProvider schedulerProvider) {
+    public void init(Scheduler main, ApolloBinderGenerator binder) {
         if (null == binder) {
             throw new NullPointerException("the binder must be not null");
         }
 
-        if (null == schedulerProvider) {
-            throw new NullPointerException("the schedulerProvider must be not null");
+        if (null == main) {
+            throw new NullPointerException("the main scheduler must be not null");
         }
 
         if (null == mApolloBinderGenerator) {
@@ -59,7 +59,7 @@ public class Apollo {
         }
 
         if (null == mSchedulerProvider) {
-            mSchedulerProvider = schedulerProvider;
+            mSchedulerProvider = SchedulerProvider.create(main);
         }
     }
 
