@@ -120,9 +120,9 @@ class Apollo private constructor() {
      * *
      * @param actual 内容
      */
-    @JvmOverloads fun send(tag: String, actual: Any = Any()) {
+    fun send(tag: String, actual: Any = Any()) {
         val event = Event(tag, actual)
-        send(event)
+        mFlowableProcessor.onNext(event)
     }
 
     /**
@@ -214,9 +214,7 @@ class Apollo private constructor() {
 
         return mFlowableProcessor
                 .filter { event ->
-                    Arrays.asList(*tags).contains(event.tag) &&
-                            //如果subscriberEvent.getData() = null,不用再去检查是不是特定类型或者其子类的实例
-                            (event.data == null || eventType.isInstance(event.data))
+                    Arrays.asList(*tags).contains(event.tag) && eventType.isInstance(event.data)
                 }
                 .flatMap { event -> Flowable.just(eventType.cast(event.data)) }
     }
@@ -274,7 +272,7 @@ class Apollo private constructor() {
 
          * @return Apollo
          */
-        @Synchronized fun get(): Apollo {
+        @JvmStatic @Synchronized fun get(): Apollo {
             if (null == sInstance) {
                 sInstance = Apollo()
             }

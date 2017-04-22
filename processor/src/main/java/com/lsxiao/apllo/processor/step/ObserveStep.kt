@@ -25,8 +25,7 @@ class ObserveStep : BasicAnnotationProcessor.ProcessingStep {
                 val descriptor = ApolloProcessor.sDescriptorMap[it] ?: return@list
 
                 if (MoreElements.isAnnotationPresent(it, ObserveOn::class.java)) {
-                    val tag = MoreElements.asExecutable(it).getAnnotation(ObserveOn::class.java).value
-                    descriptor.observe(tag)
+                    descriptor.observeOn = MoreElements.asExecutable(it).getAnnotation(ObserveOn::class.java).value
                 }
             }
         }

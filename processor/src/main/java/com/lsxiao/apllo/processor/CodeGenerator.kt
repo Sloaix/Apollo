@@ -129,6 +129,7 @@ internal class CodeGenerator private constructor(private val apolloDescriptors: 
                 .addStatement("$SUBSCRIBER_BINDER_LOCAL_PARAM_NAME.add(" +
                         getApollo() +
                         getToFlowableCode(descriptor) +
+                        getEventOnceReceiveCode(descriptor) +
                         getBackpressure(descriptor) +
                         getSubscribeOnMethodCode(descriptor) +
                         getObserveOnMethodCode(descriptor) +
@@ -148,8 +149,10 @@ internal class CodeGenerator private constructor(private val apolloDescriptors: 
         } else {
             TO_FLOWABLE_METHOD_NAME
         }
-        return CodeBlock.of(".$toFlowable(new String[]{${Utils.arraySplitBy(descriptor.tags, ",")}})")
+        return CodeBlock.of(".$toFlowable(${getTagsStringArrayCode(descriptor)})")
     }
+
+    fun getTagsStringArrayCode(descriptor: ApolloDescriptor): CodeBlock = CodeBlock.of("new String[]{${Utils.arraySplitBy(descriptor.tags, ",")}}")
 
     /**
      *  .onBackpressureBuffer()
@@ -186,7 +189,7 @@ internal class CodeGenerator private constructor(private val apolloDescriptors: 
     /**
      *  Apollo.get()
      */
-    fun getApollo(): CodeBlock = CodeBlock.of("\$T.Companion.get()", Apollo::class.java)
+    fun getApollo(): CodeBlock = CodeBlock.of("\$T.get()", Apollo::class.java)
 
     /**
      *  .subscribeWith(new DisposableSubscriber<Object>(){
@@ -235,8 +238,28 @@ internal class CodeGenerator private constructor(private val apolloDescriptors: 
             .addModifiers(Modifier.PUBLIC)
             .addAnnotation(Override::class.java)
             .addParameter(Object::class.java, "o")
+            .addCode(getStickyAutoRemoveCode(descriptor))
             .addCode(getReceiveMethodInvokeCode(descriptor).toString())
             .build()
+
+    /**
+     * Apollo.get().removeStickyEvent(new String[]{"sticky"});
+     */
+    fun getStickyAutoRemoveCode(descriptor: ApolloDescriptor): CodeBlock = if (descriptor.isSticky && descriptor.stickyAutoRemove) {
+        CodeBlock.builder().addStatement("${getApollo()}.removeStickyEvent(${getTagsStringArrayCode(descriptor)})").build()
+    } else {
+        CodeBlock.of("")
+    }
+
+
+    /**
+     * .take(...)
+     */
+    fun getEventOnceReceiveCode(descriptor: ApolloDescriptor): CodeBlock = if (descriptor.take > 0) {
+        CodeBlock.of(".take(${descriptor.take})")
+    } else {
+        CodeBlock.of("")
+    }
 
     fun getReceiveMethodInvokeCode(descriptor: ApolloDescriptor): CodeBlock {
         val parameter = descriptor.methodElement.parameters.map(VariableElement::asType).first()

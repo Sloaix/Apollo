@@ -7,6 +7,7 @@ import android.widget.TextView;
 import com.apollo.core.Apollo;
 import com.lsxiao.apollo.demo.R;
 import com.lsxiao.apollo.demo.base.BaseFragment;
+import com.lsxiao.apollo.demo.constant.Event;
 
 /**
  * author lsxiao
@@ -44,12 +45,16 @@ public class ProducerFragment extends BaseFragment implements View.OnClickListen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_send_event: {
-                Apollo.Companion.get().send("event", "event");
+                Apollo.get().send(Event.STR, "event");
+                Apollo.get().send(Event.INT_NUMBER, 1);
+                Apollo.get().send(Event.FLOAT_NUMBER, 1f);
+                Apollo.get().send(Event.BOOL, true);
+                Apollo.get().send(Event.DOBLUE_NUMBER, 1d);
                 mTvSentEvent.setText(String.format("%sevent,", mTvSentEvent.getText().toString()));
                 break;
             }
             case R.id.btn_send_sticky_event: {
-                Apollo.Companion.get().sendSticky("sticky", "sticky");
+                Apollo.get().sendSticky("sticky", "sticky");
                 mTvSentStickyEvent.setText(String.format("%ssticky,", mTvSentStickyEvent.getText().toString()));
                 break;
             }

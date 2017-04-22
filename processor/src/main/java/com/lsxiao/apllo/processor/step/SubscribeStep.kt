@@ -23,12 +23,11 @@ class SubscribeStep : BasicAnnotationProcessor.ProcessingStep {
         elementsByAnnotation.asMap().keys
                 .map { elementsByAnnotation.asMap()[it] }
                 .forEach { it ->
-                    it?.forEach  {
-                        val descriptor = ApolloProcessor.sDescriptorMap[it] ?: return@forEach
+                    it?.forEach list@ {
+                        val descriptor = ApolloProcessor.sDescriptorMap[it] ?: return@list
 
                         if (MoreElements.isAnnotationPresent(it, SubscribeOn::class.java)) {
-                            val tag = MoreElements.asExecutable(it).getAnnotation(SubscribeOn::class.java).value
-                            descriptor.subscribe(tag)
+                            descriptor.subscribeOn = MoreElements.asExecutable(it).getAnnotation(SubscribeOn::class.java).value
                         }
                     }
                 }
