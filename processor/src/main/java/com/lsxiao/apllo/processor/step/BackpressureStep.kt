@@ -21,8 +21,8 @@ class BackpressureStep : BasicAnnotationProcessor.ProcessingStep {
     override fun annotations(): Set<Class<out Annotation>> = setOf(Backpressure::class.java)
 
     override fun process(elementsByAnnotation: SetMultimap<Class<out Annotation>, Element>): Set<Element> {
-        elementsByAnnotation.asMap().keys.forEach { cls ->
-            elementsByAnnotation.asMap()[cls]?.forEach list@ { element ->
+        elementsByAnnotation.asMap().keys.forEach { clazz ->
+            elementsByAnnotation.asMap()[clazz]?.forEach list@ { element ->
                 val descriptor = ApolloProcessor.sDescriptorMap[element] ?: return@list
 
                 if (MoreElements.isAnnotationPresent(element, Backpressure::class.java)) {
@@ -30,7 +30,7 @@ class BackpressureStep : BasicAnnotationProcessor.ProcessingStep {
                         it == BackpressureStrategy.BUFFER || it == BackpressureStrategy.DROP || it == BackpressureStrategy.LATEST
                     }.let {
                         if (it != null) {
-                            descriptor.backpressure(it)
+                            descriptor.backpressureStrategy = it
                         }
                     }
                 }

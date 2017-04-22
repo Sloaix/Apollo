@@ -25,7 +25,7 @@ class ReceiveStep : BasicAnnotationProcessor.ProcessingStep {
         elementsByAnnotation.asMap().keys.forEach {
             elementsByAnnotation.asMap()[it]?.forEach { element ->
                 val descriptor = ApolloDescriptor.newInstance(element as ExecutableElement)
-                descriptor.tags(Arrays.asList<String>(*MoreElements.asExecutable(element).getAnnotation(Receive::class.java).value))
+                descriptor.tags = Arrays.asList<String>(*MoreElements.asExecutable(element).getAnnotation(Receive::class.java).value)
                 ApolloProcessor.sDescriptorMap.put(element, descriptor)
             }
         }

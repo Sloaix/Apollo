@@ -1,6 +1,6 @@
 package com.lsxiao.apllo.processor.step
 
-import com.apollo.core.annotations.Sticky
+import com.apollo.core.annotations.Take
 import com.google.auto.common.BasicAnnotationProcessor
 import com.google.auto.common.MoreElements
 import com.google.common.collect.SetMultimap
@@ -16,14 +16,13 @@ import javax.lang.model.element.Element
  * zhihu:https://zhihu.com/people/lsxiao
  */
 
-class StickyStep : BasicAnnotationProcessor.ProcessingStep {
-    override fun annotations(): Set<Class<out Annotation>> = setOf(Sticky::class.java)
+class TakeStep : BasicAnnotationProcessor.ProcessingStep {
+    override fun annotations(): Set<Class<out Annotation>> = setOf(Take::class.java)
 
     override fun process(elementsByAnnotation: SetMultimap<Class<out Annotation>, Element>): Set<Element> {
         elementsByAnnotation.asMap().keys.forEach { clazz ->
             elementsByAnnotation.asMap()[clazz]?.mapNotNull { ApolloProcessor.sDescriptorMap[it] }?.forEach {
-                it.isSticky = true
-                it.stickyAutoRemove = MoreElements.asExecutable(it.methodElement).getAnnotation(Sticky::class.java).remove
+                it.take = MoreElements.asExecutable(it.methodElement).getAnnotation(Take::class.java).value
             }
         }
         return HashSet()

@@ -5,6 +5,7 @@ import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableSet;
 import com.lsxiao.apllo.processor.step.BackpressureStep;
 import com.lsxiao.apllo.processor.step.ObserveStep;
+import com.lsxiao.apllo.processor.step.TakeStep;
 import com.lsxiao.apllo.processor.step.ReceiveStep;
 import com.lsxiao.apllo.processor.step.StickyStep;
 import com.lsxiao.apllo.processor.step.SubscribeStep;
@@ -28,6 +29,7 @@ public class ApolloProcessor extends BasicAnnotationProcessor {
     protected Iterable<? extends ProcessingStep> initSteps() {
         return ImmutableSet.of(
                 new ReceiveStep(),
+                new TakeStep(),
                 new StickyStep(),
                 new BackpressureStep(),
                 new SubscribeStep(),
