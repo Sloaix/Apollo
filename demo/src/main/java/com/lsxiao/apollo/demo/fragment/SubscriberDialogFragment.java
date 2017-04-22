@@ -33,19 +33,19 @@ public class SubscriberDialogFragment extends BaseDialogFragment {
         return R.layout.dialog_subscriber;
     }
 
+    @Sticky
+    @Receive("sticky")
+    public void onReceiveStickyEvent(String event) {
+        mTvSentStickyEvent.setText(mTvSentStickyEvent.getText().toString() + event + ",");
+    }
+
     @Override
     protected void afterCreate(Bundle savedInstanceState) {
         mTvSentStickyEvent = (TextView) mRootView.findViewById(R.id.tv_sent_sticky_event);
     }
 
-    @Receive("sticky")
-    @Sticky
-    public void onReceiveStickyEvent(String event) {
-        mTvSentStickyEvent.setText(mTvSentStickyEvent.getText().toString() + event + ",");
-    }
-
-    @Receive("event")
     @Backpressure(BackpressureStrategy.DROP)
+    @Receive("event")
     public void onReceiveEvent(String event) {
         mTvSentStickyEvent.setText(mTvSentStickyEvent.getText().toString() + event + ",");
     }
