@@ -37,22 +37,15 @@ internal class CodeGenerator private constructor(private val apolloDescriptors: 
         private val TO_FLOWABLE_METHOD_NAME = "toFlowable"
 
 
-        fun create(apolloDescriptors: ArrayList<ApolloDescriptor>, filer: Filer): CodeGenerator {
-            return CodeGenerator(apolloDescriptors, filer)
-        }
+        fun create(apolloDescriptors: ArrayList<ApolloDescriptor>, filer: Filer): CodeGenerator = CodeGenerator(apolloDescriptors, filer)
     }
 
-    fun generate() {
-        createJavaFile()
-    }
+    fun generate() = createJavaFile()
 
-    private fun createJavaFile() {
-        try {
-            getBinderGeneratorJavaFile().writeTo(mFiler)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
+    private fun createJavaFile() = try {
+        getBinderGeneratorJavaFile().writeTo(mFiler)
+    } catch (e: IOException) {
+        e.printStackTrace()
     }
 
     fun getBinderGeneratorJavaFile(): JavaFile = JavaFile
@@ -155,15 +148,13 @@ internal class CodeGenerator private constructor(private val apolloDescriptors: 
         } else {
             TO_FLOWABLE_METHOD_NAME
         }
-        val builder = CodeBlock.builder()
-                .add(".$toFlowable(new String[]{${Utils.arraySplitBy(descriptor.tags, ",")}})")
-        return builder.build()
+        return CodeBlock.of(".$toFlowable(new String[]{${Utils.arraySplitBy(descriptor.tags, ",")}})")
     }
 
     /**
      *  .onBackpressureBuffer()
      *  .onBackpressureDrop()
-     *  .onBackpressureLatest()
+     *  .
      */
     fun getBackpressure(descriptor: ApolloDescriptor): CodeBlock {
         val onBackpressure: String = when (descriptor.backpressureStrategy) {
@@ -174,8 +165,7 @@ internal class CodeGenerator private constructor(private val apolloDescriptors: 
                 ""
             }
         }
-        val builder = CodeBlock.builder().add(onBackpressure)
-        return builder.build()
+        return CodeBlock.of(onBackpressure)
     }
 
     /**
