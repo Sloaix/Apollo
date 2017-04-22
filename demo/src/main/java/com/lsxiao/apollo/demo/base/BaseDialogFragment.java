@@ -10,8 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import com.lsxiao.apllo.Apollo;
-import com.lsxiao.apllo.contract.ApolloBinder;
+import com.apollo.core.Apollo;
+import com.apollo.core.contract.ApolloBinder;
 
 /**
  * author lsxiao
@@ -52,7 +52,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
         if (null != mBinder) {
-            mBinder.clearAll();
+            mBinder.unbind();
         }
     }
 

@@ -3,7 +3,7 @@ package com.lsxiao.apllo.processor.step;
 import com.google.auto.common.BasicAnnotationProcessor;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.SetMultimap;
-import com.lsxiao.apllo.annotations.Sticky;
+import com.apollo.core.annotations.Sticky;
 import com.lsxiao.apllo.processor.ApolloDescriptor;
 import com.lsxiao.apllo.processor.ApolloProcessor;
 

@@ -1,6 +1,6 @@
-package com.lsxiao.apllo.annotations;
+package com.apollo.core.annotations;
 
-import com.lsxiao.apllo.entity.SchedulerProvider;
+import com.apollo.core.entity.SchedulerProvider;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,6 +17,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
-public @interface ObserveOn {
-    SchedulerProvider.Tag value() default SchedulerProvider.Tag.MAIN;
+public @interface SubscribeOn {
+    SchedulerProvider.Tag value() default SchedulerProvider.Tag.IO;
 }

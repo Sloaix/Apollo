@@ -3,13 +3,10 @@ package com.lsxiao.apollo.demo.fragment;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.lsxiao.apllo.annotations.Backpressure;
-import com.lsxiao.apllo.annotations.Receive;
-import com.lsxiao.apllo.annotations.Sticky;
+import com.apollo.core.annotations.Receive;
+import com.apollo.core.annotations.Sticky;
 import com.lsxiao.apollo.demo.R;
 import com.lsxiao.apollo.demo.base.BaseFragment;
-
-import io.reactivex.BackpressureStrategy;
 
 /**
  * author lsxiao
@@ -38,14 +35,13 @@ public class SubscriberFragment extends BaseFragment {
         mTvReceiveStickyEvent = (TextView) mRootView.findViewById(R.id.tv_received_sticky_event);
     }
 
-    @Receive("fish")
-    @Sticky
-    @Backpressure(BackpressureStrategy.DROP)
+    @Receive("event")
     public void onReceiveEvent(String event) {
         mTvReceiveEvent.setText(mTvReceiveEvent.getText().toString() + event + ",");
     }
 
-    @Receive("hat")
+    @Receive("sticky")
+    @Sticky
     public void onReceiveStickyEvent(String event) {
         mTvReceiveStickyEvent.setText(mTvReceiveStickyEvent.getText().toString() + event + ",");
     }

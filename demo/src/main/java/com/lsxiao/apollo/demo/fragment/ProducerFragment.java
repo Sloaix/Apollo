@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.lsxiao.apllo.Apollo;
+import com.apollo.core.Apollo;
 import com.lsxiao.apollo.demo.R;
 import com.lsxiao.apollo.demo.base.BaseFragment;
 
@@ -45,12 +45,12 @@ public class ProducerFragment extends BaseFragment implements View.OnClickListen
         switch (view.getId()) {
             case R.id.btn_send_event: {
                 Apollo.get().send("event", "event");
-                mTvSentEvent.setText(mTvSentEvent.getText().toString() + "event,");
+                mTvSentEvent.setText(String.format("%sevent,", mTvSentEvent.getText().toString()));
                 break;
             }
             case R.id.btn_send_sticky_event: {
                 Apollo.get().sendSticky("sticky", "sticky");
-                mTvSentStickyEvent.setText(mTvSentStickyEvent.getText().toString() + "sticky,");
+                mTvSentStickyEvent.setText(String.format("%ssticky,", mTvSentStickyEvent.getText().toString()));
                 break;
             }
             case R.id.btn_show_dialog: {

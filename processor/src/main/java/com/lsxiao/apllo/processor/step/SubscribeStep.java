@@ -4,8 +4,8 @@ import com.google.auto.common.BasicAnnotationProcessor;
 import com.google.auto.common.MoreElements;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.SetMultimap;
-import com.lsxiao.apllo.annotations.SubscribeOn;
-import com.lsxiao.apllo.entity.SchedulerProvider;
+import com.apollo.core.annotations.SubscribeOn;
+import com.apollo.core.entity.SchedulerProvider;
 import com.lsxiao.apllo.processor.ApolloDescriptor;
 import com.lsxiao.apllo.processor.ApolloProcessor;
 

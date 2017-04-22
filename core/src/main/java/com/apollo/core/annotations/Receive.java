@@ -1,4 +1,4 @@
-package com.lsxiao.apllo.annotations;
+package com.apollo.core.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

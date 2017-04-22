@@ -1,7 +1,8 @@
 package com.lsxiao.apllo.processor;
 
-import com.lsxiao.apllo.entity.SchedulerProvider;
+import com.apollo.core.entity.SchedulerProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.lang.model.element.ExecutableElement;
@@ -18,8 +19,8 @@ import io.reactivex.BackpressureStrategy;
 
 public class ApolloDescriptor {
     private ExecutableElement mMethodElement;
-    private boolean mIsSticky;
-    private List<String> mTags;
+    private boolean mIsSticky = false;
+    private List<String> mTags = new ArrayList<>();
     private SchedulerProvider.Tag mSubscribeOn = SchedulerProvider.Tag.IO;
     private SchedulerProvider.Tag mObserveOn = SchedulerProvider.Tag.MAIN;
     private BackpressureStrategy mBackpressureStrategy;
@@ -71,5 +72,29 @@ public class ApolloDescriptor {
     @Override
     public int hashCode() {
         return mMethodElement.hashCode();
+    }
+
+    public ExecutableElement getMethodElement() {
+        return mMethodElement;
+    }
+
+    public boolean isSticky() {
+        return mIsSticky;
+    }
+
+    public List<String> getTags() {
+        return mTags;
+    }
+
+    public SchedulerProvider.Tag getSubscribeOn() {
+        return mSubscribeOn;
+    }
+
+    public SchedulerProvider.Tag getObserveOn() {
+        return mObserveOn;
+    }
+
+    public BackpressureStrategy getBackpressureStrategy() {
+        return mBackpressureStrategy;
     }
 }

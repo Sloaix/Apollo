@@ -1,4 +1,4 @@
-package com.lsxiao.apllo.contract;
+package com.apollo.core.contract;
 
 /**
  * write with Apollo
