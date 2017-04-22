@@ -45,11 +45,6 @@ public class ApolloProcessor extends BasicAnnotationProcessor {
         mGenerated = true;
     }
 
-    /**
-     * 指定使用的java版本。通常这里会直接放回SourceVersion.latestSupported()即可。
-     *
-     * @return SourceVersion
-     */
     @Override
     public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.latestSupported();

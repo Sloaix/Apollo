@@ -1,4 +1,4 @@
-package com.apollo.core.contract;
+package com.apollo.core.contract
 
 /**
  * write with Apollo
@@ -8,6 +8,6 @@ package com.apollo.core.contract;
  * zhihu:https://zhihu.com/people/lsxiao
  */
 
-public interface ApolloBinderGenerator {
-    ApolloBinder generate(Object subscriber);
+interface ApolloBinderGenerator {
+    fun generate(subscriber: Any): ApolloBinder
 }
