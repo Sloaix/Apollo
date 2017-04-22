@@ -186,7 +186,7 @@ internal class CodeGenerator private constructor(private val apolloDescriptors: 
     /**
      *  Apollo.get()
      */
-    fun getApollo(): CodeBlock = CodeBlock.of("\$T.get()", Apollo::class.java)
+    fun getApollo(): CodeBlock = CodeBlock.of("\$T.Companion.get()", Apollo::class.java)
 
     /**
      *  .subscribeWith(new DisposableSubscriber<Object>(){

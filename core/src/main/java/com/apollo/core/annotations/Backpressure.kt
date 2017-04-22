@@ -1,6 +1,6 @@
-package com.apollo.core.annotations;
+package com.apollo.core.annotations
 
-import io.reactivex.BackpressureStrategy;
+import io.reactivex.BackpressureStrategy
 
 /**
  * write with Apollo
@@ -10,6 +10,4 @@ import io.reactivex.BackpressureStrategy;
  * zhihu:https://zhihu.com/people/lsxiao
  */
 
-public @interface Backpressure {
-    BackpressureStrategy value() ;
-}
+annotation class Backpressure(val value: BackpressureStrategy)
