@@ -20,6 +20,7 @@ RxJava2 Apollo中文文档(即将到来)
 ## TODO
 
 - [ ] unit test.
+- [ ] AIDL.
 
 ## Including in your project
 We need to include the apt plugin in our classpath to enable Annotation Processing:
