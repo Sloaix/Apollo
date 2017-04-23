@@ -4,9 +4,12 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.apollo.core.annotations.Backpressure;
+import com.apollo.core.annotations.ObserveOn;
 import com.apollo.core.annotations.Receive;
 import com.apollo.core.annotations.Sticky;
+import com.apollo.core.annotations.SubscribeOn;
 import com.apollo.core.annotations.Take;
+import com.apollo.core.entity.SchedulerProvider;
 import com.lsxiao.apollo.demo.R;
 import com.lsxiao.apollo.demo.base.BaseFragment;
 import com.lsxiao.apollo.demo.constant.Event;
@@ -50,8 +53,10 @@ public class SubscriberFragment extends BaseFragment {
         mTvReceiveEvent.setText(mTvReceiveEvent.getText().toString() + value + ",");
     }
 
+    @SubscribeOn(SchedulerProvider.Tag.IO)
+    @ObserveOn(SchedulerProvider.Tag.MAIN)
     @Backpressure(BackpressureStrategy.DROP)
-    @Sticky
+    @Sticky(remove = false)
     @Take(1)
     @Receive(Event.INT_NUMBER)
     public void onReceiveEvent(int value) {
