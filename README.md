@@ -7,11 +7,11 @@
 Compile-time android event bus depended on RxJava ,which support sticky event and multiple schedulers.
 
 RxJava1 see this:
-[English Document for RxJava1](https://github.com/lsxiao/Apollo/blob/master/README0.x.md)
+[Apollo English Document for RxJava1](https://github.com/lsxiao/Apollo/blob/master/README.0.x.md)
 
-[RxJava1 中文文档](https://github.com/lsxiao/Apollo/blob/master/README-zh-CN-0.x.md)
+[RxJava1 Apollo中文文档](https://github.com/lsxiao/Apollo/blob/master/README-zh-CN-0.x.md)
 
-[RxJava2 中文文档(即将到来)](https://github.com/lsxiao/Apollo/blob/master/README-zh-CN.md)
+RxJava2 Apollo中文文档(即将到来)
 
 ## Demo Preview
 ![](https://raw.githubusercontent.com/lsxiao/Apollo/master/demo.gif?raw=true)
@@ -177,7 +177,7 @@ write a method where you want to receive events
 
 - receive event with backpressure strategy
 ```java
-    //only support `DROP` `BUFFER` `LATEST`
+    //only support DROP,BUFFER,LATEST
     @Backpressure(BackpressureStrategy.DROP)
     @Receive("event")
     public void receiveEvent(Event event) {
@@ -210,12 +210,12 @@ finally send a event where your want.
 ```
 
 ## Release Note
-- 1.0.0-alpha.2(2017-4-23)
+- 1.0.0-alpha.2(2017-4-23) Full Refactoring
   - support RxJava2
   - split @Sticky @SubscribeOn @ObserveOn from @Receive
   - new annotation @Take
   - new annotation @Backpressure
-  - use kotlin to implement processor.
+  - use kotlin to implement processor(more friendly architecture).
   - use kotlin to implement core.
 
 - 0.1.4 (2016-8-23)
