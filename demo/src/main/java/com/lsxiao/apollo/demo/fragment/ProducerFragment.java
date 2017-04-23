@@ -45,16 +45,16 @@ public class ProducerFragment extends BaseFragment implements View.OnClickListen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_send_event: {
-                Apollo.get().send(Event.STR, "event");
-                Apollo.get().send(Event.INT_NUMBER, 1);
-                Apollo.get().send(Event.FLOAT_NUMBER, 1f);
-                Apollo.get().send(Event.BOOL, true);
-                Apollo.get().send(Event.DOBLUE_NUMBER, 1d);
+                Apollo.emit(Event.STR, "event");
+                Apollo.emit(Event.INT_NUMBER, 1);
+                Apollo.emit(Event.FLOAT_NUMBER, 1f);
+                Apollo.emit(Event.BOOL, true);
+                Apollo.emit(Event.DOBLUE_NUMBER, 1d);
                 mTvSentEvent.setText(String.format("%sevent,", mTvSentEvent.getText().toString()));
                 break;
             }
             case R.id.btn_send_sticky_event: {
-                Apollo.get().sendSticky("sticky", "sticky");
+                Apollo.emit("sticky", "sticky", true);
                 mTvSentStickyEvent.setText(String.format("%ssticky,", mTvSentStickyEvent.getText().toString()));
                 break;
             }

@@ -189,7 +189,7 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
     /**
      *  Apollo.get()
      */
-    fun getApollo(): CodeBlock = CodeBlock.of("\$T.get()", Apollo::class.java)
+    fun getApollo(): CodeBlock = CodeBlock.of("\$T", Apollo::class.java)
 
     /**
      *  .subscribeWith(new DisposableSubscriber<Object>(){
