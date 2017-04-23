@@ -3,18 +3,11 @@ package com.lsxiao.apollo.demo.fragment;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.apollo.core.annotations.Backpressure;
-import com.apollo.core.annotations.ObserveOn;
 import com.apollo.core.annotations.Receive;
-import com.apollo.core.annotations.Sticky;
-import com.apollo.core.annotations.SubscribeOn;
-import com.apollo.core.annotations.Take;
-import com.apollo.core.entity.SchedulerProvider;
 import com.lsxiao.apollo.demo.R;
 import com.lsxiao.apollo.demo.base.BaseFragment;
 import com.lsxiao.apollo.demo.constant.Event;
-
-import io.reactivex.BackpressureStrategy;
+import com.lsxiao.apollo.demo.model.User;
 
 /**
  * author lsxiao
@@ -44,33 +37,34 @@ public class SubscriberFragment extends BaseFragment {
     }
 
     @Receive(Event.DOBLUE_NUMBER)
-    public void onReceiveEvent(double value) {
+    public void onEvent(double value) {
         mTvReceiveEvent.setText(mTvReceiveEvent.getText().toString() + value + ",");
     }
 
     @Receive(Event.FLOAT_NUMBER)
-    public void onReceiveEvent(float value) {
+    public void onEvent(float value) {
         mTvReceiveEvent.setText(mTvReceiveEvent.getText().toString() + value + ",");
     }
 
-    @SubscribeOn(SchedulerProvider.Tag.IO)
-    @ObserveOn(SchedulerProvider.Tag.MAIN)
-    @Backpressure(BackpressureStrategy.DROP)
-    @Sticky(remove = false)
-    @Take(1)
     @Receive(Event.INT_NUMBER)
-    public void onReceiveEvent(int value) {
+    public void onEvent(int value) {
+        mTvReceiveEvent.setText(mTvReceiveEvent.getText().toString() + value + ",");
+    }
+
+
+    @Receive(Event.OBJECT)
+    public void onEvent(User value) {
         mTvReceiveEvent.setText(mTvReceiveEvent.getText().toString() + value + ",");
     }
 
 
     @Receive(Event.BOOL)
-    public void onReceiveEvent(boolean value) {
+    public void onEvent(boolean value) {
         mTvReceiveEvent.setText(mTvReceiveEvent.getText().toString() + value + ",");
     }
 
     @Receive(Event.STR)
-    public void onReceiveEvent(String value) {
+    public void onEvent(String value) {
         mTvReceiveEvent.setText(mTvReceiveEvent.getText().toString() + value + ",");
     }
 }

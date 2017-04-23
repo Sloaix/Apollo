@@ -8,6 +8,7 @@ import com.apollo.core.Apollo;
 import com.lsxiao.apollo.demo.R;
 import com.lsxiao.apollo.demo.base.BaseFragment;
 import com.lsxiao.apollo.demo.constant.Event;
+import com.lsxiao.apollo.demo.model.User;
 
 /**
  * author lsxiao
@@ -45,11 +46,7 @@ public class ProducerFragment extends BaseFragment implements View.OnClickListen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_send_event: {
-                Apollo.emit(Event.STR, "event");
-                Apollo.emit(Event.INT_NUMBER, 1);
-                Apollo.emit(Event.FLOAT_NUMBER, 1f);
-                Apollo.emit(Event.BOOL, true);
-                Apollo.emit(Event.DOBLUE_NUMBER, 1d);
+                Apollo.emit(Event.OBJECT, new User("lsxiao"));
                 mTvSentEvent.setText(String.format("%sevent,", mTvSentEvent.getText().toString()));
                 break;
             }
