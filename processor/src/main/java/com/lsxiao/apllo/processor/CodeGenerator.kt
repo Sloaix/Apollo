@@ -152,7 +152,7 @@ internal class CodeGenerator private constructor(private val apolloDescriptors: 
         return CodeBlock.of(".$toFlowable(${getTagsStringArrayCode(descriptor)})")
     }
 
-    fun getTagsStringArrayCode(descriptor: ApolloDescriptor): CodeBlock = CodeBlock.of("new String[]{${Utils.arraySplitBy(descriptor.tags, ",")}}")
+    fun getTagsStringArrayCode(descriptor: ApolloDescriptor): CodeBlock = CodeBlock.of("new String[]{${Utils.split(descriptor.tags, ",")}}")
 
     /**
      *  .onBackpressureBuffer()
