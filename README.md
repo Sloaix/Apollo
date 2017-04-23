@@ -4,10 +4,10 @@
 <a href="http://www.methodscount.com/?lib=com.github.lsxiao.Apollo%3Aapollo%3A0.1.2"><img src="https://img.shields.io/badge/Size-13 KB-e91e63.svg"/></a>
 
 
-Compile-time android event bus depended on RxJava ,which support sticky event and multiple schedulers.
+Best compile-time RxBus for android,which support RxJava2.
 
 RxJava1 see this:
-[Apollo English Document for RxJava1](https://github.com/lsxiao/Apollo/blob/master/README.0.x.md)
+[Apollo English Document for RxJava1](https://github.com/lsxiao/Apollo/blob/master/README-0.x.md)
 
 [RxJava1 Apollo中文文档](https://github.com/lsxiao/Apollo/blob/master/README-zh-CN-0.x.md)
 
