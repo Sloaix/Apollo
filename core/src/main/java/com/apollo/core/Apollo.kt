@@ -179,6 +179,17 @@ class Apollo private constructor() {
 
         @JvmStatic fun getSchedulerProvider(): SchedulerProvider = get().mSchedulerProvider
 
+        @JvmStatic fun emit(tag: String) = synchronized(get().mStickyEventMap) {
+            emit(tag, Any(), false)
+        }
+
+        @JvmStatic fun emit(tag: String, actual: Any = Any()) = synchronized(get().mStickyEventMap) {
+            emit(tag, actual, false)
+        }
+
+        @JvmStatic fun emit(tag: String, sticky: Boolean = false) = synchronized(get().mStickyEventMap) {
+            emit(tag, Any(), sticky)
+        }
 
         @JvmStatic fun emit(tag: String, actual: Any = Any(), sticky: Boolean = false) = synchronized(get().mStickyEventMap) {
             val event = Event(tag, actual, sticky)
@@ -188,9 +199,6 @@ class Apollo private constructor() {
             get().mFlowableProcessor.onNext(event)
         }
 
-        @JvmStatic fun emit(tag: String, actual: Any = Any()) = synchronized(get().mStickyEventMap) {
-            emit(tag, actual, false)
-        }
 
         @JvmStatic fun removeStickyEvent(vararg tags: String) = tags.forEach { tag ->
             synchronized(get().mStickyEventMap) {
