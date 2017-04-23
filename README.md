@@ -19,7 +19,8 @@ RxJava2 Apollo中文文档(即将到来)
 
 ## TODO
 
-- [ ] unit test.
+- [ ] debug feature.
+- [ ] more unit test.
 - [ ] AIDL.
 
 ## Including in your project
