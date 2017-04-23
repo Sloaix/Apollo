@@ -14,11 +14,13 @@ import java.util.*
 
 class UtilsTest : TestCase() {
     @Test
-    fun testArraySplitBy() {
+    fun testSplit() {
         assertEquals(""""a","b","c"""", Utils.split(Arrays.asList(*arrayOf("a", "b", "c")), ","))
 
         assertEquals(""""a","b"""", Utils.split(Arrays.asList(*arrayOf("a", "b")), ","))
 
         assertEquals(""""a"""", Utils.split(Arrays.asList(*arrayOf("a")), ","))
+
+        assertEquals("", Utils.split(Arrays.asList(*arrayOf()), ","))
     }
 }
