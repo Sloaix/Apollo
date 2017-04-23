@@ -23,7 +23,7 @@ import javax.lang.model.element.VariableElement
  * zhihu:https://zhihu.com/people/lsxiao
  */
 
-internal class CodeGenerator private constructor(private val apolloDescriptors: ArrayList<ApolloDescriptor>, private val mFiler: Filer) {
+class CodeGenerator private constructor(private val apolloDescriptors: ArrayList<ApolloDescriptor>, private val mFiler: Filer) {
 
     companion object {
         private val GENERATE_PACKAGE_NAME = "com.lsxiao.apollo.generate"
