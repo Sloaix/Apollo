@@ -72,7 +72,7 @@ you can bind and unbind Apollo in BaseActivity.
 
 ```java
 public abstract class BaseActivity extends AppCompatActivity {
-    private SubscriptionBinder mBinder;
+    private ApolloBinder mBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
