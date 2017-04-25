@@ -51,6 +51,10 @@ public class SubscriberFragment extends BaseFragment {
         mTvReceiveEvent.setText(mTvReceiveEvent.getText().toString() + value + ",");
     }
 
+    @Receive(Event.OBJECT)
+    public void onEvent() {
+    }
+
 
     @Receive(Event.OBJECT)
     public void onEvent(User value) {
