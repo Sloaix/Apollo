@@ -40,11 +40,11 @@ Add the library to the project-level build.gradle, using the apt plugin to enabl
 ```groovy
 dependencies {
   compile "io.reactivex:rxandroid:2.0.1"//use the latest version
-  compile "com.github.lsxiao.Apollo:core:1.0.0-alpha.3"
-  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-alpha.3"
+  compile "com.github.lsxiao.Apollo:core:1.0.0-beta.1"
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-alpha.1"
 
   //for kotlin
-  kapt "com.github.lsxiao.Apollo.processor:1.0.0-alpha.3"
+  kapt "com.github.lsxiao.Apollo.processor:1.0.0-beta.1"
 }
 ```
 
