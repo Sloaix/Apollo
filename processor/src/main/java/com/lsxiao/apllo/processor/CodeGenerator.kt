@@ -12,7 +12,11 @@ import java.io.IOException
 import java.util.*
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Modifier
+import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
+import javax.lang.model.type.DeclaredType
+import javax.lang.model.type.TypeKind
+import javax.lang.model.type.TypeMirror
 
 
 /**
@@ -261,6 +265,9 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
         CodeBlock.of("")
     }
 
+    /**
+     * subscriber.onNext(...)
+     */
     fun getReceiveMethodInvokeCode(descriptor: ApolloDescriptor): CodeBlock {
         val builder = CodeBlock
                 .builder()
@@ -272,8 +279,67 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
         if (descriptor.methodElement.parameters.map(VariableElement::asType).isEmpty()) {
             builder.addStatement("$SUBSCRIBER_LOCAL_NAME.${descriptor.methodElement.simpleName}()")
         } else {
-            builder.addStatement("$SUBSCRIBER_LOCAL_NAME.${descriptor.methodElement.simpleName}((\$T)o)", descriptor.methodElement.parameters.map(VariableElement::asType).first())
+            val typeMirror = descriptor.methodElement.parameters.map(VariableElement::asType).first()
+
+            builder.beginControlFlow("if(o instanceof ${parseVariableType(typeMirror)})")
+            builder.addStatement("$SUBSCRIBER_LOCAL_NAME.${descriptor.methodElement.simpleName}((\$T)o)", typeMirror)
+            builder.endControlFlow()
         }
         return builder.build()
     }
+
+    /**
+     * 返回基本数据类型装箱后的类型
+
+     * @param typeMirror VariableElement
+     * *
+     * @return String
+     */
+    fun parseVariableType(typeMirror: TypeMirror): String {
+        val typeKind = typeMirror.kind
+        when (typeKind) {
+            TypeKind.BOOLEAN -> {
+                return "Boolean"
+            }
+            TypeKind.BYTE -> {
+                return "Byte"
+            }
+            TypeKind.SHORT -> {
+                return "Short"
+            }
+            TypeKind.INT -> {
+                return "Integer"
+            }
+            TypeKind.LONG -> {
+                return "Long"
+            }
+            TypeKind.CHAR -> {
+                return "Char"
+            }
+            TypeKind.FLOAT -> {
+                return "Float"
+            }
+            TypeKind.DOUBLE -> {
+                return "Double"
+            }
+            else -> {
+                if (typeMirror is DeclaredType) {
+                    return handleGenericTypeVariable(typeMirror)
+                }
+
+                return typeMirror.toString()
+            }
+        }
+    }
+
+    /**
+     * List<User> return java.util.List.class ,rather than java.util.List<User>.class
+     * @return String
+     *
+     */
+    private fun handleGenericTypeVariable(typeMirror: TypeMirror): String {
+        val declaredType = typeMirror as DeclaredType
+        return (declaredType.asElement() as TypeElement).qualifiedName.toString()
+    }
+
 }

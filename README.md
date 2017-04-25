@@ -43,7 +43,7 @@ dependencies {
   compile "com.github.lsxiao.Apollo:core:1.0.0-beta.1"
   annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-beta.1"
 
-  //for kotlin
+  //for
   kapt "com.github.lsxiao.Apollo.processor:1.0.0-beta.1"
 }
 ```
