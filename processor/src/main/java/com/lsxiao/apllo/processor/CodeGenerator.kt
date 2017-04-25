@@ -262,7 +262,11 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
     }
 
     fun getReceiveMethodInvokeCode(descriptor: ApolloDescriptor): CodeBlock {
-        val parameter = descriptor.methodElement.parameters.map(VariableElement::asType).first()
+        val parameter = when {
+            descriptor.methodElement.parameters.map(VariableElement::asType).isEmpty() -> Any()
+            else -> descriptor.methodElement.parameters.map(VariableElement::asType).first()
+        }
+        
         val builder = CodeBlock
                 .builder()
                 .addStatement("final \$T $SUBSCRIBER_LOCAL_NAME=(\$T)$GENERATE_METHOD_BIND_OBJECT_NAME",
