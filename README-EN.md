@@ -4,9 +4,9 @@
 <a href="http://www.methodscount.com/?lib=com.github.lsxiao.Apollo%3Aapollo%3A0.1.2"><img src="https://img.shields.io/badge/Size-13 KB-e91e63.svg"/></a>
 
 
-Compile-time android event bus depended on RxJava ,which support sticky event and multiple schedulers.
+Best compile-time RxBus for android,which support RxJava2.
 
-[中文文档](https://github.com/lsxiao/Apollo/blob/master/README-zh-CN-0.x.md)
+RxJava2 Apollo中文文档(即将到来)
 
 ## Demo Preview
 ![](https://raw.githubusercontent.com/lsxiao/Apollo/master/demo.gif?raw=true)
@@ -14,22 +14,14 @@ Compile-time android event bus depended on RxJava ,which support sticky event an
 
 ## TODO
 
-- [ ] unit test.
+- [ ] debug feature.
+- [ ] more unit test.
+- [ ] AIDL.
 
 ## Including in your project
 We need to include the apt plugin in our classpath to enable Annotation Processing:
 
 ```groovy
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        //android annotation process tool
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-    }
-}
-
 allProjects {
   repositories {
     maven { url "https://www.jitpack.io" }
@@ -41,14 +33,14 @@ Add the library to the project-level build.gradle, using the apt plugin to enabl
 
 
 ```groovy
-apply plugin: 'com.neenbedankt.android-apt'
-
 dependencies {
-  apt "com.github.lsxiao.Apollo:processor:0.1.4"
-  compile "com.github.lsxiao.Apollo:apollo:0.1.4"
-  compile 'io.reactivex:rxandroid:1.2.1'//use the latest version,this just a simple.
-}
+  compile "io.reactivex:rxandroid:2.0.1"//use the latest version
+  compile "com.github.lsxiao.Apollo:core:1.0.0-beta.2"
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-beta.2"
 
+  //for
+  kapt "com.github.lsxiao.Apollo.processor:1.0.0-beta.2"
+}
 ```
 
 ## Usage
@@ -62,10 +54,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        //note!the SubscriberBinderImplement is generated code.
+        //note!the ApolloBinderGeneratorImpl is generated code.
         //because Apollo is a java library and it can't depend on a android library(RxAndroid),
         //so you must provide a AndroidSchedulers.mainThread() to init.
-        Apollo.get().init(SubscriberBinderImplement.instance(), AndroidSchedulers.mainThread());
+       Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance());
     }
 }
 ```
@@ -75,20 +67,22 @@ you can bind and unbind Apollo in BaseActivity.
 
 ```java
 public abstract class BaseActivity extends AppCompatActivity {
-    private SubscriptionBinder mBinder;
+    private ApolloBinder mBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
-        mBinder = Apollo.get().bind(this);
+        mBinder = Apollo.bind(this);
         afterCreate(savedInstanceState);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mBinder.unbind();
+        if(mBinder!=null){
+            mBinder.unbind();
+        }
     }
 
     protected abstract int getLayoutId();
@@ -103,14 +97,14 @@ write a method where you want to receive events
 
 - default
 ```java
-    @Receive(tag = TAG)
-    public void receiveEvent(Event event) {
+    @Receive("event")
+    public void onEvent(Event event) {
        //do something.
     }
 ```
 - non-parameter
 ```java
-    @Receive(tag = TAG)
+    @Receive("event")
     public void showDialog(){
         //show dialog.
     }
@@ -118,16 +112,17 @@ write a method where you want to receive events
 
 - multiple tag
 ```java
-    @Receive(tag = {TAG1,TAG2})
+    @Receive({"event1","event2"})
     public void showDialog(){
         //show dialog.
     }
 ```
 
-- receive normal event only once.
+- receive event of specified times
 ```java
-    //the event will be received only once.
-    @Receive(tag = TAG,type = Receive.Type.NORMAL_ONCE)
+    //the event will be received twice at most.
+    @Take(2)
+    @Receive("event")
     public void showDialog(){
         //show dialog.
     }
@@ -135,35 +130,63 @@ write a method where you want to receive events
 
 - schedulers
 ```java
-    //the subscribeOn and observeOn support  main, io, new, computation, trampoline, immediate schedulers.
-    //subscribeOn default scheduler is io.
-    //observeOn default scheduler is main.
-    @Receive(tag = TAG,subscribeOn = Receive.Thread.IO, observeOn = Receive.Thread.MAIN)
+    //the SubscribeOn and @ObserveOn support  main, io, new, computation, trampoline, immediate schedulers.
+    //@SubscribeOn default scheduler is io.
+    //@ObserveOn default scheduler is main.
+
+    @SubscribeOn(SchedulerProvider.Tag.IO)
+    @ObserveOn(SchedulerProvider.Tag.MAIN)
+    @Receive("event")
     public void receiveUser() {
         //do something.
     }
 ```
 
-- receive sticky event
+- receive sticky event,the sticky event will be auto removed when event is received.
 ```java
-    @Receive(tag = TAG,type = Receive.Type.STICKY)
+    @Sticky
+    @Receive("event")
     public void receiveEvent(Event event) {
         //do something.
     }
 ```
 
-- receive sticky event and remove that sticky event.
+- receive sticky event and not auto remove that sticky event.
 ```java
-    @Receive(tag = TAG,type = Receive.Type.STICKY_REMOVE)
+    @Sticky(remove = false)
+    @Receive("event")
     public void receiveEvent(Event event) {
         //do something.
     }
 ```
 
-- receive sticky event and remove all sticky events.
+- receive sticky event and remove sticky events programmatically.
 ```java
-    @Receive(tag = TAG,type = Receive.Type.STICKY_REMOVE_ALL)
+    @Sticky
+    @Receive("event")
     public void receiveEvent(Event event) {
+        //remove all
+        Apollo.removeAllStickyEvent();
+
+        //remove spectified tag event
+        Apollo.removeStickyEvent("event");
+
+        //do something.
+    }
+```
+
+- receive event with backpressure strategy
+```java
+    //only support DROP,BUFFER,LATEST
+    @Backpressure(BackpressureStrategy.DROP)
+    @Receive("event")
+    public void receiveEvent(Event event) {
+        //remove all
+        Apollo.removeAllStickyEvent();
+
+        //remove spectified tag event
+        Apollo.removeStickyEvent("event");
+
         //do something.
     }
 ```
@@ -174,16 +197,26 @@ finally send a event where your want.
 
 ```java
  //a normal event
- Apollo.get().send(EVENT_SHOW_USER, new User("lsxiao"));
+ Apollo.emit(EVENT_SHOW_USER, new User("lsxiao"));
 
- //a non-parameter event
- Apollo.get().send(EVENT_SHOW_USER);
+ //a non-arguments event
+ Apollo.emit(EVENT_SHOW_USER);
 
  //a sticky event
- Apollo.get().sendSticky(EVENT_SHOW_BOOK, new Book("A Song of Ice and Fire"));
+ Apollo.emit(EVENT_SHOW_BOOK,new Object(),true);
+
+ //a non-arguments sticky event
+ Apollo.emit(EVENT_SHOW_BOOK,true);
 ```
 
 ## Release Note
+- 1.0.0-alpha.2(2017-4-23) Full Refactoring
+  - support RxJava2
+  - split @Sticky @SubscribeOn @ObserveOn from @Receive
+  - new annotation @Take
+  - new annotation @Backpressure
+  - use kotlin to implement processor(more friendly architecture).
+  - use kotlin to implement core.
 
 - 0.1.4 (2016-8-23)
   - update demo.

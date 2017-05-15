@@ -1,31 +1,20 @@
-# Apollo
-[![](https://jitpack.io/v/lsxiao/Apollo.svg)](https://jitpack.io/#lsxiao/Apollo)
+# Apollo [![](https://jitpack.io/v/lsxiao/Apollo.svg)](https://jitpack.io/#lsxiao/Apollo)
 <a href="http://www.methodscount.com/?lib=com.github.lsxiao.Apollo%3Aapollo%3A0.1.2"><img src="https://img.shields.io/badge/Methods count-core: 93 | deps: 5492-e91e63.svg"/></a>
 <a href="http://www.methodscount.com/?lib=com.github.lsxiao.Apollo%3Aapollo%3A0.1.2"><img src="https://img.shields.io/badge/Size-13 KB-e91e63.svg"/></a>
 
+进程间通信、编译时注解 - RxBus。
 
-Best compile-time RxBus for android,which support RxJava2.
+Apollo，让RxBus简约而不简单。
 
-RxJava1 see this:
-[Apollo English Document for RxJava1](https://github.com/lsxiao/Apollo/blob/master/README-0.x.md)
+[English Document](https://github.com/lsxiao/Apollo/blob/master/README-EN.md)
 
-[RxJava1 Apollo中文文档](https://github.com/lsxiao/Apollo/blob/master/README-zh-CN-0.x.md)
+## 开始
 
-RxJava2 Apollo中文文档(即将到来)
+用3分钟时间快速集成Apollo
 
-## Demo Preview
-![](https://raw.githubusercontent.com/lsxiao/Apollo/master/demo.gif?raw=true)
+### 集成
 
-
-## TODO
-
-- [ ] debug feature.
-- [ ] more unit test.
-- [ ] AIDL.
-
-## Including in your project
-We need to include the apt plugin in our classpath to enable Annotation Processing:
-
+使用jitpack第三方依赖库
 ```groovy
 allProjects {
   repositories {
@@ -34,240 +23,126 @@ allProjects {
 }
 ```
 
-Add the library to the project-level build.gradle, using the apt plugin to enable Annotation Processing:
-
+在项目所在build.gralde添加依赖
 
 ```groovy
 dependencies {
-  compile "io.reactivex:rxandroid:2.0.1"//use the latest version
+  //Apollo依赖RxAndroid2,请使用最新的版本
+  compile "io.reactivex:rxandroid:2.0.1"
+  
+  //Apollo的核心库
   compile "com.github.lsxiao.Apollo:core:1.0.0-beta.2"
+  
+  //Apollo的编译时注解处理器
   annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-beta.2"
 
-  //for
+  //如果你使用的是kotlin,请使用kapt
   kapt "com.github.lsxiao.Apollo.processor:1.0.0-beta.2"
 }
 ```
 
-## Usage
+## 使用
 
-### Init
-init the Apollo in your custom application.
+### 初始化
+
+ `ApolloBinderGeneratorImpl`在编译时生成。
 
 ```java
-public class App extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        //note!the ApolloBinderGeneratorImpl is generated code.
-        //because Apollo is a java library and it can't depend on a android library(RxAndroid),
-        //so you must provide a AndroidSchedulers.mainThread() to init.
-       Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance());
-    }
-}
+Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), this);
 ```
 
-### Bind/Unbind
-you can bind and unbind Apollo in BaseActivity.
+### 绑定/解绑
 
+为了避免内存泄露,应在组件生命周期内绑定和解绑。
 ```java
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends Activity {
     private ApolloBinder mBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(getLayoutId());
+        ...
         mBinder = Apollo.bind(this);
-        afterCreate(savedInstanceState);
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        if(mBinder!=null){
-            mBinder.unbind();
+        ...
+        if(mBinder != null){
+            mBinder.unbind();        
         }
     }
-
-    protected abstract int getLayoutId();
-
-    protected abstract void afterCreate(Bundle savedInstanceState);
+    ...
 }
 
 ```
 
-### Receive Event
-write a method where you want to receive events
-
-- default
+### 发送
+让发送更简单
 ```java
-    @Receive("event")
-    public void onEvent(Event event) {
-       //do something.
-    }
-```
-- non-parameter
-```java
-    @Receive("event")
-    public void showDialog(){
-        //show dialog.
-    }
+Apollo.emit("event","hello apollo")
 ```
 
-- multiple tag
+### 接收
+让接收更自在
 ```java
-    @Receive({"event1","event2"})
-    public void showDialog(){
-        //show dialog.
-    }
+@Receive("event")
+public void onEvent(String message){
+    ...
+}
 ```
+更多用法请参考API部分
 
-- receive event of specified times
-```java
-    //the event will be received twice at most.
-    @Take(2)
-    @Receive("event")
-    public void showDialog(){
-        //show dialog.
-    }
-```
+## 高级用法
+### 注解
+**注意!!!**,被注解的函数一定得是public修饰,且@Receive是必须注解，其余为可选注解。
+| 注解          | 参数   | 描述                                                                                          | 默认值                     |
+|---------------|--------|-----------------------------------------------------------------------------------------------|----------------------------|
+| @Receive      |        | 接收一个字符串tag数组,或者单个字符串tag                                                       | 无                         |
+| @Sticky       | remove | 接收后是否清除stikcy事件                                                                      | ture                       |
+| @SubscribeOn  |        | 订阅所在线程                                                                                  | SchedulerProvider.Tag.IO   |
+| @ObserveOn    |        | 观察所在线程                                                                                  | SchedulerProvider.Tag.MAIN |
+| @Take         |        | 接收多少次事件,int型参数                                                                      | 无                         |
+| @Backpressure |        | 背压策略(BackpressureStrategy.BUFFER，BackpressureStrategy.DROP，BackpressureStrategy.LATEST) | 无                         |
 
-- schedulers
-```java
-    //the SubscribeOn and @ObserveOn support  main, io, new, computation, trampoline, immediate schedulers.
-    //@SubscribeOn default scheduler is io.
-    //@ObserveOn default scheduler is main.
-
-    @SubscribeOn(SchedulerProvider.Tag.IO)
-    @ObserveOn(SchedulerProvider.Tag.MAIN)
-    @Receive("event")
-    public void receiveUser() {
-        //do something.
-    }
-```
-
-- receive sticky event,the sticky event will be auto removed when event is received.
-```java
-    @Sticky
-    @Receive("event")
-    public void receiveEvent(Event event) {
-        //do something.
-    }
-```
-
-- receive sticky event and not auto remove that sticky event.
-```java
-    @Sticky(remove = false)
-    @Receive("event")
-    public void receiveEvent(Event event) {
-        //do something.
-    }
-```
-
-- receive sticky event and remove sticky events programmatically.
-```java
-    @Sticky
-    @Receive("event")
-    public void receiveEvent(Event event) {
-        //remove all
-        Apollo.removeAllStickyEvent();
-
-        //remove spectified tag event
-        Apollo.removeStickyEvent("event");
-
-        //do something.
-    }
-```
-
-- receive event with backpressure strategy
-```java
-    //only support DROP,BUFFER,LATEST
-    @Backpressure(BackpressureStrategy.DROP)
-    @Receive("event")
-    public void receiveEvent(Event event) {
-        //remove all
-        Apollo.removeAllStickyEvent();
-
-        //remove spectified tag event
-        Apollo.removeStickyEvent("event");
-
-        //do something.
-    }
-```
-
-
-### Send Event
-finally send a event where your want.
+### 方法
 
 ```java
- //a normal event
- Apollo.emit(EVENT_SHOW_USER, new User("lsxiao"));
+boolean sticky = true;
 
- //a non-arguments event
- Apollo.emit(EVENT_SHOW_USER);
+//只有tag
+Apollo.emit("tag");
+//tag和数据实体
+Apollo.emit("tag","event");
 
- //a sticky event
- Apollo.emit(EVENT_SHOW_BOOK,new Object(),true);
-
- //a non-arguments sticky event
- Apollo.emit(EVENT_SHOW_BOOK,true);
+//stikcy(只有被@Sticky注解的函数才能收到sticky事件)
+Apollo.emit("tag","event",stikcy)
+//只有tag的stikcy调用
+Apollo.emit("tag",sticky)
 ```
 
-## Release Note
-- 1.0.0-alpha.2(2017-4-23) Full Refactoring
-  - support RxJava2
-  - split @Sticky @SubscribeOn @ObserveOn from @Receive
-  - new annotation @Take
-  - new annotation @Backpressure
-  - use kotlin to implement processor(more friendly architecture).
-  - use kotlin to implement core.
+## 构建于ReactiveX之上
 
-- 0.1.4 (2016-8-23)
-  - update demo.
-  - support send and receive primitive type event.(int,boolean,float,etc...)
+* [RxJava2](https://github.com/ReactiveX/RxJava) - Reactive Extensions for the JVM
+* [RxAndroid2](https://github.com/ReactiveX/RxAndroid) - Reactive Extensions for Android
 
-- 0.1.4-alpha.1 (2016-8-12)
-  - support receive a normal event only once.(NORAML_ONCE)
-  - support receive sticky event and remove that sticky event.(STICKY_REMOVE)
-  - support receive sticky event and remove all sticky events.(STICKY_REMOVE_ALL)
+## 如何贡献代码
 
+在这里没有太多的条条框框，只要你能让Apollo变得更好，代码review并测试通过，就可以被merge到主分支。
 
-- 0.1.4-alpha (2016-8-11)
-  - support multiple tags.
-  - support non-parameter method.
-  - fixed a bug in processor which may causing compile fail.
+## 版本
+我们使用 [语义化版本控制规范](http://semver.org/) 作为版本管理，有关可用的版本，请参阅此 [标签列表](https://github.com/lsxiao/Apollo/tags)。
 
+## 作者
 
-- 0.1.3 (2016-8-10)
-  - avoid multiple bind the same object.
-  - fixed a bug may cause unsubscribe.
+* **lsxiao** - *一个默默无闻的Android工程师* - [lsxiao](https://github.com/lsxiao)
 
+更多 [贡献者](https://github.com/your/project/contributors) 请参考这个项目的列表。
 
-- 0.1.2 (2016-8-8)
-  - compile-time RxBus
-  - support sticky event
-  - support multiple scheduler.
-  - support annotation.
+## 开源许可
 
-## Maintained By
-知乎 : [@面条](https://www.zhihu.com/people/lsxiao)
+Apache License Version 2.0
 
-Github : [@lsxiao](https://github.com/lsxiao)
+## 感谢
 
-
-## License
-
-    Copyright 2016 lsxiao, Inc.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+* 所有我爱，以及爱我的人
+* 我职业生涯和生活中给与过我帮助的人。
