@@ -33,7 +33,7 @@ dependencies {
   //Apollo的核心库
   compile "com.github.lsxiao.Apollo:core:1.0.0-beta.3"
 
-  //Apollo的核心库
+  //ipc
   compile "com.github.lsxiao.Apollo:ipc:1.0.0-beta.3"
 
   //Apollo的编译时注解处理器
