@@ -2,7 +2,7 @@
 <a href="http://www.methodscount.com/?lib=com.github.lsxiao.Apollo%3Aapollo%3A0.1.2"><img src="https://img.shields.io/badge/Methods count-core: 93 | deps: 5492-e91e63.svg"/></a>
 <a href="http://www.methodscount.com/?lib=com.github.lsxiao.Apollo%3Aapollo%3A0.1.2"><img src="https://img.shields.io/badge/Size-13 KB-e91e63.svg"/></a>
 
-进程间通信、编译时注解 - RxBus。
+进程间通信、编译时注解。
 
 Apollo，让RxBus简约而不简单。
 
