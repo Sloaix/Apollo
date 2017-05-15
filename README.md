@@ -91,7 +91,7 @@ public void onEvent(String message){
 }
 ```
 
-### IPC
+### 进程间通信(IPC)
 无需更多配置，请尽情使用。
 
 ## 高级用法
