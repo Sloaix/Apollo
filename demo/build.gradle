@@ -33,6 +33,7 @@ dependencies {
     compile libs.rxandroid2
 
     compile project(':core')
+    compile project(':ipc')
 
     annotationProcessor project(':processor')
 }

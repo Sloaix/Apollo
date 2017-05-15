@@ -28,6 +28,7 @@ class Apollo private constructor() {
     private val mBindTargetMap: MutableMap<Int, ApolloBinder> = HashMap()
     private var mApolloBinderGenerator: ApolloBinderGenerator by Delegates.notNull()
     private var mSchedulerProvider: SchedulerProvider by Delegates.notNull()
+    private var mContext: Any by Delegates.notNull()
 
     companion object {
         private var sInstance: Apollo? = null
@@ -37,23 +38,35 @@ class Apollo private constructor() {
 
          * @return Apollo
          */
-        private @JvmStatic @Synchronized fun get(): Apollo {
+        @JvmStatic
+        @Synchronized
+        private fun get(): Apollo {
             if (null == sInstance) {
                 sInstance = Apollo()
             }
             return sInstance as Apollo
         }
 
-        @JvmStatic fun init(main: Scheduler, binder: ApolloBinderGenerator) {
+
+        @JvmStatic
+        fun init(main: Scheduler, binder: ApolloBinderGenerator, context: Any) {
             get().mApolloBinderGenerator = binder
             get().mSchedulerProvider = SchedulerProvider.create(main)
+            get().mContext = context
+            get().mApolloBinderGenerator.registerReceiver()
         }
 
+        @Deprecated(message = "this method is not support ipc", replaceWith = ReplaceWith("use init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), getApplicationContext()) to instead"), level = DeprecationLevel.WARNING)
+        @JvmStatic
+        fun init(main: Scheduler, binder: ApolloBinderGenerator) {
+            init(main, binder, Any())
+        }
 
         /**
          * 判断是否有订阅者
          */
-        @JvmStatic fun hasSubscribers(): Boolean {
+        @JvmStatic
+        fun hasSubscribers(): Boolean {
             return get().mFlowableProcessor.hasSubscribers()
         }
 
@@ -64,7 +77,8 @@ class Apollo private constructor() {
          * *
          * @return ApolloBinder
          */
-        @JvmStatic fun bind(o: Any?): ApolloBinder {
+        @JvmStatic
+        fun bind(o: Any?): ApolloBinder {
             if (null == o) {
                 throw NullPointerException("object to subscribe must not be null")
             }
@@ -79,7 +93,8 @@ class Apollo private constructor() {
          * *
          * @return ApolloBinder
          */
-        @JvmStatic private fun uniqueBind(o: Any): ApolloBinder {
+        @JvmStatic
+        private fun uniqueBind(o: Any): ApolloBinder {
             val uniqueId = System.identityHashCode(o)
 
             var binder: ApolloBinder
@@ -92,27 +107,30 @@ class Apollo private constructor() {
                     //移除已经解绑的binder
                     get().mBindTargetMap.remove(uniqueId)
                     //重新绑定
-                    binder = get().mApolloBinderGenerator!!.generate(o)
+                    binder = get().mApolloBinderGenerator.generate(o)
                     //保存到map中
                     get().mBindTargetMap.put(uniqueId, binder)
                 }
             } else {
-                binder = get().mApolloBinderGenerator!!.generate(o)
+                binder = get().mApolloBinderGenerator.generate(o)
                 get().mBindTargetMap.put(uniqueId, binder)
             }
             return binder
         }
 
 
-        @JvmStatic fun toFlowable(tag: String): Flowable<Any> {
+        @JvmStatic
+        fun toFlowable(tag: String): Flowable<Any> {
             return toFlowable(arrayOf(tag), Any::class.java)
         }
 
-        @JvmStatic fun toFlowable(tags: Array<String>): Flowable<Any> {
+        @JvmStatic
+        fun toFlowable(tags: Array<String>): Flowable<Any> {
             return toFlowable(tags, Any::class.java)
         }
 
-        @JvmStatic fun <T> toFlowable(tags: Array<String>?, eventType: Class<T>?): Flowable<T> {
+        @JvmStatic
+        fun <T> toFlowable(tags: Array<String>?, eventType: Class<T>?): Flowable<T> {
             if (null == eventType) {
                 throw NullPointerException("the eventType must be not null")
             }
@@ -132,15 +150,18 @@ class Apollo private constructor() {
                     .flatMap { event -> Flowable.just(eventType.cast(event.data)) }
         }
 
-        @JvmStatic fun toFlowableSticky(tag: String): Flowable<Any> {
+        @JvmStatic
+        fun toFlowableSticky(tag: String): Flowable<Any> {
             return toFlowableSticky(arrayOf(tag))
         }
 
-        @JvmStatic fun toFlowableSticky(tags: Array<String>): Flowable<Any> {
+        @JvmStatic
+        fun toFlowableSticky(tags: Array<String>): Flowable<Any> {
             return toFlowableSticky(tags, Any::class.java)
         }
 
-        @JvmStatic fun <T> toFlowableSticky(tags: Array<String>?, eventType: Class<T>?): Flowable<T> {
+        @JvmStatic
+        fun <T> toFlowableSticky(tags: Array<String>?, eventType: Class<T>?): Flowable<T> {
             if (null == eventType) {
                 throw NullPointerException("the eventType must be not null")
             }
@@ -177,36 +198,56 @@ class Apollo private constructor() {
             }
         }
 
-        @JvmStatic fun getSchedulerProvider(): SchedulerProvider = get().mSchedulerProvider
+        @JvmStatic
+        fun getSchedulerProvider(): SchedulerProvider = get().mSchedulerProvider
 
-        @JvmStatic fun emit(tag: String) = synchronized(get().mStickyEventMap) {
-            emit(tag, Any(), false)
-        }
+        @JvmStatic
+        fun getContext(): Any = get().mContext
 
-        @JvmStatic fun emit(tag: String, actual: Any = Any()) = synchronized(get().mStickyEventMap) {
-            emit(tag, actual, false)
-        }
 
-        @JvmStatic fun emit(tag: String, sticky: Boolean = false) = synchronized(get().mStickyEventMap) {
-            emit(tag, Any(), sticky)
-        }
-
-        @JvmStatic fun emit(tag: String, actual: Any = Any(), sticky: Boolean = false) = synchronized(get().mStickyEventMap) {
-            val event = Event(tag, actual, sticky)
-            if (sticky) {
-                get().mStickyEventMap.put(tag, event)
+        @JvmStatic
+        fun emit(event: Event) = synchronized(get().mStickyEventMap) {
+            if (event.isSticky) {
+                get().mStickyEventMap.put(event.tag, event)
             }
             get().mFlowableProcessor.onNext(event)
         }
 
+        @JvmStatic
+        fun emit(tag: String) = synchronized(get().mStickyEventMap) {
+            emit(tag, Any(), false)
+        }
 
-        @JvmStatic fun removeStickyEvent(vararg tags: String) = tags.forEach { tag ->
+        @JvmStatic
+        fun emit(tag: String, actual: Any = Any()) = synchronized(get().mStickyEventMap) {
+            emit(tag, actual, false)
+        }
+
+        @JvmStatic
+        fun emit(tag: String, sticky: Boolean = false) = synchronized(get().mStickyEventMap) {
+            emit(tag, Any(), sticky)
+        }
+
+        @JvmStatic
+        fun emit(tag: String, actual: Any = Any(), sticky: Boolean = false) = synchronized(get().mStickyEventMap) {
+            val event = Event(tag, actual, ProcessUtil.getPid(), sticky)
+            if (sticky) {
+                get().mStickyEventMap.put(tag, event)
+            }
+            get().mFlowableProcessor.onNext(event)
+
+            get().mApolloBinderGenerator.broadcastEvent(event)
+        }
+
+        @JvmStatic
+        fun removeStickyEvent(vararg tags: String) = tags.forEach { tag ->
             synchronized(get().mStickyEventMap) {
                 get().mStickyEventMap.remove(tag)
             }
         }
 
-        @JvmStatic fun removeAllStickyEvent() = {
+        @JvmStatic
+        fun removeAllStickyEvent() = {
             synchronized(get().mStickyEventMap) {
                 get().mStickyEventMap.clear()
             }
@@ -216,7 +257,8 @@ class Apollo private constructor() {
         /**
          * 根据tag和eventType获取指定类型的Sticky事件
          */
-        @JvmStatic fun <T> getStickyEvent(tag: String, eventType: Class<T>): T? {
+        @JvmStatic
+        fun <T> getStickyEvent(tag: String, eventType: Class<T>): T? {
             synchronized(get().mStickyEventMap) {
                 val o = get().mStickyEventMap[tag]?.data as Any
                 if (o.javaClass.canonicalName == eventType.canonicalName) {
@@ -229,7 +271,8 @@ class Apollo private constructor() {
         /**
          * 根据tag获取Sticky事件
          */
-        @JvmStatic fun getStickyEvent(tag: String): Any? {
+        @JvmStatic
+        fun getStickyEvent(tag: String): Any? {
             synchronized(get().mStickyEventMap) {
                 return if (get().mStickyEventMap[tag] == null) null else get().mStickyEventMap[tag]?.data
             }

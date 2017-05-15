@@ -7,8 +7,6 @@ import com.lsxiao.apollo.generate.ApolloBinderGeneratorImpl;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-//import com.lsxiao.apollo.generate.ApolloBinderGeneratorImpl;
-
 
 /**
  * author lsxiao
@@ -18,6 +16,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance());
+        Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), this);
     }
 }

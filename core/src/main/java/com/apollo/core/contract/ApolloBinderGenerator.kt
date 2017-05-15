@@ -1,5 +1,7 @@
 package com.apollo.core.contract
 
+import com.apollo.core.entity.Event
+
 /**
  * write with Apollo
  * author:lsxiao
@@ -10,4 +12,8 @@ package com.apollo.core.contract
 
 interface ApolloBinderGenerator {
     fun generate(subscriber: Any): ApolloBinder
+
+    fun broadcastEvent(event: Event)
+
+    fun registerReceiver()
 }
