@@ -90,7 +90,9 @@ public void onEvent(String message){
     ...
 }
 ```
-更多用法请参考API部分
+
+### IPC
+无需更多配置，请尽情使用。
 
 ## 高级用法
 ### 注解
@@ -137,7 +139,7 @@ Apollo.emit("tag",sticky)
 
 * **lsxiao** - *一个默默无闻的Android工程师* - [lsxiao](https://github.com/lsxiao)
 
-更多 [贡献者](https://github.com/your/project/contributors) 请参考这个项目的列表。
+更多 [贡献者](https://github.com/lsxiao/Apollo/contributors) 请参考这个项目的列表。
 
 ## 开源许可
 

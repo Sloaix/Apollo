@@ -1,26 +1,20 @@
-# Apollo
-[![](https://jitpack.io/v/lsxiao/Apollo.svg)](https://jitpack.io/#lsxiao/Apollo)
+# Apollo [![](https://jitpack.io/v/lsxiao/Apollo.svg)](https://jitpack.io/#lsxiao/Apollo)
 <a href="http://www.methodscount.com/?lib=com.github.lsxiao.Apollo%3Aapollo%3A0.1.2"><img src="https://img.shields.io/badge/Methods count-core: 93 | deps: 5492-e91e63.svg"/></a>
 <a href="http://www.methodscount.com/?lib=com.github.lsxiao.Apollo%3Aapollo%3A0.1.2"><img src="https://img.shields.io/badge/Size-13 KB-e91e63.svg"/></a>
 
+Inter-Process Communication , Compile-time Annotation.
 
-Best compile-time RxBus for android,which support RxJava2.
+Apollo , make RxBus simplified but not simple.
 
-RxJava2 Apollo中文文档(即将到来)
+[English Document](https://github.com/lsxiao/Apollo/blob/master/README-EN.md)
 
-## Demo Preview
-![](https://raw.githubusercontent.com/lsxiao/Apollo/master/demo.gif?raw=true)
+## Start
 
+quick integration with 3 minutes
 
-## TODO
+### integration
 
-- [ ] debug feature.
-- [ ] more unit test.
-- [ ] AIDL.
-
-## Including in your project
-We need to include the apt plugin in our classpath to enable Annotation Processing:
-
+use jitpack in your module.
 ```groovy
 allProjects {
   repositories {
@@ -29,240 +23,128 @@ allProjects {
 }
 ```
 
-Add the library to the project-level build.gradle, using the apt plugin to enable Annotation Processing:
-
+depend these in your build.gralde.
 
 ```groovy
 dependencies {
-  compile "io.reactivex:rxandroid:2.0.1"//use the latest version
+  //Apollo依赖RxAndroid2,请使用最新的版本
+  compile "io.reactivex:rxandroid:2.0.1"
+
+  //Apollo的核心库
   compile "com.github.lsxiao.Apollo:core:1.0.0-beta.2"
+
+  //Apollo的编译时注解处理器
   annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-beta.2"
 
-  //for
+  //如果你使用的是kotlin,请使用kapt
   kapt "com.github.lsxiao.Apollo.processor:1.0.0-beta.2"
 }
 ```
 
 ## Usage
 
-### Init
-init the Apollo in your custom application.
+### init
+
+ `ApolloBinderGeneratorImpl`在编译时生成。
 
 ```java
-public class App extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        //note!the ApolloBinderGeneratorImpl is generated code.
-        //because Apollo is a java library and it can't depend on a android library(RxAndroid),
-        //so you must provide a AndroidSchedulers.mainThread() to init.
-       Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance());
-    }
-}
+Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), this);
 ```
 
-### Bind/Unbind
-you can bind and unbind Apollo in BaseActivity.
+### bind/unbind
 
+In order to avoid memory leaks, it should be bind and unbind within the component lifecycle.
 ```java
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends Activity {
     private ApolloBinder mBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(getLayoutId());
+        ...
         mBinder = Apollo.bind(this);
-        afterCreate(savedInstanceState);
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        if(mBinder!=null){
+        ...
+        if(mBinder != null){
             mBinder.unbind();
         }
     }
-
-    protected abstract int getLayoutId();
-
-    protected abstract void afterCreate(Bundle savedInstanceState);
+    ...
 }
 
 ```
 
-### Receive Event
-write a method where you want to receive events
-
-- default
+### emit
+make emit easier.
 ```java
-    @Receive("event")
-    public void onEvent(Event event) {
-       //do something.
-    }
-```
-- non-parameter
-```java
-    @Receive("event")
-    public void showDialog(){
-        //show dialog.
-    }
+Apollo.emit("event","hello apollo")
 ```
 
-- multiple tag
+### receive
+receive anywhere you like.
 ```java
-    @Receive({"event1","event2"})
-    public void showDialog(){
-        //show dialog.
-    }
+@Receive("event")
+public void onEvent(String message){
+    ...
+}
 ```
+### IPC
+No more configuration, please enjoy.
 
-- receive event of specified times
-```java
-    //the event will be received twice at most.
-    @Take(2)
-    @Receive("event")
-    public void showDialog(){
-        //show dialog.
-    }
-```
+more usage see below.
 
-- schedulers
-```java
-    //the SubscribeOn and @ObserveOn support  main, io, new, computation, trampoline, immediate schedulers.
-    //@SubscribeOn default scheduler is io.
-    //@ObserveOn default scheduler is main.
+## Advanced Usage
+### Annotation List
+**Notice!!!**,The annotated function must be public, and @Receive is required ,others is optional.
 
-    @SubscribeOn(SchedulerProvider.Tag.IO)
-    @ObserveOn(SchedulerProvider.Tag.MAIN)
-    @Receive("event")
-    public void receiveUser() {
-        //do something.
-    }
-```
+| annotation          | parameter   | description                                                                                          | default                     |
+|---------------|--------|-----------------------------------------------------------------------------------------------|----------------------------|
+| @Receive      |        | string tag list, or a string                                                     |                          |
+| @Sticky       | remove | is remove after receive event.                                                                      | ture                       |
+| @SubscribeOn  |        | subscribe on scheduler                                                                                  | SchedulerProvider.Tag.IO   |
+| @ObserveOn    |        | observe on scheduler                                                                                  | SchedulerProvider.Tag.MAIN |
+| @Take         |        | how many times can be received.                                                                  |                          |
+| @Backpressure |        | backpressure strategy(BackpressureStrategy.BUFFER，BackpressureStrategy.DROP，BackpressureStrategy.LATEST) |                          |
 
-- receive sticky event,the sticky event will be auto removed when event is received.
-```java
-    @Sticky
-    @Receive("event")
-    public void receiveEvent(Event event) {
-        //do something.
-    }
-```
-
-- receive sticky event and not auto remove that sticky event.
-```java
-    @Sticky(remove = false)
-    @Receive("event")
-    public void receiveEvent(Event event) {
-        //do something.
-    }
-```
-
-- receive sticky event and remove sticky events programmatically.
-```java
-    @Sticky
-    @Receive("event")
-    public void receiveEvent(Event event) {
-        //remove all
-        Apollo.removeAllStickyEvent();
-
-        //remove spectified tag event
-        Apollo.removeStickyEvent("event");
-
-        //do something.
-    }
-```
-
-- receive event with backpressure strategy
-```java
-    //only support DROP,BUFFER,LATEST
-    @Backpressure(BackpressureStrategy.DROP)
-    @Receive("event")
-    public void receiveEvent(Event event) {
-        //remove all
-        Apollo.removeAllStickyEvent();
-
-        //remove spectified tag event
-        Apollo.removeStickyEvent("event");
-
-        //do something.
-    }
-```
-
-
-### Send Event
-finally send a event where your want.
+### Method
 
 ```java
- //a normal event
- Apollo.emit(EVENT_SHOW_USER, new User("lsxiao"));
+boolean sticky = true;
 
- //a non-arguments event
- Apollo.emit(EVENT_SHOW_USER);
+//only tag
+Apollo.emit("tag");
+//tag and object
+Apollo.emit("tag","event");
 
- //a sticky event
- Apollo.emit(EVENT_SHOW_BOOK,new Object(),true);
-
- //a non-arguments sticky event
- Apollo.emit(EVENT_SHOW_BOOK,true);
+//stikcy(can received event which is annotated by @Sticky)
+Apollo.emit("tag","event",stikcy)
+//only tag and stikcy
+Apollo.emit("tag",sticky)
 ```
 
-## Release Note
-- 1.0.0-alpha.2(2017-4-23) Full Refactoring
-  - support RxJava2
-  - split @Sticky @SubscribeOn @ObserveOn from @Receive
-  - new annotation @Take
-  - new annotation @Backpressure
-  - use kotlin to implement processor(more friendly architecture).
-  - use kotlin to implement core.
+## Build with ReactiveX
 
-- 0.1.4 (2016-8-23)
-  - update demo.
-  - support send and receive primitive type event.(int,boolean,float,etc...)
+* [RxJava2](https://github.com/ReactiveX/RxJava) - Reactive Extensions for the JVM
+* [RxAndroid2](https://github.com/ReactiveX/RxAndroid) - Reactive Extensions for Android
 
-- 0.1.4-alpha.1 (2016-8-12)
-  - support receive a normal event only once.(NORAML_ONCE)
-  - support receive sticky event and remove that sticky event.(STICKY_REMOVE)
-  - support receive sticky event and remove all sticky events.(STICKY_REMOVE_ALL)
+## How to contribute
 
+welcome pr.
 
-- 0.1.4-alpha (2016-8-11)
-  - support multiple tags.
-  - support non-parameter method.
-  - fixed a bug in processor which may causing compile fail.
+## Versioning
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/lsxiao/Apollo/tags).
 
+## Authors
 
-- 0.1.3 (2016-8-10)
-  - avoid multiple bind the same object.
-  - fixed a bug may cause unsubscribe.
-
-
-- 0.1.2 (2016-8-8)
-  - compile-time RxBus
-  - support sticky event
-  - support multiple scheduler.
-  - support annotation.
-
-## Maintained By
-知乎 : [@面条](https://www.zhihu.com/people/lsxiao)
-
-Github : [@lsxiao](https://github.com/lsxiao)
-
+* **lsxiao** - *Android developer* - [lsxiao](https://github.com/lsxiao)
+See also the list of [contributors](https://github.com/lsxiao/Apollo/contributors) who participated in this project.
 
 ## License
 
-    Copyright 2016 lsxiao, Inc.
+Apache License Version 2.0
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+## Acknowledgments
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+* All I love, and who love me.
