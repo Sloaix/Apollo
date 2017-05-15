@@ -32,18 +32,18 @@ dependencies {
     compile libs.rxjava2
     compile libs.rxandroid2
 
-//    compile project(':core')
-//    compile project(':ipc')
-//
-//    annotationProcessor project(':processor')
-//
-    //Apollo的核心库
-    compile "com.github.lsxiao.Apollo:core:-SNAPSHOT"
+    compile project(':core')
+    compile project(':ipc')
 
-    //ipc
-    compile "com.github.lsxiao.Apollo:ipc:-SNAPSHOT"
-
-    //Apollo的编译时注解处理器
-    annotationProcessor "com.github.lsxiao.Apollo:processor:-SNAPSHOT"
+    annotationProcessor project(':processor')
+//
+//    //Apollo的核心库
+//    compile "com.github.lsxiao.Apollo:core:-SNAPSHOT"
+//
+//    //ipc
+//    compile "com.github.lsxiao.Apollo:ipc:-SNAPSHOT"
+//
+//    //Apollo的编译时注解处理器
+//    annotationProcessor "com.github.lsxiao.Apollo:processor:-SNAPSHOT"
 
 }
