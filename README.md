@@ -4,7 +4,7 @@
 
 进程间通信、编译时注解。
 
-Apollo，让RxBus简约而不简单。
+Apollo，简约而不简单。
 
 [English Document](https://github.com/lsxiao/Apollo/blob/master/README-EN.md)
 
