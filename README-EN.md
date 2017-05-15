@@ -27,16 +27,13 @@ depend these in your build.gralde.
 
 ```groovy
 dependencies {
-  //Apollo依赖RxAndroid2,请使用最新的版本
   compile "io.reactivex:rxandroid:2.0.1"
 
-  //Apollo的核心库
   compile "com.github.lsxiao.Apollo:core:1.0.0-beta.3"
-
-  //Apollo的编译时注解处理器
+  compile "com.github.lsxiao.Apollo:ipc:1.0.0-beta.3"
   annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-beta.3"
 
-  //如果你使用的是kotlin,请使用kapt
+  //for kotlin
   kapt "com.github.lsxiao.Apollo.processor:1.0.0-beta.3"
 }
 ```
