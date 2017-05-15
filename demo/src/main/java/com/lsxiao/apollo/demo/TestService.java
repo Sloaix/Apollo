@@ -3,6 +3,7 @@ package com.lsxiao.apollo.demo;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.Process;
 import android.support.annotation.Nullable;
 
 import com.apollo.core.Apollo;
@@ -22,7 +23,7 @@ public class TestService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Apollo.emit("test", "test");
+        Apollo.emit("process", "from TestService pid is " + Process.myPid());
         return super.onStartCommand(intent, flags, startId);
     }
 

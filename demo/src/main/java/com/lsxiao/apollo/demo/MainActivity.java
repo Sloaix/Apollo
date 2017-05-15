@@ -2,9 +2,11 @@ package com.lsxiao.apollo.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Process;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.apollo.core.annotations.Receive;
 import com.lsxiao.apollo.demo.base.BaseActivity;
@@ -32,6 +34,7 @@ public class MainActivity extends BaseActivity {
                 .beginTransaction()
                 .replace(R.id.fl_producer, producerFragment, SubscriberFragment.TAG)
                 .commit();
+        ((TextView) findViewById(R.id.btn_start_service)).setText(String.format("启动TestService(当前pid=%s)", Process.myPid()));
         findViewById(R.id.btn_start_service).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -41,8 +44,8 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    @Receive("test")
+    @Receive("process")
     public void onEvent(String message) {
-        Log.d("xls", message);
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

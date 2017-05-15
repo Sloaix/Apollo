@@ -33,5 +33,5 @@ public class ApolloProcessEventReceiver extends BroadcastReceiver {
 
         Apollo.emit(event);
     }
-    
+
 }
