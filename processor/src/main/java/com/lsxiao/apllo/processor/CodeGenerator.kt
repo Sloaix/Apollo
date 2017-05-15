@@ -4,6 +4,7 @@ import com.apollo.core.Apollo
 import com.apollo.core.contract.ApolloBinder
 import com.apollo.core.contract.ApolloBinderGenerator
 import com.apollo.core.entity.ApolloBinderImpl
+import com.apollo.core.entity.Event
 import com.apollo.core.entity.SchedulerProvider
 import com.squareup.javapoet.*
 import io.reactivex.BackpressureStrategy
@@ -36,6 +37,10 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
         private val SINGLE_INSTANCE_METHOD_NAME = "instance"
         private val SUBSCRIBER_BINDER_LOCAL_PARAM_NAME = "apolloBinder"
         private val GENERATE_METHOD_BIND_OBJECT_NAME = "bindObject"
+        private val EVENT_TAG_NAME = "tag"
+        private val EVENT_OBJECT_NAME = "actual"
+        private val EVENT_PARAM_NAME = "event"
+
         private val SUBSCRIBER_LOCAL_NAME = "subscriber"
         private val TO_FLOWABLE_STICKY_METHOD_NAME = "toFlowableSticky"
         private val TO_FLOWABLE_METHOD_NAME = "toFlowable"
@@ -72,9 +77,12 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .addSuperinterface(ApolloBinderGenerator::class.java)
             .addField(getSingleInstanceFileSpec())
+            .addMethod(getRegisterReceiverMethod())
+            .addMethod(getBroadcastEventFunctionMethodSpec())
             .addMethod(getSingleInstanceMethodSpec())
             .addMethod(getGenerateFunctionMethodSpec())
             .build()
+
 
     /**
      *   private static ApolloBinderGenerator sInstance;
@@ -98,6 +106,42 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
             .addStatement("$SINGLE_INSTANCE_PARAM_NAME = new $GENERATE_CLASS_NAME()")
             .endControlFlow()
             .addStatement("return $SINGLE_INSTANCE_PARAM_NAME")
+            .build()
+
+    fun getBroadcastEventFunctionMethodSpec(): MethodSpec {
+        val builder = MethodSpec.methodBuilder("broadcastEvent")
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override::class.java)
+                .addParameter(Event::class.java, EVENT_PARAM_NAME, Modifier.FINAL)
+                .beginControlFlow("if(${getContext()}==null||!(${getContext()} instanceof android.content.Context))")
+                .addStatement("return")
+                .endControlFlow()
+                .addCode(getSendIntentCodeBlock())
+
+        return builder.addStatement("return").build()
+    }
+
+
+    fun getRegisterReceiverMethod(): MethodSpec {
+        val builder = MethodSpec.methodBuilder("registerReceiver")
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override::class.java)
+                .addCode(getRegisterProcessEventReceiverCode())
+
+        return builder.addStatement("return").build()
+    }
+
+    fun getRegisterProcessEventReceiverCode(): CodeBlock = CodeBlock
+            .builder()
+            .addStatement("android.content.Context context = (android.content.Context)${getContext()}")
+            .addStatement("context.registerReceiver(new com.apollo.ipc.ApolloProcessEventReceiver(),  new android.content.IntentFilter(\"apollo\"))")
+            .build()
+
+    fun getSendIntentCodeBlock(): CodeBlock = CodeBlock.builder()
+            .addStatement("android.content.Intent intent = new android.content.Intent(\"apollo\")")
+            .addStatement("android.content.Context context =(android.content.Context)${getContext()}")
+            .addStatement("intent.putExtra(\"event\", $EVENT_PARAM_NAME)")
+            .addStatement("context.sendBroadcast(intent)")
             .build()
 
     /**
@@ -156,7 +200,7 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
         return CodeBlock.of(".$toFlowable(${getTagsStringArrayCode(descriptor)})")
     }
 
-    fun getTagsStringArrayCode(descriptor: ApolloDescriptor): CodeBlock = CodeBlock.of("new String[]{${Utils.split(descriptor.tags, ",")}}")
+    fun getTagsStringArrayCode(descriptor: ApolloDescriptor): CodeBlock = CodeBlock.of("new String[]{${Util.split(descriptor.tags, ",")}}")
 
     /**
      *  .onBackpressureBuffer()
@@ -194,6 +238,11 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
      *  Apollo.get()
      */
     fun getApollo(): CodeBlock = CodeBlock.of("\$T", Apollo::class.java)
+
+    /**
+     * Apollo.getContext()
+     */
+    fun getContext(): CodeBlock = CodeBlock.of("\$T.getContext()", Apollo::class.java)
 
     /**
      *  .subscribeWith(new DisposableSubscriber<Object>(){
