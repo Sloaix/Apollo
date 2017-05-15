@@ -108,6 +108,15 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
             .addStatement("return $SINGLE_INSTANCE_PARAM_NAME")
             .build()
 
+    /**
+     * public void broadcastEvent(final Event event) {
+     *      if(com.apollo.core.Apollo.getContext()==null||!(com.apollo.core.Apollo.getContext() instanceof android.content.Context)) {
+     *      return;
+     *      }
+     *      ...
+     *      return;
+     * }
+     */
     fun getBroadcastEventFunctionMethodSpec(): MethodSpec {
         val builder = MethodSpec.methodBuilder("broadcastEvent")
                 .addModifiers(Modifier.PUBLIC)
@@ -122,6 +131,12 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
     }
 
 
+    /**
+     *
+     *  public void registerReceiver() {
+     *      return;
+     *  }
+     */
     fun getRegisterReceiverMethod(): MethodSpec {
         val builder = MethodSpec.methodBuilder("registerReceiver")
                 .addModifiers(Modifier.PUBLIC)
@@ -131,12 +146,23 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
         return builder.addStatement("return").build()
     }
 
+    /**
+     *   android.content.Context context = (android.content.Context)com.apollo.core.Apollo.getContext();
+     *   context.registerReceiver(new com.apollo.ipc.ApolloProcessEventReceiver(),  new android.content.IntentFilter("apollo"));
+     */
     fun getRegisterProcessEventReceiverCode(): CodeBlock = CodeBlock
             .builder()
             .addStatement("android.content.Context context = (android.content.Context)${getContext()}")
             .addStatement("context.registerReceiver(new com.apollo.ipc.ApolloProcessEventReceiver(),  new android.content.IntentFilter(\"apollo\"))")
             .build()
 
+    /**
+     *
+     * android.content.Intent intent = new android.content.Intent("apollo");
+     * android.content.Context context =(android.content.Context)com.apollo.core.Apollo.getContext();
+     * intent.putExtra("event", event);
+     * context.sendBroadcast(intent);
+     */
     fun getSendIntentCodeBlock(): CodeBlock = CodeBlock.builder()
             .addStatement("android.content.Intent intent = new android.content.Intent(\"apollo\")")
             .addStatement("android.content.Context context =(android.content.Context)${getContext()}")
