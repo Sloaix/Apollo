@@ -90,8 +90,8 @@ public void onEvent(String message){
     ...
 }
 ```
-### IPC
-No more configuration, please enjoy.
+### ipc
+No more configuration, just enjoy it.
 
 more usage see below.
 
