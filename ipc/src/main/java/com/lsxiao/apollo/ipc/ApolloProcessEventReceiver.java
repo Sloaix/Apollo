@@ -1,4 +1,4 @@
-package com.apollo.ipc;
+package com.lsxiao.apollo.ipc;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.os.Process;
 import com.apollo.core.Apollo;
 import com.apollo.core.entity.Event;
 
-import org.nustaq.serialization.FSTConfiguration;
 
 /**
  * write with Apollo
@@ -26,9 +25,13 @@ public class ApolloProcessEventReceiver extends BroadcastReceiver {
         if (!intent.hasExtra(KEY_EVENT) || intent.getByteArrayExtra(KEY_EVENT) == null) {
             return;
         }
-        FSTConfiguration conf = FSTConfiguration.createDefaultConfiguration();
-
-        Event event = (Event) conf.asObject(intent.getByteArrayExtra(KEY_EVENT));
+        Event event;
+        try {
+            event = Apollo.getSerializer().deserialize(intent.getByteArrayExtra(KEY_EVENT), Event.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
 
         if (event.getPid() == Process.myPid()) {
             return;
