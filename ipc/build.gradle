@@ -1,8 +1,7 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group='com.github.lsxiao'
+group = 'com.github.lsxiao'
 android {
     def config = parent.ext
 
