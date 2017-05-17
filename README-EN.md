@@ -29,12 +29,12 @@ depend these in your build.gralde.
 dependencies {
   compile "io.reactivex:rxandroid:2.0.1"
 
-  compile "com.github.lsxiao.Apollo:core:1.0.0-beta.5"
-  compile "com.github.lsxiao.Apollo:ipc:1.0.0-beta.5"
-  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-beta.5"
+  compile "com.github.lsxiao.Apollo:core:1.0.0-rc.1"
+  compile "com.github.lsxiao.Apollo:ipc:1.0.0-rc.1"
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-rc.1"
 
   //for kotlin
-  kapt "com.github.lsxiao.Apollo.processor:1.0.0-beta.5"
+  kapt "com.github.lsxiao.Apollo.processor:1.0.0-rc.1"
 }
 ```
 
@@ -88,7 +88,12 @@ public void onEvent(String message){
 }
 ```
 ### ipc
-No more configuration, just enjoy it.
+default is closed,you can enable it.
+```
+Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(),this,true);
+```
+
+your data object which need to ipc must has a non-parameter-constructor,because apollo used kory to serialize object.
 
 more usage see below.
 
@@ -119,6 +124,23 @@ Apollo.emit("tag","event");
 Apollo.emit("tag","event",stikcy)
 //only tag and stikcy
 Apollo.emit("tag",sticky)
+```
+
+### Custom Serializer
+Apollo use kory to serialize object,you can override it by providing a serializer.
+```java
+Apollo.serializer(new Serializable() {
+    @NotNull
+    @Override
+    public byte[] serialize(@NotNull Object obj) {
+        ...
+    }
+
+    @Override
+    public <T> T deserialize(@NotNull byte[] data, @NotNull Class<T> clazz) {
+        ...
+    }
+});
 ```
 
 ## Build with ReactiveX

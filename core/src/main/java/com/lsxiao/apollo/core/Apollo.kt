@@ -6,6 +6,10 @@ import com.lsxiao.apollo.core.entity.Event
 import com.lsxiao.apollo.core.entity.SchedulerProvider
 import com.lsxiao.apollo.core.serialize.KryoSerializer
 import com.lsxiao.apollo.core.serialize.Serializable
+import io.reactivex.Flowable
+import io.reactivex.Scheduler
+import io.reactivex.processors.FlowableProcessor
+import io.reactivex.processors.PublishProcessor
 
 
 /**
@@ -13,8 +17,8 @@ import com.lsxiao.apollo.core.serialize.Serializable
  * date 2016-05-09 17:27
  */
 class Apollo private constructor() {
-    private val mFlowableProcessor: io.reactivex.processors.FlowableProcessor<Event> by lazy {
-        io.reactivex.processors.PublishProcessor.create<Event>().toSerialized()
+    private val mFlowableProcessor: FlowableProcessor<Event> by lazy {
+        PublishProcessor.create<Event>().toSerialized()
     }
     //用于保存stick事件
     private val mStickyEventMap: MutableMap<String, Event> = java.util.HashMap()
@@ -45,7 +49,7 @@ class Apollo private constructor() {
 
 
         @JvmStatic
-        fun init(main: io.reactivex.Scheduler, binder: ApolloBinderGenerator, context: Any) {
+        fun init(main: Scheduler, binder: ApolloBinderGenerator, context: Any) {
             Apollo.get().mApolloBinderGenerator = binder
             Apollo.get().mSchedulerProvider = SchedulerProvider.Companion.create(main)
             Apollo.get().mContext = context
@@ -53,7 +57,7 @@ class Apollo private constructor() {
         }
 
         @JvmStatic
-        fun init(main: io.reactivex.Scheduler, binder: ApolloBinderGenerator, context: Any, ipcEnable: Boolean = false) {
+        fun init(main: Scheduler, binder: ApolloBinderGenerator, context: Any, ipcEnable: Boolean = false) {
             Apollo.get().mApolloBinderGenerator = binder
             Apollo.get().mSchedulerProvider = SchedulerProvider.Companion.create(main)
             Apollo.get().mContext = context
@@ -74,7 +78,7 @@ class Apollo private constructor() {
 
         @Deprecated(message = "this method is not support ipc", replaceWith = ReplaceWith("use init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), getApplicationContext()) to instead"), level = DeprecationLevel.WARNING)
         @JvmStatic
-        fun init(main: io.reactivex.Scheduler, binder: ApolloBinderGenerator) {
+        fun init(main: Scheduler, binder: ApolloBinderGenerator) {
             Apollo.Companion.init(main, binder, Any())
         }
 
@@ -153,17 +157,17 @@ class Apollo private constructor() {
 
 
         @JvmStatic
-        fun toFlowable(tag: String): io.reactivex.Flowable<Any> {
+        fun toFlowable(tag: String): Flowable<Any> {
             return Apollo.Companion.toFlowable(arrayOf(tag), Any::class.java)
         }
 
         @JvmStatic
-        fun toFlowable(tags: Array<String>): io.reactivex.Flowable<Any> {
+        fun toFlowable(tags: Array<String>): Flowable<Any> {
             return Apollo.Companion.toFlowable(tags, Any::class.java)
         }
 
         @JvmStatic
-        fun <T> toFlowable(tags: Array<String>?, eventType: Class<T>?): io.reactivex.Flowable<T> {
+        fun <T> toFlowable(tags: Array<String>?, eventType: Class<T>?): Flowable<T> {
             if (null == eventType) {
                 throw java.lang.NullPointerException("the eventType must be not null")
             }
@@ -180,21 +184,21 @@ class Apollo private constructor() {
                     .filter { event ->
                         java.util.Arrays.asList(*tags).contains(event.tag) && eventType.isInstance(event.data)
                     }
-                    .flatMap { event -> io.reactivex.Flowable.just(eventType.cast(event.data)) }
+                    .flatMap { event -> Flowable.just(eventType.cast(event.data)) }
         }
 
         @JvmStatic
-        fun toFlowableSticky(tag: String): io.reactivex.Flowable<Any> {
+        fun toFlowableSticky(tag: String): Flowable<Any> {
             return Apollo.Companion.toFlowableSticky(arrayOf(tag))
         }
 
         @JvmStatic
-        fun toFlowableSticky(tags: Array<String>): io.reactivex.Flowable<Any> {
+        fun toFlowableSticky(tags: Array<String>): Flowable<Any> {
             return Apollo.Companion.toFlowableSticky(tags, Any::class.java)
         }
 
         @JvmStatic
-        fun <T> toFlowableSticky(tags: Array<String>?, eventType: Class<T>?): io.reactivex.Flowable<T> {
+        fun <T> toFlowableSticky(tags: Array<String>?, eventType: Class<T>?): Flowable<T> {
             if (null == eventType) {
                 throw java.lang.NullPointerException("the eventType must be not null")
             }
@@ -222,8 +226,8 @@ class Apollo private constructor() {
 
                 if (!stickyEvents.isEmpty()) {
                     //合并事件序列
-                    return io.reactivex.Flowable.fromIterable(stickyEvents)
-                            .flatMap { event -> io.reactivex.Flowable.just(eventType.cast(event.data)) }.mergeWith(flowable)
+                    return Flowable.fromIterable(stickyEvents)
+                            .flatMap { event -> Flowable.just(eventType.cast(event.data)) }.mergeWith(flowable)
 
                 } else {
                     return flowable
@@ -274,7 +278,7 @@ class Apollo private constructor() {
             if (Apollo.get().mIPCEnable) {
                 Apollo.get().mApolloBinderGenerator.broadcastEvent(event)
             }
-            
+
         }
 
         @JvmStatic
