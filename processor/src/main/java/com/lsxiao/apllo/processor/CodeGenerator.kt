@@ -6,10 +6,10 @@ import com.apollo.core.contract.ApolloBinderGenerator
 import com.apollo.core.entity.ApolloBinderImpl
 import com.apollo.core.entity.Event
 import com.apollo.core.entity.SchedulerProvider
+import com.esotericsoftware.kryo.Kryo
 import com.squareup.javapoet.*
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subscribers.DisposableSubscriber
-import org.nustaq.serialization.FSTConfiguration
 import java.io.IOException
 import java.util.*
 import javax.annotation.processing.Filer
@@ -35,6 +35,7 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
         private val GENERATE_PACKAGE_NAME = "com.lsxiao.apollo.generate"
         private val GENERATE_CLASS_NAME = "ApolloBinderGeneratorImpl"
         private val SINGLE_INSTANCE_PARAM_NAME = "sInstance"
+        private val FIELD_KRYO = "mKryo"
         private val SINGLE_INSTANCE_METHOD_NAME = "instance"
         private val SUBSCRIBER_BINDER_LOCAL_PARAM_NAME = "apolloBinder"
         private val GENERATE_METHOD_BIND_OBJECT_NAME = "bindObject"
@@ -78,12 +79,17 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .addSuperinterface(ApolloBinderGenerator::class.java)
             .addField(getSingleInstanceFileSpec())
+            .addField(getKryoField())
             .addMethod(getRegisterReceiverMethod())
             .addMethod(getBroadcastEventFunctionMethodSpec())
             .addMethod(getSingleInstanceMethodSpec())
             .addMethod(getGenerateFunctionMethodSpec())
             .build()
 
+    fun getKryoField(): FieldSpec = FieldSpec
+            .builder(Kryo::class.java, FIELD_KRYO, Modifier.PRIVATE)
+            .initializer("new \$T()", Kryo::class.java)
+            .build()
 
     /**
      *   private static ApolloBinderGenerator sInstance;
@@ -149,12 +155,12 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
 
     /**
      *   android.content.Context context = (android.content.Context)com.apollo.core.Apollo.getContext();
-     *   context.registerReceiver(new com.apollo.ipc.ApolloProcessEventReceiver(),  new android.content.IntentFilter("apollo"));
+     *   context.registerReceiver(new com.lsxiao.apollo.ipc.ApolloProcessEventReceiver(),  new android.content.IntentFilter("apollo"));
      */
     fun getRegisterProcessEventReceiverCode(): CodeBlock = CodeBlock
             .builder()
             .addStatement("android.content.Context context = (android.content.Context)${getContext()}")
-            .addStatement("context.registerReceiver(new com.apollo.ipc.ApolloProcessEventReceiver(),  new android.content.IntentFilter(\"apollo\"))")
+            .addStatement("context.registerReceiver(new com.lsxiao.apollo.ipc.ApolloProcessEventReceiver(),  new android.content.IntentFilter(\"apollo\"))")
             .build()
 
     /**
@@ -167,8 +173,7 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
     fun getSendIntentCodeBlock(): CodeBlock = CodeBlock.builder()
             .addStatement("android.content.Intent intent = new android.content.Intent(\"apollo\")")
             .addStatement("android.content.Context context =(android.content.Context)${getContext()}")
-            .addStatement("\$T conf = \$T.createDefaultConfiguration()", FSTConfiguration::class.java, FSTConfiguration::class.java)
-            .addStatement("intent.putExtra(\"event\",conf.asByteArray($EVENT_PARAM_NAME))")
+            .addStatement("intent.putExtra(\"event\", ${getSerializer()}.serialize($EVENT_PARAM_NAME))")
             .addStatement("context.sendBroadcast(intent)")
             .build()
 
@@ -271,6 +276,12 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
      * Apollo.getContext()
      */
     fun getContext(): CodeBlock = CodeBlock.of("\$T.getContext()", Apollo::class.java)
+
+
+    /**
+     * Apollo.getContext()
+     */
+    fun getSerializer(): CodeBlock = CodeBlock.of("\$T.getSerializer()", Apollo::class.java)
 
     /**
      *  .subscribeWith(new DisposableSubscriber<Object>(){

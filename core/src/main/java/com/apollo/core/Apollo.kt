@@ -5,6 +5,8 @@ import com.apollo.core.contract.ApolloBinder
 import com.apollo.core.contract.ApolloBinderGenerator
 import com.apollo.core.entity.Event
 import com.apollo.core.entity.SchedulerProvider
+import com.apollo.core.serialize.KryoSerializer
+import com.apollo.core.serialize.Serializable
 import io.reactivex.Flowable
 import io.reactivex.Scheduler
 import io.reactivex.processors.FlowableProcessor
@@ -29,6 +31,7 @@ class Apollo private constructor() {
     private var mApolloBinderGenerator: ApolloBinderGenerator by Delegates.notNull()
     private var mSchedulerProvider: SchedulerProvider by Delegates.notNull()
     private var mContext: Any by Delegates.notNull()
+    private var mSerializer: Serializable = KryoSerializer()
 
     companion object {
         private var sInstance: Apollo? = null
@@ -55,6 +58,14 @@ class Apollo private constructor() {
             get().mContext = context
             get().mApolloBinderGenerator.registerReceiver()
         }
+
+        @JvmStatic
+        fun serializer(serializer: Serializable) {
+            get().mSerializer = serializer
+        }
+
+        @JvmStatic
+        fun getSerializer() = get().mSerializer
 
         @Deprecated(message = "this method is not support ipc", replaceWith = ReplaceWith("use init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), getApplicationContext()) to instead"), level = DeprecationLevel.WARNING)
         @JvmStatic

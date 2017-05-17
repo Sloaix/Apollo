@@ -23,6 +23,7 @@ ext {
     autoService = "1.0-rc3"
     autoCommon = "0.8"
     kotlin = "1.1.1"
+    kryo = "4.0.0"//json parser
 
     libs = [
             supportV4        : "com.android.support:support-v4:$support",
@@ -37,6 +38,7 @@ ext {
             autoService      : "com.google.auto.service:auto-service:$autoService",
             autoCommon       : "com.google.auto:auto-common:$autoCommon",
             kotlin           : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin",
+            kryo             : "com.esotericsoftware:kryo-shaded:$kryo"
     ]
 
 
