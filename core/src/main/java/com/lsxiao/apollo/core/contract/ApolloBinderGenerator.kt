@@ -1,6 +1,6 @@
-package com.apollo.core.contract
+package com.lsxiao.apollo.core.contract
 
-import com.apollo.core.entity.Event
+import com.lsxiao.apollo.core.entity.Event
 
 /**
  * write with Apollo

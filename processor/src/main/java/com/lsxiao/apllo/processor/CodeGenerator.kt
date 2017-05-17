@@ -1,11 +1,11 @@
 package com.lsxiao.apllo.processor
 
-import com.apollo.core.Apollo
-import com.apollo.core.contract.ApolloBinder
-import com.apollo.core.contract.ApolloBinderGenerator
-import com.apollo.core.entity.ApolloBinderImpl
-import com.apollo.core.entity.Event
-import com.apollo.core.entity.SchedulerProvider
+import com.lsxiao.apollo.core.Apollo
+import com.lsxiao.apollo.core.contract.ApolloBinder
+import com.lsxiao.apollo.core.contract.ApolloBinderGenerator
+import com.lsxiao.apollo.core.entity.ApolloBinderImpl
+import com.lsxiao.apollo.core.entity.Event
+import com.lsxiao.apollo.core.entity.SchedulerProvider
 import com.esotericsoftware.kryo.Kryo
 import com.squareup.javapoet.*
 import io.reactivex.BackpressureStrategy
@@ -117,7 +117,7 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
 
     /**
      * public void broadcastEvent(final Event event) {
-     *      if(com.apollo.core.Apollo.getContext()==null||!(com.apollo.core.Apollo.getContext() instanceof android.content.Context)) {
+     *      if(com.lsxiao.apollo.core.Apollo.getContext()==null||!(com.lsxiao.apollo.core.Apollo.getContext() instanceof android.content.Context)) {
      *      return;
      *      }
      *      ...
@@ -154,7 +154,7 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
     }
 
     /**
-     *   android.content.Context context = (android.content.Context)com.apollo.core.Apollo.getContext();
+     *   android.content.Context context = (android.content.Context)com.lsxiao.apollo.core.Apollo.getContext();
      *   context.registerReceiver(new com.lsxiao.apollo.ipc.ApolloProcessEventReceiver(),  new android.content.IntentFilter("apollo"));
      */
     fun getRegisterProcessEventReceiverCode(): CodeBlock = CodeBlock
@@ -166,7 +166,7 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
     /**
      *
      * android.content.Intent intent = new android.content.Intent("apollo");
-     * android.content.Context context =(android.content.Context)com.apollo.core.Apollo.getContext();
+     * android.content.Context context =(android.content.Context)com.lsxiao.apollo.core.Apollo.getContext();
      * intent.putExtra("event", event);
      * context.sendBroadcast(intent);
      */

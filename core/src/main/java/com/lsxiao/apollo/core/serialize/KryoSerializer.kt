@@ -1,13 +1,4 @@
-package com.apollo.core.serialize
-
-import com.esotericsoftware.kryo.Kryo
-import com.esotericsoftware.kryo.KryoException
-import com.esotericsoftware.kryo.io.Input
-import com.esotericsoftware.kryo.io.Output
-
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.IOException
+package com.lsxiao.apollo.core.serialize
 
 /**
  * write with Apollo
@@ -18,15 +9,15 @@ import java.io.IOException
  */
 
 class KryoSerializer : Serializable {
-    private val mKryo = Kryo()
+    private val mKryo = com.esotericsoftware.kryo.Kryo()
 
     init {
         mKryo.references = false
     }
 
     override fun serialize(obj: Any): ByteArray {
-        val outputStream = ByteArrayOutputStream()
-        val output = Output(outputStream)
+        val outputStream = java.io.ByteArrayOutputStream()
+        val output = com.esotericsoftware.kryo.io.Output(outputStream)
         mKryo.writeObject(output, obj)
         output.flush()
         output.close()
@@ -35,7 +26,7 @@ class KryoSerializer : Serializable {
         try {
             outputStream.flush()
             outputStream.close()
-        } catch (e: IOException) {
+        } catch (e: java.io.IOException) {
             e.printStackTrace()
         }
 
@@ -43,12 +34,12 @@ class KryoSerializer : Serializable {
     }
 
     override fun <T> deserialize(data: ByteArray, clazz: Class<T>): T {
-        val byteArrayInputStream = ByteArrayInputStream(data)
-        val input = Input(byteArrayInputStream)
+        val byteArrayInputStream = java.io.ByteArrayInputStream(data)
+        val input = com.esotericsoftware.kryo.io.Input(byteArrayInputStream)
         val t = mKryo.readObject(input, clazz)
         try {
             input.close()
-        } catch (e: KryoException) {
+        } catch (e: com.esotericsoftware.kryo.KryoException) {
             e.printStackTrace()
         }
 

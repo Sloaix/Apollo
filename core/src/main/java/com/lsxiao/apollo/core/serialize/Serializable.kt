@@ -1,4 +1,4 @@
-package com.apollo.core.serialize
+package com.lsxiao.apollo.core.serialize
 
 /**
  * write with Apollo

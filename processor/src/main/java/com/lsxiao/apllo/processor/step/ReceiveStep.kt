@@ -1,6 +1,6 @@
 package com.lsxiao.apllo.processor.step
 
-import com.apollo.core.annotations.Receive
+import com.lsxiao.apollo.core.annotations.Receive
 import com.google.auto.common.BasicAnnotationProcessor
 import com.google.auto.common.MoreElements
 import com.google.common.collect.SetMultimap

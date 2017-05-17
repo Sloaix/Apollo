@@ -1,9 +1,6 @@
-package com.apollo.core.entity
+package com.lsxiao.apollo.core.entity
 
-import com.apollo.core.contract.ApolloBinder
-
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
+import com.lsxiao.apollo.core.contract.ApolloBinder
 
 /**
  * write with Apollo
@@ -14,11 +11,11 @@ import io.reactivex.disposables.Disposable
  */
 
 class ApolloBinderImpl : ApolloBinder {
-    val mCompositeDisposable: CompositeDisposable by lazy {
-        CompositeDisposable()
+    val mCompositeDisposable: io.reactivex.disposables.CompositeDisposable by lazy {
+        io.reactivex.disposables.CompositeDisposable()
     }
 
-    override fun add(disposable: Disposable) {
+    override fun add(disposable: io.reactivex.disposables.Disposable) {
         mCompositeDisposable.add(disposable)
     }
 

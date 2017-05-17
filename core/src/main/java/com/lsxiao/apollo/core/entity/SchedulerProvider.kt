@@ -1,7 +1,7 @@
-package com.apollo.core.entity
+package com.lsxiao.apollo.core.entity
 
 import io.reactivex.Scheduler
-import io.reactivex.schedulers.Schedulers
+
 
 /**
  * write with Apollo
@@ -12,21 +12,21 @@ import io.reactivex.schedulers.Schedulers
  */
 
 class SchedulerProvider private constructor(private val main: Scheduler) {
-    val io = Schedulers.io()!!
-    val computation = Schedulers.computation()!!
-    val trampoline = Schedulers.trampoline()!!
-    val single = Schedulers.single()!!
-    val new = Schedulers.newThread()!!
+    val inout = io.reactivex.schedulers.Schedulers.io()!!
+    val computation = io.reactivex.schedulers.Schedulers.computation()!!
+    val trampoline = io.reactivex.schedulers.Schedulers.trampoline()!!
+    val single = io.reactivex.schedulers.Schedulers.single()!!
+    val new = io.reactivex.schedulers.Schedulers.newThread()!!
 
 
     enum class Tag {
         MAIN, IO, NEW, COMPUTATION, TRAMPOLINE, SINGLE
     }
 
-    operator fun get(tag: Tag): Scheduler {
+    operator fun get(tag: SchedulerProvider.Tag): Scheduler {
         when (tag) {
             SchedulerProvider.Tag.MAIN -> return main
-            SchedulerProvider.Tag.IO -> return io
+            SchedulerProvider.Tag.IO -> return inout
             SchedulerProvider.Tag.COMPUTATION -> return computation
             SchedulerProvider.Tag.TRAMPOLINE -> return trampoline
             SchedulerProvider.Tag.SINGLE -> return single

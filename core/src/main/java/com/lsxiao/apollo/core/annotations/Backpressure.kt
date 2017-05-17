@@ -1,4 +1,4 @@
-package com.apollo.core.annotations
+package com.lsxiao.apollo.core.annotations
 
 import io.reactivex.BackpressureStrategy
 
@@ -10,4 +10,4 @@ import io.reactivex.BackpressureStrategy
  * zhihu:https://zhihu.com/people/lsxiao
  */
 
-annotation class Backpressure(val value: BackpressureStrategy)
+annotation class Backpressure(val value: io.reactivex.BackpressureStrategy)

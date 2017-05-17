@@ -3,8 +3,8 @@ package com.lsxiao.apollo.demo.base;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.apollo.core.Apollo;
-import com.apollo.core.contract.ApolloBinder;
+import com.lsxiao.apollo.core.Apollo;
+import com.lsxiao.apollo.core.contract.ApolloBinder;
 
 
 public abstract class BaseActivity extends AppCompatActivity {

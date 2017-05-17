@@ -7,8 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.apollo.core.Apollo;
-import com.apollo.core.contract.ApolloBinder;
+import com.lsxiao.apollo.core.Apollo;
+import com.lsxiao.apollo.core.contract.ApolloBinder;
 
 /**
  * author lsxiao

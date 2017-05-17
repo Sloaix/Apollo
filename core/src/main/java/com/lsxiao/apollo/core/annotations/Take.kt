@@ -1,4 +1,4 @@
-package com.apollo.core.annotations
+package com.lsxiao.apollo.core.annotations
 
 /**
  * write with Apollo
@@ -9,4 +9,5 @@ package com.apollo.core.annotations
  */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
 @kotlin.annotation.Retention
-annotation class Sticky(val remove: Boolean = true)
+annotation class Take(val value: Int)
+

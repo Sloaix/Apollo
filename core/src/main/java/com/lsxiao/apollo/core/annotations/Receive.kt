@@ -1,4 +1,4 @@
-package com.apollo.core.annotations
+package com.lsxiao.apollo.core.annotations
 
 /**
  * author lsxiao

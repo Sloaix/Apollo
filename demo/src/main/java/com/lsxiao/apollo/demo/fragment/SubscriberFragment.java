@@ -3,7 +3,7 @@ package com.lsxiao.apollo.demo.fragment;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.apollo.core.annotations.Receive;
+import com.lsxiao.apollo.core.annotations.Receive;
 import com.lsxiao.apollo.demo.R;
 import com.lsxiao.apollo.demo.base.BaseFragment;
 import com.lsxiao.apollo.demo.constant.Event;
