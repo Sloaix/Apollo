@@ -9,6 +9,7 @@ import com.apollo.core.entity.SchedulerProvider
 import com.squareup.javapoet.*
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subscribers.DisposableSubscriber
+import org.nustaq.serialization.FSTConfiguration
 import java.io.IOException
 import java.util.*
 import javax.annotation.processing.Filer
@@ -166,7 +167,8 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
     fun getSendIntentCodeBlock(): CodeBlock = CodeBlock.builder()
             .addStatement("android.content.Intent intent = new android.content.Intent(\"apollo\")")
             .addStatement("android.content.Context context =(android.content.Context)${getContext()}")
-            .addStatement("intent.putExtra(\"event\", $EVENT_PARAM_NAME)")
+            .addStatement("\$T conf = \$T.createDefaultConfiguration()", FSTConfiguration::class.java, FSTConfiguration::class.java)
+            .addStatement("intent.putExtra(\"event\",conf.asByteArray($EVENT_PARAM_NAME))")
             .addStatement("context.sendBroadcast(intent)")
             .build()
 
