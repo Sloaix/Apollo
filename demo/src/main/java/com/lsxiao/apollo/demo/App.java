@@ -16,6 +16,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), this);
+        Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), this, true);
     }
 }
