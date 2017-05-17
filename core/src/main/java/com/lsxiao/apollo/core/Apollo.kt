@@ -155,6 +155,11 @@ class Apollo private constructor() {
             return binder
         }
 
+        @JvmStatic
+        internal fun unBind(o: Any) {
+            val uniqueId = System.identityHashCode(o)
+            Apollo.get().mBindTargetMap.remove(uniqueId)
+        }
 
         @JvmStatic
         fun toFlowable(tag: String): Flowable<Any> {
@@ -242,6 +247,9 @@ class Apollo private constructor() {
         fun getContext(): Any = Apollo.get().mContext
 
 
+        /**
+         * ipc转发event
+         */
         @JvmStatic
         fun transfer(event: Event) = synchronized(Apollo.get().mStickyEventMap) {
             if (Apollo.get().mIPCEnable) {
@@ -289,11 +297,7 @@ class Apollo private constructor() {
         }
 
         @JvmStatic
-        fun removeAllStickyEvent() = {
-            synchronized(Apollo.get().mStickyEventMap) {
-                Apollo.get().mStickyEventMap.clear()
-            }
-        }
+        fun removeAllStickyEvent() = Apollo.get().mStickyEventMap.clear()
 
 
         /**

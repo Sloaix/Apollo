@@ -18,7 +18,7 @@ public class KryoSerializeTest extends TestCase {
     private TestClass mTestClass;
     private Event mEvent;
 
-    public static class TestClass {
+    private static class TestClass {
         private String testString;
         private int testInt;
         private float testFloat;

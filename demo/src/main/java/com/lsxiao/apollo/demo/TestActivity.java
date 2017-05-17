@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Process;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +16,9 @@ import com.lsxiao.apollo.demo.fragment.SubscriberFragment;
 import com.lsxiao.apollo.demo.model.User;
 
 public class TestActivity extends BaseActivity {
+    public static final String TAG = TestActivity.class.getSimpleName();
+
+    public String mLastEventMessage;
 
     @Override
     protected int getLayoutId() {
@@ -48,5 +52,11 @@ public class TestActivity extends BaseActivity {
     @Receive("ipc")
     public void onIPCEvent(User user) {
         Toast.makeText(this, user.toString(), Toast.LENGTH_LONG).show();
+        Log.d(TAG, "onIPCEvent: " + user);
+    }
+
+    @Receive("testRegisterAndEmit")
+    public void testRegisterAndEmit(String message) {
+        mLastEventMessage = message;
     }
 }

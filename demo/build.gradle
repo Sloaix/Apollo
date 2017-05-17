@@ -34,10 +34,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 
-
-    def test = parent.ext.test
-    testCompile test.junit
-
     def libs = parent.ext.libs
     compile libs.appcompat
     compile libs.rxjava2
