@@ -149,6 +149,15 @@ Apollo.serializer(new Serializable() {
 });
 ```
 
+## 测试
+全面而完善的测试是开源库质量的保证，目前测试用例正在不断完善中:)
+
+### core module
+`KryoSerializeTest`
+
+### demo module
+`ApolloBasicTest`
+
 ## 构建于ReactiveX之上
 
 * [RxJava2](https://github.com/ReactiveX/RxJava) - Reactive Extensions for the JVM
