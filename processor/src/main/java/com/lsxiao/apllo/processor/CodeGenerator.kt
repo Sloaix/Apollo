@@ -1,6 +1,5 @@
 package com.lsxiao.apllo.processor
 
-import com.esotericsoftware.kryo.Kryo
 import com.lsxiao.apollo.core.Apollo
 import com.lsxiao.apollo.core.contract.ApolloBinder
 import com.lsxiao.apollo.core.contract.ApolloBinderGenerator
@@ -35,7 +34,6 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
         private val GENERATE_PACKAGE_NAME = "com.lsxiao.apollo.generate"
         private val GENERATE_CLASS_NAME = "ApolloBinderGeneratorImpl"
         private val SINGLE_INSTANCE_PARAM_NAME = "sInstance"
-        private val FIELD_KRYO = "mKryo"
         private val SINGLE_INSTANCE_METHOD_NAME = "instance"
         private val SUBSCRIBER_BINDER_LOCAL_PARAM_NAME = "apolloBinder"
         private val GENERATE_METHOD_BIND_OBJECT_NAME = "bindObject"
@@ -79,16 +77,10 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .addSuperinterface(ApolloBinderGenerator::class.java)
             .addField(getSingleInstanceFileSpec())
-            .addField(getKryoField())
             .addMethod(getRegisterReceiverMethod())
             .addMethod(getBroadcastEventFunctionMethodSpec())
             .addMethod(getSingleInstanceMethodSpec())
             .addMethod(getGenerateFunctionMethodSpec())
-            .build()
-
-    fun getKryoField(): FieldSpec = FieldSpec
-            .builder(Kryo::class.java, FIELD_KRYO, Modifier.PRIVATE)
-            .initializer("new \$T()", Kryo::class.java)
             .build()
 
     /**
