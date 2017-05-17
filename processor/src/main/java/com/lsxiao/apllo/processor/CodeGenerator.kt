@@ -1,12 +1,12 @@
 package com.lsxiao.apllo.processor
 
+import com.esotericsoftware.kryo.Kryo
 import com.lsxiao.apollo.core.Apollo
 import com.lsxiao.apollo.core.contract.ApolloBinder
 import com.lsxiao.apollo.core.contract.ApolloBinderGenerator
 import com.lsxiao.apollo.core.entity.ApolloBinderImpl
 import com.lsxiao.apollo.core.entity.Event
 import com.lsxiao.apollo.core.entity.SchedulerProvider
-import com.esotericsoftware.kryo.Kryo
 import com.squareup.javapoet.*
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subscribers.DisposableSubscriber
@@ -191,7 +191,7 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
                 .addAnnotation(Override::class.java)
                 .returns(ApolloBinder::class.java)
                 .addParameter(Any::class.java, GENERATE_METHOD_BIND_OBJECT_NAME, Modifier.FINAL)
-                .addStatement("final \$T $SUBSCRIBER_BINDER_LOCAL_PARAM_NAME = new \$T()", ApolloBinderImpl::class.java, ApolloBinderImpl::class.java)
+                .addStatement("final \$T $SUBSCRIBER_BINDER_LOCAL_PARAM_NAME = new \$T($GENERATE_METHOD_BIND_OBJECT_NAME)", ApolloBinderImpl::class.java, ApolloBinderImpl::class.java)
 
         apolloDescriptors.forEach {
             getSingleBinderStatement(builder, it)
