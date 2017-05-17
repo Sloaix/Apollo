@@ -4,8 +4,8 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 
-import com.apollo.core.Apollo;
-import com.apollo.core.contract.ApolloBinder;
+import com.lsxiao.apollo.core.Apollo;
+import com.lsxiao.apollo.core.contract.ApolloBinder;
 import com.lsxiao.apollo.generate.ApolloBinderGeneratorImpl;
 
 import org.junit.After;

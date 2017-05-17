@@ -4,9 +4,9 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.apollo.core.Apollo;
-import com.apollo.core.annotations.Receive;
-import com.apollo.core.contract.ApolloBinder;
+import com.lsxiao.apollo.core.Apollo;
+import com.lsxiao.apollo.core.annotations.Receive;
+import com.lsxiao.apollo.core.contract.ApolloBinder;
 import com.lsxiao.apollo.generate.ApolloBinderGeneratorImpl;
 
 import org.junit.After;

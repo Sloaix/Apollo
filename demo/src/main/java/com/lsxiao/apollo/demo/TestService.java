@@ -6,7 +6,7 @@ import android.os.IBinder;
 import android.os.Process;
 import android.support.annotation.Nullable;
 
-import com.apollo.core.Apollo;
+import com.lsxiao.apollo.core.Apollo;
 import com.lsxiao.apollo.demo.model.User;
 
 /**

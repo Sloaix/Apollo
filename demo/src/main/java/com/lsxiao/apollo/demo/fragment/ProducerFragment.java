@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.apollo.core.Apollo;
+import com.lsxiao.apollo.core.Apollo;
 import com.lsxiao.apollo.demo.R;
 import com.lsxiao.apollo.demo.base.BaseFragment;
 import com.lsxiao.apollo.demo.constant.Event;

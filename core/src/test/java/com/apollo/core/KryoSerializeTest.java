@@ -1,8 +1,8 @@
 package com.apollo.core;
 
-import com.apollo.core.entity.Event;
-import com.apollo.core.serialize.KryoSerializer;
-import com.apollo.core.serialize.Serializable;
+import com.lsxiao.apollo.core.entity.Event;
+import com.lsxiao.apollo.core.serialize.KryoSerializer;
+import com.lsxiao.apollo.core.serialize.Serializable;
 
 import junit.framework.TestCase;
 
@@ -83,5 +83,5 @@ public class KryoSerializeTest extends TestCase {
         assertEquals(mEvent.getPid(), newEvent.getPid());
         assertEquals(mEvent.getTag(), newEvent.getTag());
     }
-    
+
 }

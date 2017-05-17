@@ -1,6 +1,7 @@
-package com.apollo.core.annotations
+package com.lsxiao.apollo.core.annotations
 
-import com.apollo.core.entity.SchedulerProvider
+import com.lsxiao.apollo.core.entity.SchedulerProvider
+
 
 /**
  * write with Apollo

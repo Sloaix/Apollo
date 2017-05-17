@@ -3,9 +3,9 @@ package com.lsxiao.apollo.demo.fragment;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.apollo.core.annotations.Backpressure;
-import com.apollo.core.annotations.Receive;
-import com.apollo.core.annotations.Sticky;
+import com.lsxiao.apollo.core.annotations.Backpressure;
+import com.lsxiao.apollo.core.annotations.Receive;
+import com.lsxiao.apollo.core.annotations.Sticky;
 import com.lsxiao.apollo.demo.R;
 import com.lsxiao.apollo.demo.base.BaseDialogFragment;
 

@@ -1,4 +1,4 @@
-package com.apollo.core.contract
+package com.lsxiao.apollo.core.contract
 
 import io.reactivex.disposables.Disposable
 
@@ -11,7 +11,7 @@ import io.reactivex.disposables.Disposable
  */
 
 interface ApolloBinder {
-    fun add(disposable: Disposable)
+    fun add(disposable: io.reactivex.disposables.Disposable)
 
     fun unbind()
 

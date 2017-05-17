@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.apollo.core.annotations.Receive;
+import com.lsxiao.apollo.core.annotations.Receive;
 import com.lsxiao.apollo.demo.base.BaseActivity;
 import com.lsxiao.apollo.demo.fragment.ProducerFragment;
 import com.lsxiao.apollo.demo.fragment.SubscriberFragment;

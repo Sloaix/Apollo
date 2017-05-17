@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Process;
 
-import com.apollo.core.Apollo;
-import com.apollo.core.entity.Event;
+import com.lsxiao.apollo.core.Apollo;
+import com.lsxiao.apollo.core.entity.Event;
 
 
 /**
