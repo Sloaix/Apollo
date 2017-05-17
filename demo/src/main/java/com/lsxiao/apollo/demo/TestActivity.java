@@ -13,7 +13,7 @@ import com.lsxiao.apollo.demo.base.BaseActivity;
 import com.lsxiao.apollo.demo.fragment.ProducerFragment;
 import com.lsxiao.apollo.demo.fragment.SubscriberFragment;
 
-public class MainActivity extends BaseActivity {
+public class TestActivity extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
@@ -38,7 +38,7 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.btn_start_service).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, TestService.class);
+                Intent intent = new Intent(TestActivity.this, TestService.class);
                 startService(intent);
             }
         });

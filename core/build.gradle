@@ -12,4 +12,7 @@ dependencies {
     def libs = parent.ext.libs;
     compile libs.rxjava2
     compile libs.kotlin
+    compile ("de.ruedigermoeller:fst:2.48-jdk-6"){
+        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
+    }
 }

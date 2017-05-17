@@ -8,6 +8,8 @@ import android.os.Process;
 import com.apollo.core.Apollo;
 import com.apollo.core.entity.Event;
 
+import org.nustaq.serialization.FSTConfiguration;
+
 /**
  * write with Apollo
  * author:lsxiao
@@ -21,17 +23,18 @@ public class ApolloProcessEventReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!intent.hasExtra(KEY_EVENT) || intent.getSerializableExtra(KEY_EVENT) == null || (!(intent.getSerializableExtra(KEY_EVENT) instanceof Event))) {
+        if (!intent.hasExtra(KEY_EVENT) || intent.getByteArrayExtra(KEY_EVENT) == null) {
             return;
         }
+        FSTConfiguration conf = FSTConfiguration.createDefaultConfiguration();
 
-        Event event = (Event) intent.getSerializableExtra(KEY_EVENT);
+        Event event = (Event) conf.asObject(intent.getByteArrayExtra(KEY_EVENT));
 
         if (event.getPid() == Process.myPid()) {
             return;
         }
 
-        Apollo.emit(event);
+        Apollo.transfer(event);
     }
 
 }

@@ -86,6 +86,23 @@ class Apollo private constructor() {
             return uniqueBind(o)
         }
 
+
+        /**
+         * 绑定Activity或者Fragment
+
+         * @param o Object
+         * *
+         * @return ApolloBinder
+         */
+        @JvmStatic
+        fun isBind(o: Any?): Boolean {
+            if (o == null) {
+                return false
+            }
+            val uniqueId = System.identityHashCode(o)
+            return get().mBindTargetMap.containsKey(uniqueId)
+        }
+
         /**
          * 唯一绑定,避免重复绑定到相同的对象
 
@@ -206,7 +223,7 @@ class Apollo private constructor() {
 
 
         @JvmStatic
-        fun emit(event: Event) = synchronized(get().mStickyEventMap) {
+        fun transfer(event: Event) = synchronized(get().mStickyEventMap) {
             if (event.isSticky) {
                 get().mStickyEventMap.put(event.tag, event)
             }
