@@ -34,7 +34,7 @@ public class TestActivity extends BaseActivity {
                 .beginTransaction()
                 .replace(R.id.fl_producer, producerFragment, SubscriberFragment.TAG)
                 .commit();
-        ((TextView) findViewById(R.id.btn_start_service)).setText(String.format("启动TestService(当前pid=%s)", Process.myPid()));
+        ((TextView) findViewById(R.id.btn_start_service)).setText(String.format("Start TestService(cur pid=%s)", Process.myPid()));
         findViewById(R.id.btn_start_service).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
