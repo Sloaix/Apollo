@@ -95,7 +95,13 @@ public void onEvent(String message){
 ```
 
 ### 进程间通信(IPC)
-无需更多配置，请尽情使用。
+
+默认关闭，要开启请设置第四个参数为true
+```
+Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), this,true);
+```
+
+**!!!注意:**由于默认采用kryo序列化，所以任何需要在进程间传输的数据对象，自己包括其内部的成员对象都必须有一个默认的无参构造函数！！！
 
 ## 高级用法
 ### 注解
@@ -110,7 +116,7 @@ public void onEvent(String message){
 | @Take         |        | 接收多少次事件,int型参数                                                                      | 无                         |
 | @Backpressure |        | 背压策略(BackpressureStrategy.BUFFER，BackpressureStrategy.DROP，BackpressureStrategy.LATEST) | 无                         |
 
-### 方法
+### 更多方法
 
 ```java
 boolean sticky = true;
@@ -124,6 +130,23 @@ Apollo.emit("tag","event");
 Apollo.emit("tag","event",stikcy)
 //只有tag的stikcy调用
 Apollo.emit("tag",sticky)
+```
+
+### 自定义Serializer
+Apollo默认采用kryo来序列化IPC数据对象，你可以提供一个Serializer来修改默认的实现。
+```java
+Apollo.serializer(new Serializable() {
+    @NotNull
+    @Override
+    public byte[] serialize(@NotNull Object obj) {
+        ...
+    }
+
+    @Override
+    public <T> T deserialize(@NotNull byte[] data, @NotNull Class<T> clazz) {
+        ...
+    }
+});
 ```
 
 ## 构建于ReactiveX之上

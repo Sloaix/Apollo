@@ -1,12 +1,12 @@
 package com.lsxiao.apollo.core
 
-
 import com.lsxiao.apollo.core.contract.ApolloBinder
 import com.lsxiao.apollo.core.contract.ApolloBinderGenerator
 import com.lsxiao.apollo.core.entity.Event
 import com.lsxiao.apollo.core.entity.SchedulerProvider
 import com.lsxiao.apollo.core.serialize.KryoSerializer
 import com.lsxiao.apollo.core.serialize.Serializable
+
 
 /**
  * author lsxiao
@@ -24,9 +24,10 @@ class Apollo private constructor() {
     private var mSchedulerProvider: SchedulerProvider by kotlin.properties.Delegates.notNull()
     private var mContext: Any by kotlin.properties.Delegates.notNull()
     private var mSerializer: Serializable = KryoSerializer()
+    private var mIPCEnable = false
 
     companion object {
-        private var sInstance: com.lsxiao.apollo.core.Apollo? = null
+        private var sInstance: Apollo? = null
 
         /**
          * 返回一个Apollo的单例对象
@@ -35,34 +36,46 @@ class Apollo private constructor() {
          */
         @JvmStatic
         @Synchronized
-        private fun get(): com.lsxiao.apollo.core.Apollo {
-            if (null == com.lsxiao.apollo.core.Apollo.Companion.sInstance) {
-                com.lsxiao.apollo.core.Apollo.Companion.sInstance = com.lsxiao.apollo.core.Apollo()
+        private fun get(): Apollo {
+            if (null == Apollo.Companion.sInstance) {
+                Apollo.Companion.sInstance = Apollo()
             }
-            return com.lsxiao.apollo.core.Apollo.Companion.sInstance as com.lsxiao.apollo.core.Apollo
+            return Apollo.Companion.sInstance as Apollo
         }
 
 
         @JvmStatic
         fun init(main: io.reactivex.Scheduler, binder: ApolloBinderGenerator, context: Any) {
-            com.lsxiao.apollo.core.Apollo.Companion.get().mApolloBinderGenerator = binder
-            com.lsxiao.apollo.core.Apollo.Companion.get().mSchedulerProvider = SchedulerProvider.Companion.create(main)
-            com.lsxiao.apollo.core.Apollo.Companion.get().mContext = context
-            com.lsxiao.apollo.core.Apollo.Companion.get().mApolloBinderGenerator.registerReceiver()
+            Apollo.get().mApolloBinderGenerator = binder
+            Apollo.get().mSchedulerProvider = SchedulerProvider.Companion.create(main)
+            Apollo.get().mContext = context
+            Apollo.get().mApolloBinderGenerator.registerReceiver()
         }
+
+        @JvmStatic
+        fun init(main: io.reactivex.Scheduler, binder: ApolloBinderGenerator, context: Any, ipcEnable: Boolean = false) {
+            Apollo.get().mApolloBinderGenerator = binder
+            Apollo.get().mSchedulerProvider = SchedulerProvider.Companion.create(main)
+            Apollo.get().mContext = context
+            Apollo.get().mIPCEnable = ipcEnable
+            if (ipcEnable) {
+                Apollo.get().mApolloBinderGenerator.registerReceiver()
+            }
+        }
+
 
         @JvmStatic
         fun serializer(serializer: Serializable) {
-            com.lsxiao.apollo.core.Apollo.Companion.get().mSerializer = serializer
+            Apollo.get().mSerializer = serializer
         }
 
         @JvmStatic
-        fun getSerializer() = com.lsxiao.apollo.core.Apollo.Companion.get().mSerializer
+        fun getSerializer() = Apollo.get().mSerializer
 
         @Deprecated(message = "this method is not support ipc", replaceWith = ReplaceWith("use init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), getApplicationContext()) to instead"), level = DeprecationLevel.WARNING)
         @JvmStatic
         fun init(main: io.reactivex.Scheduler, binder: ApolloBinderGenerator) {
-            com.lsxiao.apollo.core.Apollo.Companion.init(main, binder, Any())
+            Apollo.Companion.init(main, binder, Any())
         }
 
         /**
@@ -70,7 +83,7 @@ class Apollo private constructor() {
          */
         @JvmStatic
         fun hasSubscribers(): Boolean {
-            return com.lsxiao.apollo.core.Apollo.Companion.get().mFlowableProcessor.hasSubscribers()
+            return Apollo.get().mFlowableProcessor.hasSubscribers()
         }
 
         /**
@@ -86,7 +99,7 @@ class Apollo private constructor() {
                 throw java.lang.NullPointerException("object to subscribe must not be null")
             }
 
-            return com.lsxiao.apollo.core.Apollo.Companion.uniqueBind(o)
+            return Apollo.Companion.uniqueBind(o)
         }
 
 
@@ -103,7 +116,7 @@ class Apollo private constructor() {
                 return false
             }
             val uniqueId = System.identityHashCode(o)
-            return com.lsxiao.apollo.core.Apollo.Companion.get().mBindTargetMap.containsKey(uniqueId)
+            return Apollo.get().mBindTargetMap.containsKey(uniqueId)
         }
 
         /**
@@ -120,20 +133,20 @@ class Apollo private constructor() {
             var binder: ApolloBinder
 
             //对象已有绑定记录
-            if (com.lsxiao.apollo.core.Apollo.Companion.get().mBindTargetMap.containsKey(uniqueId)) {
-                binder = com.lsxiao.apollo.core.Apollo.Companion.get().mBindTargetMap[uniqueId] as ApolloBinder
+            if (Apollo.get().mBindTargetMap.containsKey(uniqueId)) {
+                binder = Apollo.get().mBindTargetMap[uniqueId] as ApolloBinder
                 //绑定已经解绑
                 if (binder.isUnbind()) {
                     //移除已经解绑的binder
-                    com.lsxiao.apollo.core.Apollo.Companion.get().mBindTargetMap.remove(uniqueId)
+                    Apollo.get().mBindTargetMap.remove(uniqueId)
                     //重新绑定
-                    binder = com.lsxiao.apollo.core.Apollo.Companion.get().mApolloBinderGenerator.generate(o)
+                    binder = Apollo.get().mApolloBinderGenerator.generate(o)
                     //保存到map中
-                    com.lsxiao.apollo.core.Apollo.Companion.get().mBindTargetMap.put(uniqueId, binder)
+                    Apollo.get().mBindTargetMap.put(uniqueId, binder)
                 }
             } else {
-                binder = com.lsxiao.apollo.core.Apollo.Companion.get().mApolloBinderGenerator.generate(o)
-                com.lsxiao.apollo.core.Apollo.Companion.get().mBindTargetMap.put(uniqueId, binder)
+                binder = Apollo.get().mApolloBinderGenerator.generate(o)
+                Apollo.get().mBindTargetMap.put(uniqueId, binder)
             }
             return binder
         }
@@ -141,12 +154,12 @@ class Apollo private constructor() {
 
         @JvmStatic
         fun toFlowable(tag: String): io.reactivex.Flowable<Any> {
-            return com.lsxiao.apollo.core.Apollo.Companion.toFlowable(arrayOf(tag), Any::class.java)
+            return Apollo.Companion.toFlowable(arrayOf(tag), Any::class.java)
         }
 
         @JvmStatic
         fun toFlowable(tags: Array<String>): io.reactivex.Flowable<Any> {
-            return com.lsxiao.apollo.core.Apollo.Companion.toFlowable(tags, Any::class.java)
+            return Apollo.Companion.toFlowable(tags, Any::class.java)
         }
 
         @JvmStatic
@@ -163,7 +176,7 @@ class Apollo private constructor() {
                 throw java.lang.IllegalArgumentException("the tags must be not empty")
             }
 
-            return com.lsxiao.apollo.core.Apollo.Companion.get().mFlowableProcessor
+            return Apollo.get().mFlowableProcessor
                     .filter { event ->
                         java.util.Arrays.asList(*tags).contains(event.tag) && eventType.isInstance(event.data)
                     }
@@ -172,12 +185,12 @@ class Apollo private constructor() {
 
         @JvmStatic
         fun toFlowableSticky(tag: String): io.reactivex.Flowable<Any> {
-            return com.lsxiao.apollo.core.Apollo.Companion.toFlowableSticky(arrayOf(tag))
+            return Apollo.Companion.toFlowableSticky(arrayOf(tag))
         }
 
         @JvmStatic
         fun toFlowableSticky(tags: Array<String>): io.reactivex.Flowable<Any> {
-            return com.lsxiao.apollo.core.Apollo.Companion.toFlowableSticky(tags, Any::class.java)
+            return Apollo.Companion.toFlowableSticky(tags, Any::class.java)
         }
 
         @JvmStatic
@@ -194,16 +207,16 @@ class Apollo private constructor() {
                 throw java.lang.IllegalArgumentException("the tags must be not empty")
             }
 
-            synchronized(com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap) {
+            synchronized(Apollo.get().mStickyEventMap) {
                 //普通事件的被观察者
-                val flowable = com.lsxiao.apollo.core.Apollo.Companion.toFlowable(tags, eventType)
+                val flowable = Apollo.Companion.toFlowable(tags, eventType)
 
                 val stickyEvents = java.util.ArrayList<Event>()
                 for (tag in tags) {
                     //sticky事件
-                    val event = com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap[tag]
+                    val event = Apollo.get().mStickyEventMap[tag]
                     if (event != null) {
-                        com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap[tag]?.let { stickyEvents.add(it) }
+                        Apollo.get().mStickyEventMap[tag]?.let { stickyEvents.add(it) }
                     }
                 }
 
@@ -219,57 +232,62 @@ class Apollo private constructor() {
         }
 
         @JvmStatic
-        fun getSchedulerProvider(): SchedulerProvider = com.lsxiao.apollo.core.Apollo.Companion.get().mSchedulerProvider
+        fun getSchedulerProvider(): SchedulerProvider = Apollo.get().mSchedulerProvider
 
         @JvmStatic
-        fun getContext(): Any = com.lsxiao.apollo.core.Apollo.Companion.get().mContext
+        fun getContext(): Any = Apollo.get().mContext
 
 
         @JvmStatic
-        fun transfer(event: Event) = synchronized(com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap) {
-            if (event.isSticky) {
-                com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap.put(event.tag, event)
+        fun transfer(event: Event) = synchronized(Apollo.get().mStickyEventMap) {
+            if (Apollo.get().mIPCEnable) {
+                if (event.isSticky) {
+                    Apollo.get().mStickyEventMap.put(event.tag, event)
+                }
+                Apollo.get().mFlowableProcessor.onNext(event)
             }
-            com.lsxiao.apollo.core.Apollo.Companion.get().mFlowableProcessor.onNext(event)
         }
 
         @JvmStatic
-        fun emit(tag: String) = synchronized(com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap) {
-            com.lsxiao.apollo.core.Apollo.Companion.emit(tag, Any(), false)
+        fun emit(tag: String) = synchronized(Apollo.get().mStickyEventMap) {
+            Apollo.Companion.emit(tag, Any(), false)
         }
 
         @JvmStatic
-        fun emit(tag: String, actual: Any = Any()) = synchronized(com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap) {
-            com.lsxiao.apollo.core.Apollo.Companion.emit(tag, actual, false)
+        fun emit(tag: String, actual: Any = Any()) = synchronized(Apollo.get().mStickyEventMap) {
+            Apollo.Companion.emit(tag, actual, false)
         }
 
         @JvmStatic
-        fun emit(tag: String, sticky: Boolean = false) = synchronized(com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap) {
-            com.lsxiao.apollo.core.Apollo.Companion.emit(tag, Any(), sticky)
+        fun emit(tag: String, sticky: Boolean = false) = synchronized(Apollo.get().mStickyEventMap) {
+            Apollo.Companion.emit(tag, Any(), sticky)
         }
 
         @JvmStatic
-        fun emit(tag: String, actual: Any = Any(), sticky: Boolean = false) = synchronized(com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap) {
+        fun emit(tag: String, actual: Any = Any(), sticky: Boolean = false) = synchronized(Apollo.get().mStickyEventMap) {
             val event = Event(tag, actual, ProcessUtil.getPid(), sticky)
             if (sticky) {
-                com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap.put(tag, event)
+                Apollo.get().mStickyEventMap.put(tag, event)
             }
-            com.lsxiao.apollo.core.Apollo.Companion.get().mFlowableProcessor.onNext(event)
+            Apollo.get().mFlowableProcessor.onNext(event)
 
-            com.lsxiao.apollo.core.Apollo.Companion.get().mApolloBinderGenerator.broadcastEvent(event)
+            if (Apollo.get().mIPCEnable) {
+                Apollo.get().mApolloBinderGenerator.broadcastEvent(event)
+            }
+            
         }
 
         @JvmStatic
         fun removeStickyEvent(vararg tags: String) = tags.forEach { tag ->
-            synchronized(com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap) {
-                com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap.remove(tag)
+            synchronized(Apollo.get().mStickyEventMap) {
+                Apollo.get().mStickyEventMap.remove(tag)
             }
         }
 
         @JvmStatic
         fun removeAllStickyEvent() = {
-            synchronized(com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap) {
-                com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap.clear()
+            synchronized(Apollo.get().mStickyEventMap) {
+                Apollo.get().mStickyEventMap.clear()
             }
         }
 
@@ -279,8 +297,8 @@ class Apollo private constructor() {
          */
         @JvmStatic
         fun <T> getStickyEvent(tag: String, eventType: Class<T>): T? {
-            synchronized(com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap) {
-                val o = com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap[tag]?.data as Any
+            synchronized(Apollo.get().mStickyEventMap) {
+                val o = Apollo.get().mStickyEventMap[tag]?.data as Any
                 if (o.javaClass.canonicalName == eventType.canonicalName) {
                     return eventType.cast(o)
                 }
@@ -293,8 +311,8 @@ class Apollo private constructor() {
          */
         @JvmStatic
         fun getStickyEvent(tag: String): Any? {
-            synchronized(com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap) {
-                return if (com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap[tag] == null) null else com.lsxiao.apollo.core.Apollo.Companion.get().mStickyEventMap[tag]?.data
+            synchronized(Apollo.get().mStickyEventMap) {
+                return if (Apollo.get().mStickyEventMap[tag] == null) null else Apollo.get().mStickyEventMap[tag]?.data
             }
         }
     }
