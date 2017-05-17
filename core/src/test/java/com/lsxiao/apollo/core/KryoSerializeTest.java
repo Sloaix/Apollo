@@ -1,4 +1,4 @@
-package com.apollo.core;
+package com.lsxiao.apollo.core;
 
 import com.lsxiao.apollo.core.entity.Event;
 import com.lsxiao.apollo.core.serialize.KryoSerializer;
