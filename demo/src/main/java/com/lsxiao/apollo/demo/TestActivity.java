@@ -12,6 +12,7 @@ import com.apollo.core.annotations.Receive;
 import com.lsxiao.apollo.demo.base.BaseActivity;
 import com.lsxiao.apollo.demo.fragment.ProducerFragment;
 import com.lsxiao.apollo.demo.fragment.SubscriberFragment;
+import com.lsxiao.apollo.demo.model.User;
 
 public class TestActivity extends BaseActivity {
 
@@ -44,8 +45,8 @@ public class TestActivity extends BaseActivity {
         });
     }
 
-    @Receive("process")
-    public void onEvent(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    @Receive("ipc")
+    public void onIPCEvent(User user) {
+        Toast.makeText(this, user.toString(), Toast.LENGTH_LONG).show();
     }
 }

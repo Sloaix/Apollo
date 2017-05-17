@@ -7,6 +7,7 @@ import android.os.Process;
 import android.support.annotation.Nullable;
 
 import com.apollo.core.Apollo;
+import com.lsxiao.apollo.demo.model.User;
 
 /**
  * write with Apollo
@@ -23,7 +24,7 @@ public class TestService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Apollo.emit("process", "from TestService pid is " + Process.myPid());
+        Apollo.emit("ipc", new User("a User from TestService and pid is" + Process.myPid()));
         return super.onStartCommand(intent, flags, startId);
     }
 

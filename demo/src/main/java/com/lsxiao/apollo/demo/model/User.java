@@ -11,6 +11,9 @@ package com.lsxiao.apollo.demo.model;
 public class User {
     String name;
 
+    public User() {
+    }
+
     public User(String name) {
         this.name = name;
     }
