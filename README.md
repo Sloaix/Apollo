@@ -40,7 +40,7 @@ dependencies {
   annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-rc.1"
 
   //如果你使用的是kotlin,请使用kapt
-  kapt "com.github.lsxiao.Apollo.processor:1.0.0-rc.1"
+  kapt "com.github.lsxiao.Apollo:processor:1.0.0-rc.1"
 }
 ```
 
