@@ -34,7 +34,7 @@ dependencies {
   annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-rc.1"
 
   //for kotlin
-  kapt "com.github.lsxiao.Apollo.processor:1.0.0-rc.1"
+  kapt "com.github.lsxiao.Apollo:processor:1.0.0-rc.1"
 }
 ```
 
