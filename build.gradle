@@ -1,4 +1,4 @@
-apply from:"./config/dependencies.gradle"
+apply from: "./config/dependencies.gradle"
 buildscript {
     ext {
         kotlin_version = '1.1.2-4'
@@ -9,7 +9,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5' // Add this line
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
     }
 }
 
