@@ -29,12 +29,12 @@ depend these in your build.gralde.
 dependencies {
   compile "io.reactivex:rxandroid:2.0.1"
 
-  compile "com.github.lsxiao.Apollo:core:1.0.0-rc.1"
-  compile "com.github.lsxiao.Apollo:ipc:1.0.0-rc.1"
-  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-rc.1"
+  compile "com.github.lsxiao.Apollo:core:1.0.0-rc.2"
+  compile "com.github.lsxiao.Apollo:ipc:1.0.0-rc.2"
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-rc.2"
 
   //for kotlin
-  kapt "com.github.lsxiao.Apollo:processor:1.0.0-rc.1"
+  kapt "com.github.lsxiao.Apollo:processor:1.0.0-rc.2"
 }
 ```
 
