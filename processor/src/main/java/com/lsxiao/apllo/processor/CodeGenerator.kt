@@ -349,7 +349,7 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
      * subscriber.onNext(...)
      */
     fun getReceiveMethodInvokeCode(descriptor: ApolloDescriptor): CodeBlock {
-        val ClassType = descriptor.methodElement.enclosingElement.asType().toString().replace(Regex("<.*?>"), "")
+        val ClassType = descriptor.methodElement.enclosingElement.asType().toString().replace(Regex("<.*>"), "")
         val builder = CodeBlock
                 .builder()
                 .addStatement("final $ClassType $SUBSCRIBER_LOCAL_NAME=($ClassType)$GENERATE_METHOD_BIND_OBJECT_NAME")
