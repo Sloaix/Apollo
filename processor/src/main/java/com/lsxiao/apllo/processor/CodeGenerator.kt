@@ -193,12 +193,14 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
     }
 
     /**
-     *  if (object.getClass().getCanonicalName().equals(...)) {
+     *  if (bindObject.getClass().isAssignableFrom(...class)) {
      *      apolloBinder.add(Apollo.get().toFlowable(new String[]{...}).subscribeOn(Apollo.get().getSchedulerProvider().get(...)).observeOn(...).subscribeWith(...))
      *  }
      */
     fun getSingleBinderStatement(builder: MethodSpec.Builder, descriptor: ApolloDescriptor) {
-        builder.beginControlFlow("if($GENERATE_METHOD_BIND_OBJECT_NAME.getClass().getCanonicalName().equals(\"${descriptor.methodElement.enclosingElement.asType()}\"))")
+        val ClassType = descriptor.methodElement.enclosingElement.asType().toString().replace(Regex("<.*>"), "")
+
+        builder.beginControlFlow("if($GENERATE_METHOD_BIND_OBJECT_NAME.getClass().isAssignableFrom($ClassType.class))")
                 .addStatement("$SUBSCRIBER_BINDER_LOCAL_PARAM_NAME.add(" +
                         getApollo() +
                         getToFlowableCode(descriptor) +
