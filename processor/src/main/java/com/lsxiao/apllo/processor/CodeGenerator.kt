@@ -200,7 +200,7 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
     fun getSingleBinderStatement(builder: MethodSpec.Builder, descriptor: ApolloDescriptor) {
         val ClassType = descriptor.methodElement.enclosingElement.asType().toString().replace(Regex("<.*>"), "")
 
-        builder.beginControlFlow("if($GENERATE_METHOD_BIND_OBJECT_NAME.getClass().isAssignableFrom($ClassType.class))")
+        builder.beginControlFlow("if($ClassType.class.isAssignableFrom($GENERATE_METHOD_BIND_OBJECT_NAME.getClass()))")
                 .addStatement("$SUBSCRIBER_BINDER_LOCAL_PARAM_NAME.add(" +
                         getApollo() +
                         getToFlowableCode(descriptor) +
