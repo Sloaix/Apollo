@@ -15,7 +15,7 @@ import com.lsxiao.apollo.demo.fragment.ProducerFragment;
 import com.lsxiao.apollo.demo.fragment.SubscriberFragment;
 import com.lsxiao.apollo.demo.model.User;
 
-public class TestActivity extends BaseActivity {
+public class TestActivity extends BaseActivity<User> {
     public static final String TAG = TestActivity.class.getSimpleName();
 
     public String mLastEventMessage;

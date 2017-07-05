@@ -7,7 +7,7 @@ import com.lsxiao.apollo.core.Apollo;
 import com.lsxiao.apollo.core.contract.ApolloBinder;
 
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity<T> extends AppCompatActivity {
     private ApolloBinder mBinder;
 
     @Override
