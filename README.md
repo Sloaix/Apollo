@@ -31,16 +31,16 @@ dependencies {
   compile "io.reactivex:rxandroid:2.0.1"
   
   //Apollo的核心库
-  compile "com.github.lsxiao.Apollo:core:1.0.0-rc.3"
+  compile "com.github.lsxiao.Apollo:core:1.0.0-rc.4"
 
   //ipc
-  compile "com.github.lsxiao.Apollo:ipc:1.0.0-rc.3"
+  compile "com.github.lsxiao.Apollo:ipc:1.0.0-rc.4"
 
   //Apollo的编译时注解处理器
-  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-rc.3"
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-rc.4"
 
   //如果你使用的是kotlin,请使用kapt
-  kapt "com.github.lsxiao.Apollo:processor:1.0.0-rc.3"
+  kapt "com.github.lsxiao.Apollo:processor:1.0.0-rc.4"
 }
 ```
 
