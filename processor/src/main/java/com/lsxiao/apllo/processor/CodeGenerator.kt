@@ -354,6 +354,7 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
         val ClassType = descriptor.methodElement.enclosingElement.asType().toString().replace(Regex("<.*>"), "")
         val builder = CodeBlock
                 .builder()
+                .beginControlFlow("try")
                 .addStatement("final $ClassType $SUBSCRIBER_LOCAL_NAME=($ClassType)$GENERATE_METHOD_BIND_OBJECT_NAME")
 
         if (descriptor.methodElement.parameters.map(VariableElement::asType).isEmpty()) {
@@ -365,6 +366,9 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
             builder.addStatement("$SUBSCRIBER_LOCAL_NAME.${descriptor.methodElement.simpleName}((\$T)o)", typeMirror)
             builder.endControlFlow()
         }
+        builder.endControlFlow()
+        builder.beginControlFlow("catch (Exception e)")
+        builder.endControlFlow()
         return builder.build()
     }
 
