@@ -16,7 +16,7 @@ ext {
     support = "25.3.1"
 
     //libs
-    rxjava2 = "2.1.1"
+    rxjava2 = "2.1.2"
     rxandroid2 = "2.0.1"
 
     javapoet = "1.8.0"
