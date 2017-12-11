@@ -2,9 +2,18 @@
 <a href="http://www.methodscount.com/?lib=com.github.lsxiao.Apollo%3Aapollo%3A0.1.2"><img src="https://img.shields.io/badge/Methods count-core: 93 | deps: 5492-e91e63.svg"/></a>
 <a href="http://www.methodscount.com/?lib=com.github.lsxiao.Apollo%3Aapollo%3A0.1.2"><img src="https://img.shields.io/badge/Size-13 KB-e91e63.svg"/></a>
 
-进程间通信、编译时注解。
+> EventBus by RxJava
 
-Apollo，简约而不简单。
+- 基于RxJava
+- 基于编译时注解技术，编译时生成绑定代码，非反射，性能0损耗
+- 支持进程间通信
+- 支持@Tag注解，支持多重Tag
+- 支持@Sticky注解
+- 支持@Take注解,接收指定次数事件
+- 支持@SubscribeOn注解，指定订阅线程
+- 支持@ObserveOn注解，指定观察线程
+- 支持@Backpressure注解，支持3种背压策略(BackpressureStrategy.BUFFER，BackpressureStrategy.DROP，BackpressureStrategy.LATEST)
+- 支持apollo core 非注解式使用
 
 [English Document](https://github.com/lsxiao/Apollo/blob/master/README-EN.md)
 
