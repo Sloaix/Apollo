@@ -8,11 +8,11 @@ targetCompatibility = 1.7
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    def test = parent.ext.test;
+    def test = parent.ext.test
     testCompile test.junit
 
 
-    def libs = parent.ext.libs;
+    def libs = parent.ext.libs
     compile libs.rxjava2
     compile libs.kotlin
     compile libs.kryo
