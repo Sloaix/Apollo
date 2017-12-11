@@ -29,12 +29,12 @@ depend these in your build.gralde.
 dependencies {
   compile "io.reactivex:rxandroid:2.0.1"
 
-  compile "com.github.lsxiao.Apollo:core:1.0.0-rc.4"
-  compile "com.github.lsxiao.Apollo:ipc:1.0.0-rc.4"
-  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-rc.4"
+  compile "com.github.lsxiao.Apollo:core:1.0.0-rc.6"
+  compile "com.github.lsxiao.Apollo:ipc:1.0.0-rc.6"
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-rc.6"
 
   //for kotlin
-  kapt "com.github.lsxiao.Apollo:processor:1.0.0-rc.4"
+  kapt "com.github.lsxiao.Apollo:processor:1.0.0-rc.6"
 }
 ```
 
@@ -45,7 +45,7 @@ dependencies {
  `ApolloBinderGeneratorImpl`在编译时生成。
 
 ```java
-Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), this);
+Apollo.init(AndroidSchedulers.mainThread(),  this);
 ```
 
 ### bind/unbind
@@ -90,7 +90,7 @@ public void onEvent(String message){
 ### ipc
 default is closed,you can enable it.
 ```
-Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(),this,true);
+Apollo.init(AndroidSchedulers.mainThread(), this,true);
 ```
 
 your data object which need to ipc must has a non-parameter-constructor,because apollo used kory to serialize object.

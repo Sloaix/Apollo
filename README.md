@@ -31,16 +31,16 @@ dependencies {
   compile "io.reactivex:rxandroid:2.0.1"
   
   //Apollo的核心库
-  compile "com.github.lsxiao.Apollo:core:1.0.0-rc.4"
+  compile "com.github.lsxiao.Apollo:core:1.0.0-rc.6"
 
   //ipc
-  compile "com.github.lsxiao.Apollo:ipc:1.0.0-rc.4"
+  compile "com.github.lsxiao.Apollo:ipc:1.0.0-rc.6"
 
   //Apollo的编译时注解处理器
-  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-rc.4"
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0-rc.6"
 
   //如果你使用的是kotlin,请使用kapt
-  kapt "com.github.lsxiao.Apollo:processor:1.0.0-rc.4"
+  kapt "com.github.lsxiao.Apollo:processor:1.0.0-rc.6"
 }
 ```
 
@@ -51,7 +51,7 @@ dependencies {
  `ApolloBinderGeneratorImpl`在编译时生成。
 
 ```java
-Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), this);
+Apollo.init(AndroidSchedulers.mainThread(),  this);
 ```
 
 ### 绑定/解绑
@@ -98,7 +98,7 @@ public void onEvent(String message){
 
 默认关闭，要开启请设置第四个参数为true
 ```
-Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), this,true);
+Apollo.init(AndroidSchedulers.mainThread(), this,true);
 ```
 
 **!!!注意:**由于默认采用kryo序列化，所以任何需要在进程间传输的数据对象，自己包括其内部的成员对象都必须有一个默认的无参构造函数！！！
