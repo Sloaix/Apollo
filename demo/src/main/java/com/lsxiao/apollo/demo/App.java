@@ -3,7 +3,6 @@ package com.lsxiao.apollo.demo;
 import android.app.Application;
 
 import com.lsxiao.apollo.core.Apollo;
-import com.lsxiao.apollo.generate.ApolloBinderGeneratorImpl;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -16,6 +15,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), this, true);
+        Apollo.init(AndroidSchedulers.mainThread(), this, true);
     }
 }

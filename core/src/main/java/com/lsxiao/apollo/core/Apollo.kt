@@ -47,18 +47,36 @@ class Apollo private constructor() {
             return Apollo.Companion.sInstance as Apollo
         }
 
+        @Deprecated(message = "this method is not support ipc", replaceWith = ReplaceWith("use init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), getApplicationContext()) to instead"), level = DeprecationLevel.HIDDEN)
+        @JvmStatic
+        fun init(main: Scheduler, binder: ApolloBinderGenerator) {
+            Apollo.Companion.init(main, binder, Any())
+        }
 
+        @Deprecated(message = "this method is not support ipc", replaceWith = ReplaceWith("use init(AndroidSchedulers.mainThread(), getApplicationContext()) to instead"), level = DeprecationLevel.WARNING)
         @JvmStatic
         fun init(main: Scheduler, binder: ApolloBinderGenerator, context: Any) {
-            Apollo.get().mApolloBinderGenerator = binder
-            Apollo.get().mSchedulerProvider = SchedulerProvider.Companion.create(main)
-            Apollo.get().mContext = context
-            Apollo.get().mApolloBinderGenerator.registerReceiver()
+            init(main, context)
+        }
+
+        @Deprecated(message = "this method is not support ipc", replaceWith = ReplaceWith("use init(AndroidSchedulers.mainThread(), getApplicationContext(),true) to instead"), level = DeprecationLevel.WARNING)
+        @JvmStatic
+        fun init(main: Scheduler, binder: ApolloBinderGenerator, context: Any, ipcEnable: Boolean = false) {
+            init(main, context, ipcEnable)
         }
 
         @JvmStatic
-        fun init(main: Scheduler, binder: ApolloBinderGenerator, context: Any, ipcEnable: Boolean = false) {
-            Apollo.get().mApolloBinderGenerator = binder
+        fun init(main: Scheduler, context: Any) {
+            init(main, context, false)
+        }
+
+        @JvmStatic
+        fun init(main: Scheduler, context: Any, ipcEnable: Boolean = false) {
+            val generatorImplClass = Class.forName("com.lsxiao.apollo.generate.ApolloBinderGeneratorImpl") as Class<ApolloBinderGenerator>
+            val staticInstanceMethod = generatorImplClass.getMethod("instance")
+            val generator = staticInstanceMethod.invoke(null) as ApolloBinderGenerator
+
+            Apollo.get().mApolloBinderGenerator = generator
             Apollo.get().mSchedulerProvider = SchedulerProvider.Companion.create(main)
             Apollo.get().mContext = context
             Apollo.get().mIPCEnable = ipcEnable
@@ -76,11 +94,6 @@ class Apollo private constructor() {
         @JvmStatic
         fun getSerializer() = Apollo.get().mSerializer
 
-        @Deprecated(message = "this method is not support ipc", replaceWith = ReplaceWith("use init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), getApplicationContext()) to instead"), level = DeprecationLevel.WARNING)
-        @JvmStatic
-        fun init(main: Scheduler, binder: ApolloBinderGenerator) {
-            Apollo.Companion.init(main, binder, Any())
-        }
 
         /**
          * 判断是否有订阅者
