@@ -158,6 +158,15 @@ Apollo.serializer(new Serializable() {
 });
 ```
 
+## 混淆
+```
+-dontwarn com.esotericsoftware.kryo.**
+-dontwarn org.objenesis.instantiator.**
+-dontwarn org.codehaus.**
+-dontwarn java.nio.**
+-dontwarn java.lang.invoke.**
+```
+
 ## 测试
 全面而完善的测试是开源库质量的保证，目前测试用例正在不断完善中:)
 
