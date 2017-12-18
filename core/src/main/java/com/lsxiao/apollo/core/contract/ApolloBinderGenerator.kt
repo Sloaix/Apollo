@@ -15,5 +15,4 @@ interface ApolloBinderGenerator {
 
     fun broadcastEvent(event: Event)
 
-    fun registerReceiver()
 }

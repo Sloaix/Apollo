@@ -80,8 +80,27 @@ class Apollo private constructor() {
             Apollo.get().mSchedulerProvider = SchedulerProvider.Companion.create(main)
             Apollo.get().mContext = context
             Apollo.get().mIPCEnable = ipcEnable
+
             if (ipcEnable) {
-                Apollo.get().mApolloBinderGenerator.registerReceiver()
+                registerIPCReceiver(context)
+            }
+        }
+
+        private fun registerIPCReceiver(context: Any) {
+            try {
+                val intentFilterClass = Class.forName("android.content.IntentFilter")
+
+                val intentFilterConstructor = intentFilterClass.getConstructor(String::class.java)
+
+                val broadcastReceiverClass = Class.forName("android.content.BroadcastReceiver")
+
+                val ipcBroadcastReceiverClass = Class.forName("com.lsxiao.apollo.ipc.ApolloProcessEventReceiver")
+
+                val registerBroadcastReceiverMethod = context.javaClass.getMethod("registerReceiver", broadcastReceiverClass, intentFilterClass)
+
+                registerBroadcastReceiverMethod.invoke(context, ipcBroadcastReceiverClass.newInstance(), intentFilterConstructor.newInstance("apollo"))
+            } catch (e: ClassNotFoundException) {
+                throw Exception("please check whether depend on apollo:ipc in build.gradle")
             }
         }
 

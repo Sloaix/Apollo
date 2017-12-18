@@ -17,6 +17,11 @@
 
 [English Document](https://github.com/lsxiao/Apollo/blob/master/README-EN.md)
 
+
+## Todo
+- 重写demo
+- 完整的单元测试
+
 ## 开始
 
 用3分钟时间快速集成Apollo
@@ -37,19 +42,19 @@ allProjects {
 ```groovy
 dependencies {
   //Apollo依赖RxAndroid2,请使用最新的版本
-  compile "io.reactivex:rxandroid:2.0.1"
+  implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
   
   //Apollo的核心库
-  compile "com.github.lsxiao.Apollo:core:1.0.0"
+  implementation "com.github.lsxiao.Apollo:core:1.0.1-beta.1"
 
-  //ipc
-  compile "com.github.lsxiao.Apollo:ipc:1.0.0"
+  //IPC,如不需要可以不依赖
+  implementation "com.github.lsxiao.Apollo:ipc:1.0.1-beta.1"
 
   //Apollo的编译时注解处理器
-  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0"
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.1-beta.1"
 
   //如果你使用的是kotlin,请使用kapt
-  kapt "com.github.lsxiao.Apollo:processor:1.0.0"
+  kapt "com.github.lsxiao.Apollo:processor:1.0.1-beta.1"
 }
 ```
 
@@ -60,7 +65,7 @@ dependencies {
  `ApolloBinderGeneratorImpl`在编译时生成。
 
 ```java
-Apollo.init(AndroidSchedulers.mainThread(),  this);
+Apollo.init(AndroidSchedulers.mainThread(), this);
 ```
 
 ### 绑定/解绑
@@ -105,7 +110,7 @@ public void onEvent(String message){
 
 ### 进程间通信(IPC)
 
-默认关闭，要开启请设置第四个参数为true
+默认关闭
 ```
 Apollo.init(AndroidSchedulers.mainThread(), this,true);
 ```
@@ -156,6 +161,15 @@ Apollo.serializer(new Serializable() {
         ...
     }
 });
+```
+
+## 混淆
+```
+-dontwarn com.esotericsoftware.kryo.**
+-dontwarn org.objenesis.instantiator.**
+-dontwarn org.codehaus.**
+-dontwarn java.nio.**
+-dontwarn java.lang.invoke.**
 ```
 
 ## 测试

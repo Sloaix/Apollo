@@ -1,7 +1,6 @@
 package com.lsxiao.apollo.demo;
 
 import android.app.Application;
-import android.graphics.Bitmap;
 
 import com.lsxiao.apollo.core.Apollo;
 
@@ -17,6 +16,5 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         Apollo.init(AndroidSchedulers.mainThread(), this, true);
-        Bitmap
     }
 }

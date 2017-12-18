@@ -10,8 +10,8 @@ allprojects {
 
 ext {
     //Official
-    buildToolsVersion = "26.0.2"
-    compileSdkVersion = 26
+    buildToolsVersion = "27.0.2"
+    compileSdkVersion = 27
     minSdkVersion = 14
     targetSdkVersion = 14
     support = "27.0.2"

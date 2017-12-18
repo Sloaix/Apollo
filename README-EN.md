@@ -27,14 +27,17 @@ depend these in your build.gralde.
 
 ```groovy
 dependencies {
-  compile "io.reactivex:rxandroid:2.0.1"
+  implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
 
-  compile "com.github.lsxiao.Apollo:core:1.0.0"
-  compile "com.github.lsxiao.Apollo:ipc:1.0.0"
-  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.0"
+  implementation "com.github.lsxiao.Apollo:core:1.0.1-beta.1"
+
+  //IPC module,optional
+  implementation "com.github.lsxiao.Apollo:ipc:1.0.1-beta.1"
+
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.1-beta.1"
 
   //for kotlin
-  kapt "com.github.lsxiao.Apollo:processor:1.0.0"
+  kapt "com.github.lsxiao.Apollo:processor:1.0.1-beta.1"
 }
 ```
 
@@ -88,7 +91,7 @@ public void onEvent(String message){
 }
 ```
 ### ipc
-default is closed,you can enable it.
+default is closed.
 ```
 Apollo.init(AndroidSchedulers.mainThread(), this,true);
 ```
