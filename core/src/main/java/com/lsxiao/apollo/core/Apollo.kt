@@ -2,6 +2,7 @@ package com.lsxiao.apollo.core
 
 import com.lsxiao.apollo.core.contract.ApolloBinder
 import com.lsxiao.apollo.core.contract.ApolloBinderGenerator
+import com.lsxiao.apollo.core.entity.ApolloBinderImpl
 import com.lsxiao.apollo.core.entity.Event
 import com.lsxiao.apollo.core.entity.SchedulerProvider
 import com.lsxiao.apollo.core.serialize.KryoSerializer
@@ -10,6 +11,7 @@ import io.reactivex.Flowable
 import io.reactivex.Scheduler
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import kotlin.properties.Delegates
 
 
 /**
@@ -21,14 +23,16 @@ class Apollo private constructor() {
         PublishProcessor.create<Event>().toSerialized()
     }
     //用于保存stick事件
-    private val mStickyEventMap: MutableMap<String, Event> = java.util.HashMap()
+    private val mStickyEventMap: MutableMap<String, Event> = HashMap()
     //用于保存SubscriptionBinder
-    private val mBindTargetMap: MutableMap<Int, ApolloBinder> = java.util.HashMap()
-    private var mApolloBinderGenerator: ApolloBinderGenerator by kotlin.properties.Delegates.notNull()
-    private var mSchedulerProvider: SchedulerProvider by kotlin.properties.Delegates.notNull()
-    private var mContext: Any by kotlin.properties.Delegates.notNull()
+    private val mBindTargetMap: MutableMap<Int, ApolloBinder> = HashMap()
+    private var mApolloBinderGenerator: ApolloBinderGenerator by Delegates.notNull()
+    private var mSchedulerProvider: SchedulerProvider by Delegates.notNull()
+    private var mContext: Any by Delegates.notNull()
     private var mSerializer: Serializable = KryoSerializer()
     private var mIPCEnable = false
+    private var mIsApolloBinderClassNotFound = false
+    private var mIsIPCModuleClassNotFound = false
 
     companion object {
         private var sInstance: Apollo? = null
@@ -72,11 +76,17 @@ class Apollo private constructor() {
 
         @JvmStatic
         fun init(main: Scheduler, context: Any, ipcEnable: Boolean = false) {
-            val generatorImplClass = Class.forName("com.lsxiao.apollo.generate.ApolloBinderGeneratorImpl") as Class<ApolloBinderGenerator>
-            val staticInstanceMethod = generatorImplClass.getMethod("instance")
-            val generator = staticInstanceMethod.invoke(null) as ApolloBinderGenerator
+            try {
+                val generatorImplClass = Class.forName("com.lsxiao.apollo.generate.ApolloBinderGeneratorImpl") as Class<ApolloBinderGenerator>
+                val staticInstanceMethod = generatorImplClass.getMethod("instance")
+                val generator = staticInstanceMethod.invoke(null) as ApolloBinderGenerator
 
-            Apollo.get().mApolloBinderGenerator = generator
+                Apollo.get().mApolloBinderGenerator = generator
+
+            } catch (e: ClassNotFoundException) {
+                Apollo.get().mIsApolloBinderClassNotFound = true
+            }
+
             Apollo.get().mSchedulerProvider = SchedulerProvider.Companion.create(main)
             Apollo.get().mContext = context
             Apollo.get().mIPCEnable = ipcEnable
@@ -84,6 +94,7 @@ class Apollo private constructor() {
             if (ipcEnable) {
                 registerIPCReceiver(context)
             }
+
         }
 
         private fun registerIPCReceiver(context: Any) {
@@ -99,8 +110,8 @@ class Apollo private constructor() {
                 val registerBroadcastReceiverMethod = context.javaClass.getMethod("registerReceiver", broadcastReceiverClass, intentFilterClass)
 
                 registerBroadcastReceiverMethod.invoke(context, ipcBroadcastReceiverClass.newInstance(), intentFilterConstructor.newInstance("apollo"))
-            } catch (e: ClassNotFoundException) {
-                throw Exception("please check whether depend on apollo:ipc in build.gradle")
+            } catch (ignore: ClassNotFoundException) {
+                Apollo.get().mIsIPCModuleClassNotFound = true
             }
         }
 
@@ -158,13 +169,18 @@ class Apollo private constructor() {
         /**
          * 唯一绑定,避免重复绑定到相同的对象
 
-         * @param o Object
+         * @param obj Object
          * *
          * @return ApolloBinder
          */
         @JvmStatic
-        private fun uniqueBind(o: Any): ApolloBinder {
-            val uniqueId = System.identityHashCode(o)
+        private fun uniqueBind(obj: Any): ApolloBinder {
+            //找不到生成的绑定类
+            if (Apollo.get().mIsApolloBinderClassNotFound) {
+                return ApolloBinderImpl(obj)
+            }
+
+            val uniqueId = System.identityHashCode(obj)
 
             var binder: ApolloBinder
 
@@ -176,12 +192,12 @@ class Apollo private constructor() {
                     //移除已经解绑的binder
                     Apollo.get().mBindTargetMap.remove(uniqueId)
                     //重新绑定
-                    binder = Apollo.get().mApolloBinderGenerator.generate(o)
+                    binder = Apollo.get().mApolloBinderGenerator.generate(obj)
                     //保存到map中
                     Apollo.get().mBindTargetMap.put(uniqueId, binder)
                 }
             } else {
-                binder = Apollo.get().mApolloBinderGenerator.generate(o)
+                binder = Apollo.get().mApolloBinderGenerator.generate(obj)
                 Apollo.get().mBindTargetMap.put(uniqueId, binder)
             }
             return binder
@@ -315,7 +331,17 @@ class Apollo private constructor() {
             }
             Apollo.get().mFlowableProcessor.onNext(event)
 
+            //推送消息到其他进程
             if (Apollo.get().mIPCEnable) {
+
+                if (Apollo.get().mIsApolloBinderClassNotFound) {
+                    throw Exception("the ApolloBinderGeneratorImpl class is not found which is generated at compile time")
+                }
+
+                if (Apollo.get().mIsIPCModuleClassNotFound) {
+                    throw Exception("the ApolloProcessEventReceiver class is not found which belong to ipc module,you must depend on com.github.lsxiao.Apollo:ipc:latest")
+                }
+
                 Apollo.get().mApolloBinderGenerator.broadcastEvent(event)
             }
 

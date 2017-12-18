@@ -1,1 +1,1 @@
-include ':processor', ':demo', ':core', ':ipc'
+include ':processor', ':demo', ':core', ':ipc', ':unittest'

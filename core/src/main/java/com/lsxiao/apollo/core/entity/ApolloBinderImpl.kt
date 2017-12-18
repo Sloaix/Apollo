@@ -13,8 +13,8 @@ import io.reactivex.disposables.Disposable
  * zhihu:https://zhihu.com/people/lsxiao
  */
 
-class ApolloBinderImpl(val o: Any) : ApolloBinder {
-    val mCompositeDisposable: CompositeDisposable by lazy {
+class ApolloBinderImpl(private val o: Any) : ApolloBinder {
+    private val mCompositeDisposable: CompositeDisposable by lazy {
         CompositeDisposable()
     }
 
