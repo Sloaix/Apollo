@@ -17,6 +17,11 @@
 
 [English Document](https://github.com/lsxiao/Apollo/blob/master/README-EN.md)
 
+
+## Todo
+- 重写demo
+- 完整的单元测试
+
 ## 开始
 
 用3分钟时间快速集成Apollo
