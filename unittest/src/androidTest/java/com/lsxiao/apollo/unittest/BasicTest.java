@@ -1,4 +1,4 @@
-package com.lsxiao.apollo.demo;
+package com.lsxiao.apollo.unittest;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -9,7 +9,6 @@ import com.lsxiao.apollo.core.annotations.Receive;
 import com.lsxiao.apollo.core.contract.ApolloBinder;
 import com.lsxiao.apollo.core.entity.SchedulerProvider;
 import com.lsxiao.apollo.core.serialize.KryoSerializer;
-import com.lsxiao.apollo.generate.ApolloBinderGeneratorImpl;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,18 +30,14 @@ import static junit.framework.Assert.assertTrue;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 @RunWith(AndroidJUnit4.class)
-public class ApolloBasicTest {
+public class BasicTest {
     private static final String TAG = "EVENT_TAG";
-    private String countStringEvent;
     private Context mContext;
-    private ApolloBinder binder = null;
 
     @Before
     public void setUp() throws Exception {
         mContext = InstrumentationRegistry.getTargetContext();
-
-        Apollo.init(AndroidSchedulers.mainThread(), ApolloBinderGeneratorImpl.instance(), mContext);
-
+        Apollo.init(AndroidSchedulers.mainThread(), mContext);
     }
 
     @Test

@@ -370,7 +370,7 @@ class CodeGenerator private constructor(private val apolloDescriptors: ArrayList
                 return "Long"
             }
             TypeKind.CHAR -> {
-                return "Char"
+                return "Character"
             }
             TypeKind.FLOAT -> {
                 return "Float"

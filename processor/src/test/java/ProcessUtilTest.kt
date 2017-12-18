@@ -15,12 +15,12 @@ import java.util.*
 class ProcessUtilTest : TestCase() {
     @Test
     fun testSplit() {
-        assertEquals(""""a","b","c"""", Util.split(Arrays.asList(*arrayOf("a", "b", "c")), ","))
+        assertEquals(""""a","b","c"""", Util.split(Arrays.asList("a", "b", "c"), ","))
 
-        assertEquals(""""a","b"""", Util.split(Arrays.asList(*arrayOf("a", "b")), ","))
+        assertEquals(""""a","b"""", Util.split(Arrays.asList("a", "b"), ","))
 
-        assertEquals(""""a"""", Util.split(Arrays.asList(*arrayOf("a")), ","))
+        assertEquals(""""a"""", Util.split(Arrays.asList("a"), ","))
 
-        assertEquals("", Util.split(Arrays.asList(*arrayOf()), ","))
+        assertEquals("", Util.split(Arrays.asList(), ","))
     }
 }

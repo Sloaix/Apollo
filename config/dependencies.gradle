@@ -21,9 +21,9 @@ ext {
     rxandroid2 = "2.0.1"
 
     javapoet = "1.8.0"
-    autoService = "1.0-rc3"
+    autoService = "1.0-rc4"
     autoCommon = "0.9"
-    kotlin = "1.2.0"
+    kotlin = "1.2.10"
     kryo = "4.0.0"//json parser
 
     libs = [
