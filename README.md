@@ -20,7 +20,7 @@
 
 ## Todo
 - 重写demo
-- 完整的单元测试
+- 完整的单元测试(已完成30%,见unittest module)
 
 ## 开始
 
@@ -142,9 +142,15 @@ Apollo.emit("tag","event");
 
 //stikcy(只有被@Sticky注解的函数才能收到sticky事件)
 Apollo.emit("tag","event",stikcy)
+
 //只有tag的stikcy调用
 Apollo.emit("tag",sticky)
 ```
+//！！！注意，在emit一个boolean变量的时候,正确写法
+`Apollo.emit("tag",true,sticky)`
+
+//错误写法,这样直接就发送了一个不带参数的sticky事件
+~~`Apollo.emit("tag",true)`~~
 
 ### 自定义Serializer
 Apollo默认采用kryo来序列化IPC数据对象，你可以提供一个Serializer来修改默认的实现。
@@ -179,31 +185,22 @@ Apollo.serializer(new Serializable() {
 `KryoSerializeTest`
 
 ### demo module
-`ApolloBasicTest`
+`unittest`
 
 ## 构建于ReactiveX之上
 
 * [RxJava2](https://github.com/ReactiveX/RxJava) - Reactive Extensions for the JVM
 * [RxAndroid2](https://github.com/ReactiveX/RxAndroid) - Reactive Extensions for Android
 
-## 如何贡献代码
-
-在这里没有太多的条条框框，只要你能让Apollo变得更好，代码review并测试通过，就可以被merge到主分支。
-
 ## 版本
 我们使用 [语义化版本控制规范](http://semver.org/) 作为版本管理，有关可用的版本，请参阅此 [标签列表](https://github.com/lsxiao/Apollo/tags)。
 
 ## 作者
 
-* **lsxiao** - *一个默默无闻的Android工程师* - [lsxiao](https://github.com/lsxiao)
+* **lsxiao** - [lsxiao](https://github.com/lsxiao)
 
 更多 [贡献者](https://github.com/lsxiao/Apollo/contributors) 请参考这个项目的列表。
 
 ## 开源许可
 
 Apache License Version 2.0
-
-## 感谢
-
-* 所有我爱，以及爱我的人
-* 我职业生涯和生活中给与过我帮助的人。
