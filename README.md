@@ -186,7 +186,7 @@ Apollo.serializer(new Serializable() {
 ### core module
 `KryoSerializeTest`
 
-### demo module
+### unit test module
 `unittest`
 
 ## 构建于ReactiveX之上
