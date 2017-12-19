@@ -146,10 +146,12 @@ Apollo.emit("tag","event",stikcy)
 //只有tag的stikcy调用
 Apollo.emit("tag",sticky)
 ```
-//！！！注意，在emit一个boolean变量的时候,正确写法
+**注意**，在emit一个boolean变量的时候,**正确写法**:
+
 `Apollo.emit("tag",true,sticky)`
 
-//错误写法,这样直接就发送了一个不带参数的sticky事件
+**错误写法**,这样直接就发送了一个不带参数的sticky事件:
+
 ~~`Apollo.emit("tag",true)`~~
 
 ### 自定义Serializer
