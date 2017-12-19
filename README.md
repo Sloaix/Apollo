@@ -45,16 +45,16 @@ dependencies {
   implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
   
   //Apollo的核心库
-  implementation "com.github.lsxiao.Apollo:core:1.0.1-beta.1"
+  implementation "com.github.lsxiao.Apollo:core:1.0.1"
 
   //IPC,如不需要可以不依赖
-  implementation "com.github.lsxiao.Apollo:ipc:1.0.1-beta.1"
+  implementation "com.github.lsxiao.Apollo:ipc:1.0.1"
 
   //Apollo的编译时注解处理器
-  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.1-beta.1"
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.1"
 
   //如果你使用的是kotlin,请使用kapt
-  kapt "com.github.lsxiao.Apollo:processor:1.0.1-beta.1"
+  kapt "com.github.lsxiao.Apollo:processor:1.0.1"
 }
 ```
 
@@ -146,10 +146,12 @@ Apollo.emit("tag","event",stikcy)
 //只有tag的stikcy调用
 Apollo.emit("tag",sticky)
 ```
-//！！！注意，在emit一个boolean变量的时候,正确写法
+**注意**，在emit一个boolean变量的时候,**正确写法**:
+
 `Apollo.emit("tag",true,sticky)`
 
-//错误写法,这样直接就发送了一个不带参数的sticky事件
+**错误写法**,这样直接就发送了一个不带参数的sticky事件:
+
 ~~`Apollo.emit("tag",true)`~~
 
 ### 自定义Serializer

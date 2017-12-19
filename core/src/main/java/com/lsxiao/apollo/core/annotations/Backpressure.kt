@@ -10,4 +10,4 @@ import io.reactivex.BackpressureStrategy
  * zhihu:https://zhihu.com/people/lsxiao
  */
 
-annotation class Backpressure(val value: io.reactivex.BackpressureStrategy)
+annotation class Backpressure(val value: BackpressureStrategy)
