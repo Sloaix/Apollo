@@ -11,7 +11,7 @@ import io.reactivex.disposables.Disposable
  */
 
 interface ApolloBinder {
-    fun add(disposable: io.reactivex.disposables.Disposable)
+    fun add(disposable: Disposable)
 
     fun unbind()
 
