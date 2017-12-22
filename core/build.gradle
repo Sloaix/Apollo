@@ -13,7 +13,7 @@ dependencies {
 
 
     def libs = parent.ext.libs
-    implementation libs.rxjava2
-    implementation libs.kotlin
-    implementation libs.kryo
+    compile libs.rxjava2
+    compile libs.kotlin
+    compile libs.kryo
 }
