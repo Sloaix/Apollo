@@ -11,10 +11,10 @@ dependencies {
     testImplementation parent.ext.test.junit
     def libs = parent.ext.libs
 
-    implementation project(':core')
-    implementation libs.javapoet
-    implementation libs.autoService
-    implementation libs.autoCommon
-    implementation libs.kotlin
-    implementation libs.rxjava2
+    compile project(':core')
+    compile libs.javapoet
+    compile libs.autoService
+    compile libs.autoCommon
+    compile libs.kotlin
+    compile libs.rxjava2
 }
