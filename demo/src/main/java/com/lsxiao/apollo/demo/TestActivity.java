@@ -1,5 +1,11 @@
 package com.lsxiao.apollo.demo;
 
+import com.lsxiao.apollo.core.annotations.Receive;
+import com.lsxiao.apollo.demo.base.BaseActivity;
+import com.lsxiao.apollo.demo.fragment.ProducerFragment;
+import com.lsxiao.apollo.demo.fragment.SubscriberFragment;
+import com.lsxiao.apollo.demo.model.User;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Process;
@@ -8,12 +14,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.lsxiao.apollo.core.annotations.Receive;
-import com.lsxiao.apollo.demo.base.BaseActivity;
-import com.lsxiao.apollo.demo.fragment.ProducerFragment;
-import com.lsxiao.apollo.demo.fragment.SubscriberFragment;
-import com.lsxiao.apollo.demo.model.User;
 
 public class TestActivity extends BaseActivity<User> {
     public static final String TAG = TestActivity.class.getSimpleName();
@@ -39,7 +39,8 @@ public class TestActivity extends BaseActivity<User> {
                 .beginTransaction()
                 .replace(R.id.fl_producer, producerFragment, SubscriberFragment.TAG)
                 .commit();
-        ((TextView) findViewById(R.id.btn_start_service)).setText(String.format("Start TestService(cur pid=%s)", Process.myPid()));
+        ((TextView) findViewById(R.id.btn_start_service))
+                .setText(String.format("Start TestService(cur pid=%s)", Process.myPid()));
         findViewById(R.id.btn_start_service).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,6 +48,7 @@ public class TestActivity extends BaseActivity<User> {
                 startService(intent);
             }
         });
+
     }
 
     @Receive("ipc")

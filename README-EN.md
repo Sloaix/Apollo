@@ -29,15 +29,15 @@ depend these in your build.gralde.
 dependencies {
   implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
 
-  implementation "com.github.lsxiao.Apollo:core:1.0.1"
+  implementation "com.github.lsxiao.Apollo:core:1.0.1-fix"
 
   //IPC module,optional
-  implementation "com.github.lsxiao.Apollo:ipc:1.0.1"
+  implementation "com.github.lsxiao.Apollo:ipc:1.0.1-fix"
 
-  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.1"
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.1-fix"
 
   //for kotlin
-  kapt "com.github.lsxiao.Apollo:processor:1.0.1"
+  kapt "com.github.lsxiao.Apollo:processor:1.0.1-fix"
 }
 ```
 
@@ -144,6 +144,16 @@ Apollo.serializer(new Serializable() {
         ...
     }
 });
+```
+
+## ProGuard
+```
+-dontwarn com.esotericsoftware.kryo.**
+-dontwarn org.objenesis.instantiator.**
+-dontwarn org.codehaus.**
+-dontwarn java.nio.**
+-dontwarn java.lang.invoke.**
+-keep class com.lsxiao.apollo.generate.** { *; }
 ```
 
 ## Build with ReactiveX

@@ -45,16 +45,16 @@ dependencies {
   implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
   
   //Apollo的核心库
-  implementation "com.github.lsxiao.Apollo:core:1.0.1"
+  implementation "com.github.lsxiao.Apollo:core:1.0.1-fix"
 
   //IPC,如不需要可以不依赖
-  implementation "com.github.lsxiao.Apollo:ipc:1.0.1"
+  implementation "com.github.lsxiao.Apollo:ipc:1.0.1-fix"
 
   //Apollo的编译时注解处理器
-  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.1"
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.1-fix"
 
   //如果你使用的是kotlin,请使用kapt
-  kapt "com.github.lsxiao.Apollo:processor:1.0.1"
+  kapt "com.github.lsxiao.Apollo:processor:1.0.1-fix"
 }
 ```
 
@@ -178,6 +178,7 @@ Apollo.serializer(new Serializable() {
 -dontwarn org.codehaus.**
 -dontwarn java.nio.**
 -dontwarn java.lang.invoke.**
+-keep class com.lsxiao.apollo.generate.** { *; }
 ```
 
 ## 测试
