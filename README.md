@@ -178,6 +178,7 @@ Apollo.serializer(new Serializable() {
 -dontwarn org.codehaus.**
 -dontwarn java.nio.**
 -dontwarn java.lang.invoke.**
+-keep class com.lsxiao.apollo.generate.** { *; }
 ```
 
 ## 测试

@@ -146,6 +146,16 @@ Apollo.serializer(new Serializable() {
 });
 ```
 
+## ProGuard
+```
+-dontwarn com.esotericsoftware.kryo.**
+-dontwarn org.objenesis.instantiator.**
+-dontwarn org.codehaus.**
+-dontwarn java.nio.**
+-dontwarn java.lang.invoke.**
+-keep class com.lsxiao.apollo.generate.** { *; }
+```
+
 ## Build with ReactiveX
 
 * [RxJava2](https://github.com/ReactiveX/RxJava) - Reactive Extensions for the JVM
