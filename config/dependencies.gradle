@@ -23,7 +23,7 @@ ext {
     javapoet = "1.8.0"
     autoService = "1.0-rc4"
     autoCommon = "0.9"
-    kotlin = "1.2.10"
+    kotlin = "1.2.21"
     kryo = "4.0.0"//json parser
 
     libs = [
