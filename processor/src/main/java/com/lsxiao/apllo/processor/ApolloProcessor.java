@@ -1,15 +1,5 @@
 package com.lsxiao.apllo.processor;
 
-import com.google.auto.common.BasicAnnotationProcessor;
-import com.google.auto.service.AutoService;
-import com.google.common.collect.ImmutableSet;
-import com.lsxiao.apllo.processor.step.BackpressureStep;
-import com.lsxiao.apllo.processor.step.ObserveStep;
-import com.lsxiao.apllo.processor.step.TakeStep;
-import com.lsxiao.apllo.processor.step.ReceiveStep;
-import com.lsxiao.apllo.processor.step.StickyStep;
-import com.lsxiao.apllo.processor.step.SubscribeStep;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +9,15 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 
+import com.google.auto.common.BasicAnnotationProcessor;
+import com.google.auto.service.AutoService;
+import com.google.common.collect.ImmutableSet;
+import com.lsxiao.apllo.processor.step.BackpressureStep;
+import com.lsxiao.apllo.processor.step.ObserveStep;
+import com.lsxiao.apllo.processor.step.ReceiveStep;
+import com.lsxiao.apllo.processor.step.StickyStep;
+import com.lsxiao.apllo.processor.step.SubscribeStep;
+import com.lsxiao.apllo.processor.step.TakeStep;
 
 @AutoService(Processor.class)
 public class ApolloProcessor extends BasicAnnotationProcessor {
@@ -40,7 +39,7 @@ public class ApolloProcessor extends BasicAnnotationProcessor {
     @Override
     protected void postRound(RoundEnvironment roundEnv) {
         super.postRound(roundEnv);
-        if (mGenerated) {
+        if (mGenerated || sDescriptorMap.isEmpty()) {
             return;
         }
         CodeGenerator.Companion.create(new ArrayList<>(sDescriptorMap.values()), processingEnv.getFiler()).generate();
