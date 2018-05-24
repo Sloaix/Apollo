@@ -45,16 +45,16 @@ dependencies {
   implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
   
   //Apollo的核心库
-  implementation "com.github.lsxiao.Apollo:core:1.0.1-fix"
+  implementation "com.github.lsxiao.Apollo:core:1.0.2"
 
   //IPC,如不需要可以不依赖
-  implementation "com.github.lsxiao.Apollo:ipc:1.0.1-fix"
+  implementation "com.github.lsxiao.Apollo:ipc:1.0.2"
 
   //Apollo的编译时注解处理器
-  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.1-fix"
+  annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.2"
 
   //如果你使用的是kotlin,请使用kapt
-  kapt "com.github.lsxiao.Apollo:processor:1.0.1-fix"
+  kapt "com.github.lsxiao.Apollo:processor:1.0.2"
 }
 ```
 
